@@ -47,6 +47,7 @@ import tempfile
 import time
 import zipfile
 from contextlib import contextmanager
+from distutils.dir_util import copy_tree
 
 import pygit2
 
@@ -249,7 +250,7 @@ def cpy(src, dst):
        directory as needed."""
     if os.path.isdir(src):
         if not os.path.exists(dst):
-            os.makedirs(dst)
+            copy_tree(src, dst)
     else:
         # file
         dstdir = os.path.dirname(dst)
@@ -492,7 +493,7 @@ def pack_manual(version, file_list, output_dir):
     # We want every file for the manual version
     LOGGER.debug("Packaging manual distributable at {}".format(archive))
     file_list = list(file_list)
-    root_files_to_include = ["Readme.md", "requirements.txt"]
+    root_files_to_include = ["Readme.md", "Pipfile", "Pipfile.lock"]
     for fname in root_files_to_include:
         orig = os.path.join(ROOT_PATH, fname)
         target = os.path.join(MOPY_PATH, fname)
@@ -727,9 +728,29 @@ def handle_apps_folder():
 
 
 @contextmanager
+def handle_distutils():
+    distutils_suffix = os.path.join(u"Lib", u"distutils")
+    real_path = os.path.join(real_sys_prefix(), distutils_suffix)
+    actual_path = os.path.join(sys.prefix, distutils_suffix)
+    if real_path != actual_path:
+        tmpdir = tempfile.mkdtemp()
+        LOGGER.debug("Moving virtualenv distutils to {}".format(tmpdir))
+        mv(actual_path, tmpdir)
+        cpy(real_path, actual_path)
+    try:
+        yield
+    finally:
+        if real_path != actual_path:
+            rm(actual_path)
+            mv(os.path.join(tmpdir, u"distutils"), os.path.dirname(actual_path))
+            rm(tmpdir)
+
+
+@contextmanager
 def handle_executable(release_version, version_info):
     LOGGER.info("Building executable...")
-    build_executable(release_version, version_info)
+    with handle_distutils():
+        build_executable(release_version, version_info)
     try:
         yield
     finally:

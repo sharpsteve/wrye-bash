@@ -57,8 +57,9 @@ operating system.
 
 Once you have those, install the required packages by running:
 
-```python
-path/to/python.exe -m pip install -r requirements.txt
+```
+path/to/python.exe -m pip install pipenv
+path/to/python.exe -m pipenv sync --dev
 ```
 
 Refer to the readmes for [detailed instructions][12]. In short:
