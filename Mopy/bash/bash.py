@@ -55,7 +55,7 @@ def _import_bolt(opts):
     except Exception as e:
         but_kwargs = {'text': "QUIT", 'fg': 'red'}  # foreground button color
         msg = '\n'.join([dump_environment(), '', 'Unable to load bolt:',
-                          traceback.format_exc(e), 'Exiting.'])
+                          traceback.format_exc(), 'Exiting.'])
         _tkinter_error_dial(msg, but_kwargs)
         sys.exit(1)
 
@@ -191,7 +191,7 @@ def main(opts):
             _('or to the Wrye Bash Discord at'),
             _('https://discord.gg/NwWvAFR'),
             '',
-            traceback.format_exc(e)
+            traceback.format_exc()
         ])
         _close_dialog_windows()
         _show_wx_error(msg)
@@ -283,7 +283,7 @@ def _main(opts):
     except (exception.BoltError, ImportError, OSError, IOError) as e:
         msg = '\n'.join([_('Error! Unable to start Wrye Bash.'), '\n', _(
             'Please ensure Wrye Bash is correctly installed.'), '\n',
-                          traceback.format_exc(e)])
+                          traceback.format_exc()])
         _close_dialog_windows()
         _show_wx_error(msg)
         return
@@ -462,7 +462,7 @@ def _show_wx_error(msg):
         print('The following is the error that occurred when displaying the '\
               'first error:')
         try:
-            print(traceback.format_exc(e))
+            print(traceback.format_exc())
         except Exception:
             print('   An error occurred while displaying the second error.')
 
