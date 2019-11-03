@@ -140,7 +140,7 @@ def decode(byte_str, encoding=None, avoidEncodings=()):
 def encode(text_str, encodings=encodingOrder, firstEncoding=None,
            returnEncoding=False):
     """Encode unicode string to byte string, using heuristics on encoding."""
-    if isinstance(text_str, str) or text_str is None:
+    if isinstance(text_str, bytes) or text_str is None:
         if returnEncoding: return text_str, None
         else: return text_str
     # Try user specified encoding
