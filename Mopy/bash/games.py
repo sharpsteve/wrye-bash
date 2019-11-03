@@ -87,28 +87,10 @@ def _parse_plugins_txt_(path, mod_infos, _star):
             # use raw strings below
             is_active = not _star or modname.startswith('*')
             if _star and is_active: modname = modname[1:]
-            try:
-                test = bolt.decode(modname, encoding='cp1252')
-            except UnicodeError:
-                bolt.deprint('%r failed to properly decode' % modname)
-                continue
-            if bolt.GPath(test) not in mod_infos:
-                # The automatic encoding detector could have returned
-                # an encoding it actually wasn't.  Luckily, we
-                # have a way to double check: modInfos.data
-                for encoding in bolt.encodingOrder:
-                    try:
-                        test2 = str(modname, encoding)
-                        if bolt.GPath(test2) not in mod_infos:
-                            continue
-                        modname = bolt.GPath(test2)
-                        break
-                    except UnicodeError:
-                        pass
-                else:
-                    modname = bolt.GPath(test)
-            else:
-                modname = bolt.GPath(test)
+            # TODO(lojack): file is already open reading in as unicode (str)
+            # object.  Test to see if it chokes when weird characters are
+            # present.
+            modname = bolt.GPath(modname)
             modnames.append(modname)
             if is_active: active.append(modname)
     return active, modnames
