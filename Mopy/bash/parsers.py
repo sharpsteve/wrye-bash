@@ -3993,9 +3993,9 @@ class ModFile(object):
                         self.tops[label].load(ins, do_unpack and (topClass != MobBase))
                     else:
                         self.topsSkipped.add(label)
-                        insSeek(size-header.__class__.rec_header_size,1,type + '.' + label)
+                        insSeek(size-header.__class__.rec_header_size,1,type.encode('ascii') + b'.' + label)
                 except:
-                    print('Error in',self.fileInfo.name.s)
+                    traceback.print_exc()
                     deprint(' ',traceback=True)
                     break
                 subProgress(insTell())
