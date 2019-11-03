@@ -375,7 +375,7 @@ def initTranslator(lang=None, path=None):
             print('Error loading translation file:')
             traceback.print_exc()
             trans = gettext.NullTranslations()
-    trans.install(str=True)
+    trans.install()
 
 #--Do translator test and set
 if locale.getlocale() == (None,None):
