@@ -63,13 +63,6 @@ if os.name == 'nt':
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
-# speed up os.walk
-try:
-    import scandir
-    _walk = walkdir = scandir.walk
-except ImportError:
-    _walk = walkdir = os.walk
-    scandir = None
 
 # Unicode ---------------------------------------------------------------------
 #--decode unicode strings

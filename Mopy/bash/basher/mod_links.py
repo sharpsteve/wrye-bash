@@ -2073,7 +2073,7 @@ class Mod_Scripts_Export(_Mod_Export_Link):
             message=_('Choose directory to export scripts to'),
             defaultPath=defaultPath)
         if textDir != defaultPath:
-            for asDir,sDirs,sFiles in bolt.walkdir(defaultPath.s):
+            for asDir,sDirs,sFiles in os.walk(defaultPath.s):
                 if not (sDirs or sFiles):
                     defaultPath.removedirs()
         if not textDir: return

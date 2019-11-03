@@ -231,7 +231,7 @@ class RestoreSettings(object):
         initialize bass.dirs."""
         if self._extract_dir is self.__unset: raise BoltError(
             'backup_ini_path: you must extract the settings file first')
-        for r, d, fs in bolt.walkdir('%s' % self._extract_dir):
+        for r, d, fs in os.walk('%s' % self._extract_dir):
             for f in fs:
                 if f == 'bash.ini':
                     self._bash_ini_path = jo(r, f)
