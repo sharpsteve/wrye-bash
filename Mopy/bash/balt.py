@@ -44,7 +44,7 @@ import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from wx.lib.embeddedimage import PyEmbeddedImage
 import wx.lib.newevent
-import wx.wizard as wiz
+import wx.adv as wiz
 
 class Resources:
     #--Icon Bundles
