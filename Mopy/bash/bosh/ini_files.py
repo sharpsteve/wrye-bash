@@ -148,7 +148,6 @@ class IniFile(AFile):
             sectionSettings = None
             section = None
             for i,line in enumerate(iniFile.readlines()):
-                line = str(line, self.ini_encoding)
                 maDeleted = reDeleted.match(line)
                 stripped = reComment.sub('',line).strip()
                 maSection = reSection.match(stripped)
