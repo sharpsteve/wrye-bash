@@ -686,7 +686,7 @@ class MelFidList(MelFids):
     def loadData(self, record, ins, sub_type, size_, readId):
         """Reads data from ins into record attribute."""
         if not size_: return
-        fids = ins.unpack(repr(size_ / 4) + 'I', size_, readId)
+        fids = ins.unpack(repr(size_ // 4) + 'I', size_, readId)
         record.__setattr__(self.attr,list(fids))
         if self._debug:
             for fid in fids:
@@ -1085,7 +1085,7 @@ class MelStructA(MelStructs):
         itemSize = struct.calcsize(self.format)
         melLoadData = MelStruct.loadData
         # Note for py3: we want integer division here!
-        for x in range(size_/itemSize):
+        for x in range(size_//itemSize):
             target = selfDefault()
             recordAppend(target)
             target.__slots__ = selfAttrs
@@ -2363,6 +2363,7 @@ class MreHasEffects(object):
             if effect.magnitude:
                 effectValue *=  effect.magnitude
             if effect.area:
+                # TODO(lojack): integer division?
                 effectValue *=  (effect.area/10)
             if effect.duration:
                 effectValue *=  effect.duration
