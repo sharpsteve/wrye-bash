@@ -61,7 +61,6 @@ import time
 from collections import OrderedDict
 from functools import partial
 from operator import itemgetter
-from types import ClassType
 #--wxPython
 import wx
 
@@ -4112,7 +4111,7 @@ class BashApp(wx.App):
         #--Window sizes by class name rather than by class
         if settings['bash.version'] < 43:
             for key,value in list(balt.sizes.items()):
-                if isinstance(key,ClassType):
+                if isinstance(key,type):
                     balt.sizes[key.__name__] = value
                     del balt.sizes[key]
         #--Current Version
