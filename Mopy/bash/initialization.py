@@ -246,11 +246,9 @@ def init_dirs_mopy_and_cd(is_standalone):
     # ensure we are in the correct directory so relative paths will work
     # properly
     if is_standalone:
-        pathToProg = os.path.dirname(
-            str(sys.executable, Path.sys_fs_enc))
+        pathToProg = os.path.dirname(sys.executable)
     else:
-        pathToProg = os.path.dirname(
-            str(sys.argv[0], Path.sys_fs_enc))
+        pathToProg = os.path.dirname(sys.argv[0])
     if pathToProg:
         os.chdir(pathToProg)
     dirs['mopy'] = Path.getcwd()
