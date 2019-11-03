@@ -32,7 +32,7 @@ from . import bass
 from . import load_order
 from .ScriptParser import error
 import wx
-import wx.wizard as wiz     # wxPython wizard class
+import wx.adv as wiz     # wxPython wizard class
 from . import bosh, balt, bolt, bush
 from .balt import vspace, hspace, set_event_hook, Events
 from .env import get_file_version
