@@ -66,6 +66,13 @@ splitterStyle = wx.SP_LIVE_UPDATE # | wx.SP_3DSASH # ugly but
 wxPoint = wx.Point
 wxSize = wx.Size
 
+
+def cmp(x, y):
+    """Backwards compatibility, Python 3 drops cmp."""
+    # TODO(lojack): Try to rewrite usages of this
+    return (x > y) - (x < y)
+
+
 class Font(wx.Font):
 
     @staticmethod
@@ -1673,11 +1680,7 @@ class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
     def ReorderDisplayed(self, inorder):
         """Reorder the list control displayed items to match inorder."""
         sortDict = dict((self._item_itemId[y], x) for x, y in enumerate(inorder))
-        def cmp(x, y):
-            x = sortDict[x]
-            y = sortDict[y]
-            return (x > y) - (x < y)
-        self.SortItems(cmp)
+        self.SortItems(lambda x, y: cmp(sortDict[x], sortDict[y]))
 
 #------------------------------------------------------------------------------
 _depth = 0
