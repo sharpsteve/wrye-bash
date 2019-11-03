@@ -916,12 +916,12 @@ class HtmlCtrl(object):
         self.text_ctrl = _wx_lib_iewin.IEHtmlWindow(parent,
             style=wx.NO_FULL_REPAINT_ON_RESIZE)
         #--Html Back
-        bitmap = wx.ArtProvider_GetBitmap(wx.ART_GO_BACK, wx.ART_HELP_BROWSER,
+        bitmap = wx.ArtProvider.GetBitmap(wx.ART_GO_BACK, wx.ART_HELP_BROWSER,
                                           (16, 16))
         self.prevButton = bitmapButton(parent, bitmap,
                                        onBBClick=self.text_ctrl.GoBack)
         #--Html Forward
-        bitmap = wx.ArtProvider_GetBitmap(wx.ART_GO_FORWARD,
+        bitmap = wx.ArtProvider.GetBitmap(wx.ART_GO_FORWARD,
                                           wx.ART_HELP_BROWSER, (16, 16))
         self.nextButton = bitmapButton(parent, bitmap,
                                        onBBClick=self.text_ctrl.GoForward)
