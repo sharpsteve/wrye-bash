@@ -40,3 +40,9 @@ Mopy/bash/l10n/*NEW.txt
 # if a symlink
 .idea
 .vscode
+
+# Virtual Evnironments
+.venv
+activate.bat
+Activate.ps1
+activate
