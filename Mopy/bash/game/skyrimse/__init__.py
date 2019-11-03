@@ -126,7 +126,8 @@ class SkyrimSEGameInfo(SkyrimGameInfo):
             MreQust,
         )
         # Setting RecordHeader class variables --------------------------------
-        brec.RecordHeader.topTypes = [
+        __tobytes = lambda x: bytes(x, 'ascii')
+        brec.RecordHeader.topTypes = cls.str_to_bytes([
             'GMST', 'KYWD', 'LCRT', 'AACT', 'TXST', 'GLOB', 'CLAS', 'FACT',
             'HDPT', 'HAIR', 'EYES', 'RACE', 'SOUN', 'ASPC', 'MGEF', 'SCPT',
             'LTEX', 'ENCH', 'SPEL', 'SCRL', 'ACTI', 'TACT', 'ARMO', 'BOOK',
@@ -141,12 +142,13 @@ class SkyrimSEGameInfo(SkyrimGameInfo):
             'RGDL', 'DOBJ', 'LGTM', 'MUSC', 'FSTP', 'FSTS', 'SMBN', 'SMQN',
             'SMEN', 'DLBR', 'MUST', 'DLVW', 'WOOP', 'SHOU', 'EQUP', 'RELA',
             'SCEN', 'ASTP', 'OTFT', 'ARTO', 'MATO', 'MOVT', 'SNDR', 'DUAL',
-            'SNCT', 'SOPM', 'COLL', 'CLFM', 'REVB', 'LENS', 'VOLI']
+            'SNCT', 'SOPM', 'COLL', 'CLFM', 'REVB', 'LENS', 'VOLI'])
         #-> this needs updating for Skyrim
         brec.RecordHeader.recordTypes = set(
-            brec.RecordHeader.topTypes + ['GRUP', 'TES4', 'REFR', 'ACHR',
+            brec.RecordHeader.topTypes + cls.str_to_bytes(
+                                         ['GRUP', 'TES4', 'REFR', 'ACHR',
                                           'ACRE', 'LAND', 'INFO', 'NAVM',
-                                          'PHZD', 'PGRE'])
+                                          'PHZD', 'PGRE']))
         brec.RecordHeader.plugin_form_version = 44
         brec.MreRecord.type_class = dict((x.classType,x) for x in (
             MreAchr, MreDial, MreInfo, MreAact, MreActi, MreAddn, MreAlch,
@@ -169,7 +171,7 @@ class SkyrimSEGameInfo(SkyrimGameInfo):
             MreQust, MreHeader,
         ))
         brec.MreRecord.simpleTypes = (
-            set(brec.MreRecord.type_class) - {'TES4', 'ACHR', 'CELL', 'DIAL',
-                                              'INFO', 'WRLD', })
+            set(brec.MreRecord.type_class) - {b'TES4', b'ACHR', b'CELL',
+                                              b'DIAL', b'INFO', b'WRLD', })
 
 GAME_TYPE = SkyrimSEGameInfo

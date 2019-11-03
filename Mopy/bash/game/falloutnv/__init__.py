@@ -165,7 +165,7 @@ class FalloutNVGameInfo(Fallout3GameInfo):
                 MreTxst, MreVtyp, MreWatr, MreWeap, MreWthr,
             )
         # Setting RecordHeader class variables --------------------------------
-        brec.RecordHeader.topTypes = [
+        brec.RecordHeader.topTypes = cls.str_to_bytes([
             'GMST', 'TXST', 'MICN', 'GLOB', 'CLAS', 'FACT', 'HDPT', 'HAIR',
             'EYES', 'RACE', 'SOUN', 'ASPC', 'MGEF', 'SCPT', 'LTEX', 'ENCH',
             'SPEL', 'ACTI', 'TACT', 'TERM', 'ARMO', 'BOOK', 'CONT', 'DOOR',
@@ -178,11 +178,11 @@ class FalloutNVGameInfo(Fallout3GameInfo):
             'VTYP', 'IPCT', 'IPDS', 'ARMA', 'ECZN', 'MESG', 'RGDL', 'DOBJ',
             'LGTM', 'MUSC', 'IMOD', 'REPU', 'RCPE', 'RCCT', 'CHIP', 'CSNO',
             'LSCT', 'MSET', 'ALOC', 'CHAL', 'AMEF', 'CCRD', 'CMNY', 'CDCK',
-            'DEHY', 'HUNG', 'SLPD', 'CELL', 'WRLD', ]
+            'DEHY', 'HUNG', 'SLPD', 'CELL', 'WRLD', ])
         brec.RecordHeader.recordTypes = set(
-            brec.RecordHeader.topTypes + ['GRUP', 'TES4', 'ACHR', 'ACRE',
-                                          'INFO', 'LAND', 'NAVM', 'PGRE',
-                                          'PMIS', 'REFR'])
+            brec.RecordHeader.topTypes + [b'GRUP', b'TES4', b'ACHR', b'ACRE',
+                                          b'INFO', b'LAND', b'NAVM', b'PGRE',
+                                          b'PMIS', b'REFR'])
         brec.RecordHeader.plugin_form_version = 15
         brec.MreRecord.type_class = dict(
             (x.classType, x) for x in (cls.mergeClasses +  # Not Mergeable
@@ -192,7 +192,7 @@ class FalloutNVGameInfo(Fallout3GameInfo):
             set(brec.MreRecord.type_class) - {
             # 'TES4','ACHR','ACRE','REFR','CELL','PGRD','PGRE','LAND',
             # 'WRLD','INFO','DIAL','NAVM'
-            'TES4', 'ACHR', 'ACRE', 'CELL', 'DIAL', 'INFO', 'LAND', 'NAVI',
-            'NAVM', 'PGRE', 'PMIS', 'REFR', 'WRLD', })
+            b'TES4', b'ACHR', b'ACRE', b'CELL', b'DIAL', b'INFO', b'LAND',
+            b'NAVI', b'NAVM', b'PGRE', b'PMIS', b'REFR', b'WRLD', })
 
 GAME_TYPE = FalloutNVGameInfo

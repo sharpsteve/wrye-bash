@@ -409,13 +409,13 @@ class GameInfo(object):
         # Top types in order of the main ESM
         brec.RecordHeader.topTypes = []
         brec.RecordHeader.recordTypes = set(
-            brec.RecordHeader.topTypes + ['GRUP', 'TES4'])
+            brec.RecordHeader.topTypes + [b'GRUP', b'TES4'])
         # Record Types
         brec.MreRecord.type_class = dict((x.classType,x) for x in  (
                 ))
         # Simple records
         brec.MreRecord.simpleTypes = (
-                set(brec.MreRecord.type_class) - {'TES4'})
+                set(brec.MreRecord.type_class) - {b'TES4'})
     # Import from the constants module ----------------------------------------
     # Class attributes moved to constants module, set dynamically at init
     _constants_members = {
@@ -447,5 +447,13 @@ class GameInfo(object):
         vf_module = importlib.import_module('.vanilla_files',
                                             package=package_name)
         cls.vanilla_files = vf_module.vanilla_files
+
+    @staticmethod
+    def str_to_bytes(list_of_strings):
+        """Convert a list of string objects to bytes, using ASCII as the
+           codec.  Useful for transforming largs lists of record header
+           signatures into bytes form (how they're actually read)."""
+        return [x.encode('ascii') for x in list_of_strings]
+
 
 GAME_TYPE = None

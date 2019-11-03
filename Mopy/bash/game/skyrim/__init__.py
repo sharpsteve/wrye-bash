@@ -271,7 +271,8 @@ class SkyrimGameInfo(GameInfo):
         # MreMgef, has not been verified to be used here for Skyrim
 
         # Setting RecordHeader class variables --------------------------------
-        brec.RecordHeader.topTypes = ['GMST', 'KYWD', 'LCRT', 'AACT', 'TXST',
+        brec.RecordHeader.topTypes = cls.str_to_bytes(
+           ['GMST', 'KYWD', 'LCRT', 'AACT', 'TXST',
             'GLOB', 'CLAS', 'FACT', 'HDPT', 'HAIR', 'EYES', 'RACE', 'SOUN',
             'ASPC', 'MGEF', 'SCPT', 'LTEX', 'ENCH', 'SPEL', 'SCRL', 'ACTI',
             'TACT', 'ARMO', 'BOOK', 'CONT', 'DOOR', 'INGR', 'LIGH', 'MISC',
@@ -285,12 +286,12 @@ class SkyrimGameInfo(GameInfo):
             'ECZN', 'LCTN', 'MESG', 'RGDL', 'DOBJ', 'LGTM', 'MUSC', 'FSTP',
             'FSTS', 'SMBN', 'SMQN', 'SMEN', 'DLBR', 'MUST', 'DLVW', 'WOOP',
             'SHOU', 'EQUP', 'RELA', 'SCEN', 'ASTP', 'OTFT', 'ARTO', 'MATO',
-            'MOVT', 'SNDR', 'DUAL', 'SNCT', 'SOPM', 'COLL', 'CLFM', 'REVB']
+            'MOVT', 'SNDR', 'DUAL', 'SNCT', 'SOPM', 'COLL', 'CLFM', 'REVB'])
         #-> this needs updating for Skyrim
         brec.RecordHeader.recordTypes = set(
-            brec.RecordHeader.topTypes + ['GRUP', 'TES4', 'REFR', 'ACHR',
-                                          'ACRE', 'LAND', 'INFO', 'NAVM',
-                                          'PHZD', 'PGRE'])
+            brec.RecordHeader.topTypes + [b'GRUP', b'TES4', b'REFR', b'ACHR',
+                                          b'ACRE', b'LAND', b'INFO', b'NAVM',
+                                          b'PHZD', b'PGRE'])
         brec.RecordHeader.plugin_form_version = 43
         brec.MreRecord.type_class = dict((x.classType,x) for x in (
             MreAchr, MreDial, MreInfo, MreAact, MreActi, MreAddn, MreAlch,
@@ -313,7 +314,7 @@ class SkyrimGameInfo(GameInfo):
             MreQust, MreHeader,
         ))
         brec.MreRecord.simpleTypes = (
-            set(brec.MreRecord.type_class) - {'TES4', 'ACHR', 'CELL', 'DIAL',
-                                              'INFO', 'WRLD', })
+            set(brec.MreRecord.type_class) - {b'TES4', b'ACHR', b'CELL',
+                                              b'DIAL', b'INFO', b'WRLD', })
 
 GAME_TYPE = SkyrimGameInfo

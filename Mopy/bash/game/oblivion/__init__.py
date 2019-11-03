@@ -264,17 +264,18 @@ class OblivionGameInfo(GameInfo):
         __rec_type.pack_formats.update({x: '=4sIi2I' for x in {2, 3}})
         __rec_type.pack_formats.update({x: '=4sIhh2I' for x in {4, 5}})
         # Similar to other games
-        __rec_type.topTypes = [
+        __rec_type.topTypes = cls.str_to_bytes([
             'GMST', 'GLOB', 'CLAS', 'FACT', 'HAIR', 'EYES', 'RACE', 'SOUN',
             'SKIL', 'MGEF', 'SCPT', 'LTEX', 'ENCH', 'SPEL', 'BSGN', 'ACTI',
             'APPA', 'ARMO', 'BOOK', 'CLOT', 'CONT', 'DOOR', 'INGR', 'LIGH',
             'MISC', 'STAT', 'GRAS', 'TREE', 'FLOR', 'FURN', 'WEAP', 'AMMO',
             'NPC_', 'CREA', 'LVLC', 'SLGM', 'KEYM', 'ALCH', 'SBSP', 'SGST',
             'LVLI', 'WTHR', 'CLMT', 'REGN', 'CELL', 'WRLD', 'DIAL', 'QUST',
-            'IDLE', 'PACK', 'CSTY', 'LSCR', 'LVSP', 'ANIO', 'WATR', 'EFSH']
+            'IDLE', 'PACK', 'CSTY', 'LSCR', 'LVSP', 'ANIO', 'WATR', 'EFSH'])
         __rec_type.recordTypes = set(
-            __rec_type.topTypes + ['GRUP', 'TES4', 'ROAD', 'REFR', 'ACHR',
-                                   'ACRE', 'PGRD', 'LAND', 'INFO'])
+            __rec_type.topTypes + [b'GRUP', b'TES4', b'ROAD', b'REFR',
+                                   b'ACHR', b'ACRE', b'PGRD', b'LAND',
+                                   b'INFO'])
         brec.MreRecord.type_class = dict((x.classType,x) for x in (
             MreAchr, MreAcre, MreActi, MreAlch, MreAmmo, MreAnio, MreAppa,
             MreArmo, MreBook, MreBsgn, MreCell, MreClas, MreClot, MreCont,
@@ -286,8 +287,9 @@ class OblivionGameInfo(GameInfo):
             MreHeader, MreWatr, MreWeap, MreWrld, MreWthr, MreClmt, MreCsty,
             MreIdle, MreLtex, MreRegn, MreSbsp, MreDial, MreInfo,))
         brec.MreRecord.simpleTypes = (
-            set(brec.MreRecord.type_class) - {'TES4', 'ACHR', 'ACRE', 'REFR',
-                                              'CELL', 'PGRD', 'ROAD', 'LAND',
-                                              'WRLD', 'INFO', 'DIAL'})
+            set(brec.MreRecord.type_class) - {b'TES4', b'ACHR', b'ACRE',
+                                              b'REFR', b'CELL', b'PGRD',
+                                              b'ROAD', b'LAND', b'WRLD',
+                                              b'INFO', b'DIAL'})
 
 GAME_TYPE = OblivionGameInfo

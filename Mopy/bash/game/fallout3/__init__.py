@@ -289,7 +289,7 @@ class Fallout3GameInfo(GameInfo):
             MreWeap, MreWthr,
             )
         # Setting RecordHeader class variables --------------------------------
-        brec.RecordHeader.topTypes = [
+        brec.RecordHeader.topTypes = cls.str_to_bytes([
             'GMST', 'TXST', 'MICN', 'GLOB', 'CLAS', 'FACT', 'HDPT', 'HAIR',
             'EYES', 'RACE', 'SOUN', 'ASPC', 'MGEF', 'SCPT', 'LTEX', 'ENCH',
             'SPEL', 'ACTI', 'TACT', 'TERM', 'ARMO', 'BOOK', 'CONT', 'DOOR',
@@ -300,11 +300,11 @@ class Fallout3GameInfo(GameInfo):
             'PACK', 'CSTY', 'LSCR', 'ANIO', 'WATR', 'EFSH', 'EXPL', 'DEBR',
             'IMGS', 'IMAD', 'FLST', 'PERK', 'BPTD', 'ADDN', 'AVIF', 'RADS',
             'CAMS', 'CPTH', 'VTYP', 'IPCT', 'IPDS', 'ARMA', 'ECZN', 'MESG',
-            'RGDL', 'DOBJ', 'LGTM', 'MUSC', ]
+            'RGDL', 'DOBJ', 'LGTM', 'MUSC', ])
         brec.RecordHeader.recordTypes = set(
-            brec.RecordHeader.topTypes + ['GRUP', 'TES4', 'ACHR', 'ACRE',
-                                          'INFO', 'LAND', 'NAVM', 'PGRE',
-                                          'PMIS', 'REFR'])
+            brec.RecordHeader.topTypes + [b'GRUP', b'TES4', b'ACHR', b'ACRE',
+                                          b'INFO', b'LAND', b'NAVM', b'PGRE',
+                                          b'PMIS', b'REFR'])
         brec.RecordHeader.plugin_form_version = 15
         brec.MreRecord.type_class = dict(
             (x.classType, x) for x in (cls.mergeClasses + # Not Mergeable
@@ -313,7 +313,7 @@ class Fallout3GameInfo(GameInfo):
         brec.MreRecord.simpleTypes = (set(brec.MreRecord.type_class) - {
             # 'TES4','ACHR','ACRE','REFR','CELL','PGRD','ROAD','LAND',
             # 'WRLD','INFO','DIAL','PGRE','NAVM'
-            'TES4', 'ACHR', 'ACRE', 'CELL', 'DIAL', 'INFO', 'LAND', 'NAVI',
-            'NAVM', 'PGRE', 'PMIS', 'REFR', 'WRLD', })
+            b'TES4', b'ACHR', b'ACRE', b'CELL', b'DIAL', b'INFO', b'LAND',
+            b'NAVI', b'NAVM', b'PGRE', b'PMIS', b'REFR', b'WRLD', })
 
 GAME_TYPE = Fallout3GameInfo

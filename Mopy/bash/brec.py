@@ -340,7 +340,7 @@ class ModReader:
         if expSize and expSize != size:
             raise exception.ModSizeError(self.inName, recType + '.' + rec_type, size,
                                          expSize, True)
-        return rec_type,size
+        return rec_type.decode('ascii'),size
 
     #--Find data ------------------------------------------
     def findSubRecord(self,subType,recType='----'):
@@ -903,7 +903,7 @@ class MelUnicode(MelString):
     def loadData(self, record, ins, sub_type, size_, readId):
         """Reads data from ins into record attribute"""
         value = '\n'.join(decode(x,self.encoding,avoidEncodings=('utf8','utf-8'))
-                           for x in bolt.cstrip(ins.read(size_, readId)).split('\n'))
+                           for x in bolt.cstrip(ins.read(size_, readId)).split(b'\n'))
         record.__setattr__(self.attr,value)
 
     def dumpData(self,record,out):

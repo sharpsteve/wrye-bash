@@ -157,7 +157,7 @@ class Fallout4GameInfo(GameInfo):
             MreLvli, MreLvln
         )
         # Setting RecordHeader class variables --------------------------------
-        brec.RecordHeader.topTypes = [
+        brec.RecordHeader.topTypes = cls.str_to_bytes([
             'GMST', 'KYWD', 'LCRT', 'AACT', 'TRNS', 'CMPO', 'TXST', 'GLOB',
             'DMGT', 'CLAS', 'FACT', 'HDPT', 'RACE', 'SOUN', 'ASPC', 'MGEF',
             'LTEX', 'ENCH', 'SPEL', 'ACTI', 'TACT', 'ARMO', 'BOOK', 'CONT',
@@ -174,10 +174,11 @@ class Fallout4GameInfo(GameInfo):
             'MOVT', 'SNDR', 'SNCT', 'SOPM', 'COLL', 'CLFM', 'REVB', 'PKIN',
             'RFGP', 'AMDL', 'LAYR', 'COBJ', 'OMOD', 'MSWP', 'ZOOM', 'INNR',
             'KSSM', 'AECH', 'SCCO', 'AORU', 'SCSN', 'STAG', 'NOCM', 'LENS',
-            'GDRY', 'OVIS']
+            'GDRY', 'OVIS'])
         brec.RecordHeader.recordTypes = (set(brec.RecordHeader.topTypes) |
-            {'GRUP', 'TES4', 'REFR', 'ACHR', 'PMIS', 'PARW', 'PGRE', 'PBEA',
-             'PFLA', 'PCON', 'PBAR', 'PHZD', 'LAND', 'NAVM', 'DIAL', 'INFO'})
+            {b'GRUP', b'TES4', b'REFR', b'ACHR', b'PMIS', b'PARW', b'PGRE',
+             b'PBEA', b'PFLA', b'PCON', b'PBAR', b'PHZD', b'LAND', b'NAVM',
+             b'DIAL', b'INFO'})
         brec.RecordHeader.plugin_form_version = 131
         brec.MreRecord.type_class = dict((x.classType,x) for x in (
             #--Always present
@@ -186,6 +187,6 @@ class Fallout4GameInfo(GameInfo):
             # Added to records.py
             ))
         brec.MreRecord.simpleTypes = (
-            set(brec.MreRecord.type_class) - {'TES4',})
+            set(brec.MreRecord.type_class) - {b'TES4',})
 
 GAME_TYPE = Fallout4GameInfo

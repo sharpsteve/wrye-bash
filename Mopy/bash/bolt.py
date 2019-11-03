@@ -613,7 +613,7 @@ class Path(object):
     def __repr__(self):
         return "bolt.Path("+repr(self._s)+")"
 
-    def __unicode__(self):
+    def __str__(self):
         return self._s
 
     #--Properties--------------------------------------------------------
@@ -1818,7 +1818,8 @@ def copyattrs(source,dest,attrs):
 
 def cstrip(inString): # TODO(ut): hunt down and deprecate - it's O(n)+
     """Convert c-string (null-terminated string) to python string."""
-    zeroDex = inString.find('\x00')
+
+    zeroDex = inString.find(b'\x00')
     if zeroDex == -1:
         return inString
     else:
