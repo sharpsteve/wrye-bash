@@ -49,7 +49,7 @@ def _write_plugins_txt_(path, lord, active, _star):
 
 def __write_plugins(out, lord, active, _star):
     def asterisk(active_set=frozenset(active)):
-        return '*' if _star and (mod in active_set) else ''
+        return b'*' if _star and (mod in active_set) else b''
     for mod in (_star and lord) or active:
         # Ok, this seems to work for Oblivion, but not Skyrim
         # Skyrim seems to refuse to have any non-cp1252 named file in
@@ -57,7 +57,7 @@ def __write_plugins(out, lord, active, _star):
         # doesn't work.
         try:
             out.write(asterisk() + bolt.encode(mod.s, firstEncoding='cp1252'))
-            out.write('\r\n')
+            out.write(b'\r\n')
         except UnicodeEncodeError:
             bolt.deprint(mod.s + ' failed to properly encode and was not '
                                  'included in plugins.txt')
