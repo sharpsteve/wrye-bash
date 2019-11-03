@@ -1673,7 +1673,11 @@ class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
     def ReorderDisplayed(self, inorder):
         """Reorder the list control displayed items to match inorder."""
         sortDict = dict((self._item_itemId[y], x) for x, y in enumerate(inorder))
-        self.SortItems(lambda x, y: cmp(sortDict[x], sortDict[y]))
+        def cmp(x, y):
+            x = sortDict[x]
+            y = sortDict[y]
+            return (x > y) - (x < y)
+        self.SortItems(cmp)
 
 #------------------------------------------------------------------------------
 _depth = 0
