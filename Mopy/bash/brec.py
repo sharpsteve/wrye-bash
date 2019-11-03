@@ -131,6 +131,9 @@ class RecordHeader(object):
         :param arg4 : For GRUP 0 for known mods (2h, form_version, unknown ?)
                     : For Records 2h, form_version, unknown
         """
+        if isinstance(recType, bytes):
+            # Record headers should only have ascii characters
+            recType = recType.decode('ascii')
         self.recType = recType
         self.size = size
         if self.recType == 'GRUP':
@@ -157,7 +160,7 @@ class RecordHeader(object):
             raise exception.ModError(ins.inName,
                                      'Bad header type: ' + repr(rec_type))
         #--Record
-        if rec_type != 'GRUP':
+        if rec_type != b'GRUP':
             pass
         #--Top Group
         elif args[3] == 0: #groupType == 0 (Top Type)
@@ -326,7 +329,7 @@ class ModReader:
         selfUnpack = self.unpack
         (rec_type, size) = selfUnpack('4sH', 6, recType + '.SUB_HEAD')
         #--Extended storage?
-        while rec_type == 'XXXX':
+        while rec_type == b'XXXX':
             size = selfUnpack('I',4,recType+'.XXXX.SIZE.')[0]
             rec_type = selfUnpack('4sH', 6, recType + '.XXXX.TYPE')[0] #--Throw away size (always == 0)
         #--Match expected name?
@@ -2066,167 +2069,167 @@ class MelMODS(MelBase):
 ##: Ripped from bush.py may belong to game/
 # Magic Info ------------------------------------------------------------------
 _magicEffects = {
-    'ABAT': [5,_('Absorb Attribute'),0.95],
-    'ABFA': [5,_('Absorb Fatigue'),6],
-    'ABHE': [5,_('Absorb Health'),16],
-    'ABSK': [5,_('Absorb Skill'),2.1],
-    'ABSP': [5,_('Absorb Magicka'),7.5],
-    'BA01': [1,_('Bound Armor Extra 01'),0],#--Formid == 0
-    'BA02': [1,_('Bound Armor Extra 02'),0],#--Formid == 0
-    'BA03': [1,_('Bound Armor Extra 03'),0],#--Formid == 0
-    'BA04': [1,_('Bound Armor Extra 04'),0],#--Formid == 0
-    'BA05': [1,_('Bound Armor Extra 05'),0],#--Formid == 0
-    'BA06': [1,_('Bound Armor Extra 06'),0],#--Formid == 0
-    'BA07': [1,_('Bound Armor Extra 07'),0],#--Formid == 0
-    'BA08': [1,_('Bound Armor Extra 08'),0],#--Formid == 0
-    'BA09': [1,_('Bound Armor Extra 09'),0],#--Formid == 0
-    'BA10': [1,_('Bound Armor Extra 10'),0],#--Formid == 0
-    'BABO': [1,_('Bound Boots'),12],
-    'BACU': [1,_('Bound Cuirass'),12],
-    'BAGA': [1,_('Bound Gauntlets'),8],
-    'BAGR': [1,_('Bound Greaves'),12],
-    'BAHE': [1,_('Bound Helmet'),12],
-    'BASH': [1,_('Bound Shield'),12],
-    'BRDN': [0,_('Burden'),0.21],
-    'BW01': [1,_('Bound Order Weapon 1'),1],
-    'BW02': [1,_('Bound Order Weapon 2'),1],
-    'BW03': [1,_('Bound Order Weapon 3'),1],
-    'BW04': [1,_('Bound Order Weapon 4'),1],
-    'BW05': [1,_('Bound Order Weapon 5'),1],
-    'BW06': [1,_('Bound Order Weapon 6'),1],
-    'BW07': [1,_('Summon Staff of Sheogorath'),1],
-    'BW08': [1,_('Bound Priest Dagger'),1],
-    'BW09': [1,_('Bound Weapon Extra 09'),0],#--Formid == 0
-    'BW10': [1,_('Bound Weapon Extra 10'),0],#--Formid == 0
-    'BWAX': [1,_('Bound Axe'),39],
-    'BWBO': [1,_('Bound Bow'),95],
-    'BWDA': [1,_('Bound Dagger'),14],
-    'BWMA': [1,_('Bound Mace'),91],
-    'BWSW': [1,_('Bound Sword'),235],
-    'CALM': [3,_('Calm'),0.47],
-    'CHML': [3,_('Chameleon'),0.63],
-    'CHRM': [3,_('Charm'),0.2],
-    'COCR': [3,_('Command Creature'),0.6],
-    'COHU': [3,_('Command Humanoid'),0.75],
-    'CUDI': [5,_('Cure Disease'),1400],
-    'CUPA': [5,_('Cure Paralysis'),500],
-    'CUPO': [5,_('Cure Poison'),600],
-    'DARK': [3,_('DO NOT USE - Darkness'),0],
-    'DEMO': [3,_('Demoralize'),0.49],
-    'DGAT': [2,_('Damage Attribute'),100],
-    'DGFA': [2,_('Damage Fatigue'),4.4],
-    'DGHE': [2,_('Damage Health'),12],
-    'DGSP': [2,_('Damage Magicka'),2.45],
-    'DIAR': [2,_('Disintegrate Armor'),6.2],
-    'DISE': [2,_('Disease Info'),0], #--Formid == 0
-    'DIWE': [2,_('Disintegrate Weapon'),6.2],
-    'DRAT': [2,_('Drain Attribute'),0.7],
-    'DRFA': [2,_('Drain Fatigue'),0.18],
-    'DRHE': [2,_('Drain Health'),0.9],
-    'DRSK': [2,_('Drain Skill'),0.65],
-    'DRSP': [2,_('Drain Magicka'),0.18],
-    'DSPL': [4,_('Dispel'),3.6],
-    'DTCT': [4,_('Detect Life'),0.08],
-    'DUMY': [2,_('Mehrunes Dagon'),0], #--Formid == 0
-    'FIDG': [2,_('Fire Damage'),7.5],
-    'FISH': [0,_('Fire Shield'),0.95],
-    'FOAT': [5,_('Fortify Attribute'),0.6],
-    'FOFA': [5,_('Fortify Fatigue'),0.04],
-    'FOHE': [5,_('Fortify Health'),0.14],
-    'FOMM': [5,_('Fortify Magicka Multiplier'),0.04],
-    'FOSK': [5,_('Fortify Skill'),0.6],
-    'FOSP': [5,_('Fortify Magicka'),0.15],
-    'FRDG': [2,_('Frost Damage'),7.4],
-    'FRNZ': [3,_('Frenzy'),0.04],
-    'FRSH': [0,_('Frost Shield'),0.95],
-    'FTHR': [0,_('Feather'),0.1],
-    'INVI': [3,_('Invisibility'),40],
-    'LGHT': [3,_('Light'),0.051],
-    'LISH': [0,_('Shock Shield'),0.95],
-    'LOCK': [0,_('DO NOT USE - Lock'),30],
-    'MYHL': [1,_('Summon Mythic Dawn Helm'),110],
-    'MYTH': [1,_('Summon Mythic Dawn Armor'),120],
-    'NEYE': [3,_('Night-Eye'),22],
-    'OPEN': [0,_('Open'),4.3],
-    'PARA': [3,_('Paralyze'),475],
-    'POSN': [2,_('Poison Info'),0],
-    'RALY': [3,_('Rally'),0.03],
-    'REAN': [1,_('Reanimate'),10],
-    'REAT': [5,_('Restore Attribute'),38],
-    'REDG': [4,_('Reflect Damage'),2.5],
-    'REFA': [5,_('Restore Fatigue'),2],
-    'REHE': [5,_('Restore Health'),10],
-    'RESP': [5,_('Restore Magicka'),2.5],
-    'RFLC': [4,_('Reflect Spell'),3.5],
-    'RSDI': [5,_('Resist Disease'),0.5],
-    'RSFI': [5,_('Resist Fire'),0.5],
-    'RSFR': [5,_('Resist Frost'),0.5],
-    'RSMA': [5,_('Resist Magic'),2],
-    'RSNW': [5,_('Resist Normal Weapons'),1.5],
-    'RSPA': [5,_('Resist Paralysis'),0.75],
-    'RSPO': [5,_('Resist Poison'),0.5],
-    'RSSH': [5,_('Resist Shock'),0.5],
-    'RSWD': [5,_('Resist Water Damage'),0], #--Formid == 0
-    'SABS': [4,_('Spell Absorption'),3],
-    'SEFF': [0,_('Script Effect'),0],
-    'SHDG': [2,_('Shock Damage'),7.8],
-    'SHLD': [0,_('Shield'),0.45],
-    'SLNC': [3,_('Silence'),60],
-    'STMA': [2,_('Stunted Magicka'),0],
-    'STRP': [4,_('Soul Trap'),30],
-    'SUDG': [2,_('Sun Damage'),9],
-    'TELE': [4,_('Telekinesis'),0.49],
-    'TURN': [1,_('Turn Undead'),0.083],
-    'VAMP': [2,_('Vampirism'),0],
-    'WABR': [0,_('Water Breathing'),14.5],
-    'WAWA': [0,_('Water Walking'),13],
-    'WKDI': [2,_('Weakness to Disease'),0.12],
-    'WKFI': [2,_('Weakness to Fire'),0.1],
-    'WKFR': [2,_('Weakness to Frost'),0.1],
-    'WKMA': [2,_('Weakness to Magic'),0.25],
-    'WKNW': [2,_('Weakness to Normal Weapons'),0.25],
-    'WKPO': [2,_('Weakness to Poison'),0.1],
-    'WKSH': [2,_('Weakness to Shock'),0.1],
-    'Z001': [1,_('Summon Rufio\'s Ghost'),13],
-    'Z002': [1,_('Summon Ancestor Guardian'),33.3],
-    'Z003': [1,_('Summon Spiderling'),45],
-    'Z004': [1,_('Summon Flesh Atronach'),1],
-    'Z005': [1,_('Summon Bear'),47.3],
-    'Z006': [1,_('Summon Gluttonous Hunger'),61],
-    'Z007': [1,_('Summon Ravenous Hunger'),123.33],
-    'Z008': [1,_('Summon Voracious Hunger'),175],
-    'Z009': [1,_('Summon Dark Seducer'),1],
-    'Z010': [1,_('Summon Golden Saint'),1],
-    'Z011': [1,_('Wabba Summon'),0],
-    'Z012': [1,_('Summon Decrepit Shambles'),45],
-    'Z013': [1,_('Summon Shambles'),87.5],
-    'Z014': [1,_('Summon Replete Shambles'),150],
-    'Z015': [1,_('Summon Hunger'),22],
-    'Z016': [1,_('Summon Mangled Flesh Atronach'),22],
-    'Z017': [1,_('Summon Torn Flesh Atronach'),32.5],
-    'Z018': [1,_('Summon Stitched Flesh Atronach'),75.5],
-    'Z019': [1,_('Summon Sewn Flesh Atronach'),195],
-    'Z020': [1,_('Extra Summon 20'),0],
-    'ZCLA': [1,_('Summon Clannfear'),75.56],
-    'ZDAE': [1,_('Summon Daedroth'),123.33],
-    'ZDRE': [1,_('Summon Dremora'),72.5],
-    'ZDRL': [1,_('Summon Dremora Lord'),157.14],
-    'ZFIA': [1,_('Summon Flame Atronach'),45],
-    'ZFRA': [1,_('Summon Frost Atronach'),102.86],
-    'ZGHO': [1,_('Summon Ghost'),22],
-    'ZHDZ': [1,_('Summon Headless Zombie'),56],
-    'ZLIC': [1,_('Summon Lich'),350],
-    'ZSCA': [1,_('Summon Scamp'),30],
-    'ZSKA': [1,_('Summon Skeleton Guardian'),32.5],
-    'ZSKC': [1,_('Summon Skeleton Champion'),152],
-    'ZSKE': [1,_('Summon Skeleton'),11.25],
-    'ZSKH': [1,_('Summon Skeleton Hero'),66],
-    'ZSPD': [1,_('Summon Spider Daedra'),195],
-    'ZSTA': [1,_('Summon Storm Atronach'),125],
-    'ZWRA': [1,_('Summon Faded Wraith'),87.5],
-    'ZWRL': [1,_('Summon Gloom Wraith'),260],
-    'ZXIV': [1,_('Summon Xivilai'),200],
-    'ZZOM': [1,_('Summon Zombie'),16.67],
+    b'ABAT': [5,_('Absorb Attribute'),0.95],
+    b'ABFA': [5,_('Absorb Fatigue'),6],
+    b'ABHE': [5,_('Absorb Health'),16],
+    b'ABSK': [5,_('Absorb Skill'),2.1],
+    b'ABSP': [5,_('Absorb Magicka'),7.5],
+    b'BA01': [1,_('Bound Armor Extra 01'),0],#--Formid == 0
+    b'BA02': [1,_('Bound Armor Extra 02'),0],#--Formid == 0
+    b'BA03': [1,_('Bound Armor Extra 03'),0],#--Formid == 0
+    b'BA04': [1,_('Bound Armor Extra 04'),0],#--Formid == 0
+    b'BA05': [1,_('Bound Armor Extra 05'),0],#--Formid == 0
+    b'BA06': [1,_('Bound Armor Extra 06'),0],#--Formid == 0
+    b'BA07': [1,_('Bound Armor Extra 07'),0],#--Formid == 0
+    b'BA08': [1,_('Bound Armor Extra 08'),0],#--Formid == 0
+    b'BA09': [1,_('Bound Armor Extra 09'),0],#--Formid == 0
+    b'BA10': [1,_('Bound Armor Extra 10'),0],#--Formid == 0
+    b'BABO': [1,_('Bound Boots'),12],
+    b'BACU': [1,_('Bound Cuirass'),12],
+    b'BAGA': [1,_('Bound Gauntlets'),8],
+    b'BAGR': [1,_('Bound Greaves'),12],
+    b'BAHE': [1,_('Bound Helmet'),12],
+    b'BASH': [1,_('Bound Shield'),12],
+    b'BRDN': [0,_('Burden'),0.21],
+    b'BW01': [1,_('Bound Order Weapon 1'),1],
+    b'BW02': [1,_('Bound Order Weapon 2'),1],
+    b'BW03': [1,_('Bound Order Weapon 3'),1],
+    b'BW04': [1,_('Bound Order Weapon 4'),1],
+    b'BW05': [1,_('Bound Order Weapon 5'),1],
+    b'BW06': [1,_('Bound Order Weapon 6'),1],
+    b'BW07': [1,_('Summon Staff of Sheogorath'),1],
+    b'BW08': [1,_('Bound Priest Dagger'),1],
+    b'BW09': [1,_('Bound Weapon Extra 09'),0],#--Formid == 0
+    b'BW10': [1,_('Bound Weapon Extra 10'),0],#--Formid == 0
+    b'BWAX': [1,_('Bound Axe'),39],
+    b'BWBO': [1,_('Bound Bow'),95],
+    b'BWDA': [1,_('Bound Dagger'),14],
+    b'BWMA': [1,_('Bound Mace'),91],
+    b'BWSW': [1,_('Bound Sword'),235],
+    b'CALM': [3,_('Calm'),0.47],
+    b'CHML': [3,_('Chameleon'),0.63],
+    b'CHRM': [3,_('Charm'),0.2],
+    b'COCR': [3,_('Command Creature'),0.6],
+    b'COHU': [3,_('Command Humanoid'),0.75],
+    b'CUDI': [5,_('Cure Disease'),1400],
+    b'CUPA': [5,_('Cure Paralysis'),500],
+    b'CUPO': [5,_('Cure Poison'),600],
+    b'DARK': [3,_('DO NOT USE - Darkness'),0],
+    b'DEMO': [3,_('Demoralize'),0.49],
+    b'DGAT': [2,_('Damage Attribute'),100],
+    b'DGFA': [2,_('Damage Fatigue'),4.4],
+    b'DGHE': [2,_('Damage Health'),12],
+    b'DGSP': [2,_('Damage Magicka'),2.45],
+    b'DIAR': [2,_('Disintegrate Armor'),6.2],
+    b'DISE': [2,_('Disease Info'),0], #--Formid == 0
+    b'DIWE': [2,_('Disintegrate Weapon'),6.2],
+    b'DRAT': [2,_('Drain Attribute'),0.7],
+    b'DRFA': [2,_('Drain Fatigue'),0.18],
+    b'DRHE': [2,_('Drain Health'),0.9],
+    b'DRSK': [2,_('Drain Skill'),0.65],
+    b'DRSP': [2,_('Drain Magicka'),0.18],
+    b'DSPL': [4,_('Dispel'),3.6],
+    b'DTCT': [4,_('Detect Life'),0.08],
+    b'DUMY': [2,_('Mehrunes Dagon'),0], #--Formid == 0
+    b'FIDG': [2,_('Fire Damage'),7.5],
+    b'FISH': [0,_('Fire Shield'),0.95],
+    b'FOAT': [5,_('Fortify Attribute'),0.6],
+    b'FOFA': [5,_('Fortify Fatigue'),0.04],
+    b'FOHE': [5,_('Fortify Health'),0.14],
+    b'FOMM': [5,_('Fortify Magicka Multiplier'),0.04],
+    b'FOSK': [5,_('Fortify Skill'),0.6],
+    b'FOSP': [5,_('Fortify Magicka'),0.15],
+    b'FRDG': [2,_('Frost Damage'),7.4],
+    b'FRNZ': [3,_('Frenzy'),0.04],
+    b'FRSH': [0,_('Frost Shield'),0.95],
+    b'FTHR': [0,_('Feather'),0.1],
+    b'INVI': [3,_('Invisibility'),40],
+    b'LGHT': [3,_('Light'),0.051],
+    b'LISH': [0,_('Shock Shield'),0.95],
+    b'LOCK': [0,_('DO NOT USE - Lock'),30],
+    b'MYHL': [1,_('Summon Mythic Dawn Helm'),110],
+    b'MYTH': [1,_('Summon Mythic Dawn Armor'),120],
+    b'NEYE': [3,_('Night-Eye'),22],
+    b'OPEN': [0,_('Open'),4.3],
+    b'PARA': [3,_('Paralyze'),475],
+    b'POSN': [2,_('Poison Info'),0],
+    b'RALY': [3,_('Rally'),0.03],
+    b'REAN': [1,_('Reanimate'),10],
+    b'REAT': [5,_('Restore Attribute'),38],
+    b'REDG': [4,_('Reflect Damage'),2.5],
+    b'REFA': [5,_('Restore Fatigue'),2],
+    b'REHE': [5,_('Restore Health'),10],
+    b'RESP': [5,_('Restore Magicka'),2.5],
+    b'RFLC': [4,_('Reflect Spell'),3.5],
+    b'RSDI': [5,_('Resist Disease'),0.5],
+    b'RSFI': [5,_('Resist Fire'),0.5],
+    b'RSFR': [5,_('Resist Frost'),0.5],
+    b'RSMA': [5,_('Resist Magic'),2],
+    b'RSNW': [5,_('Resist Normal Weapons'),1.5],
+    b'RSPA': [5,_('Resist Paralysis'),0.75],
+    b'RSPO': [5,_('Resist Poison'),0.5],
+    b'RSSH': [5,_('Resist Shock'),0.5],
+    b'RSWD': [5,_('Resist Water Damage'),0], #--Formid == 0
+    b'SABS': [4,_('Spell Absorption'),3],
+    b'SEFF': [0,_('Script Effect'),0],
+    b'SHDG': [2,_('Shock Damage'),7.8],
+    b'SHLD': [0,_('Shield'),0.45],
+    b'SLNC': [3,_('Silence'),60],
+    b'STMA': [2,_('Stunted Magicka'),0],
+    b'STRP': [4,_('Soul Trap'),30],
+    b'SUDG': [2,_('Sun Damage'),9],
+    b'TELE': [4,_('Telekinesis'),0.49],
+    b'TURN': [1,_('Turn Undead'),0.083],
+    b'VAMP': [2,_('Vampirism'),0],
+    b'WABR': [0,_('Water Breathing'),14.5],
+    b'WAWA': [0,_('Water Walking'),13],
+    b'WKDI': [2,_('Weakness to Disease'),0.12],
+    b'WKFI': [2,_('Weakness to Fire'),0.1],
+    b'WKFR': [2,_('Weakness to Frost'),0.1],
+    b'WKMA': [2,_('Weakness to Magic'),0.25],
+    b'WKNW': [2,_('Weakness to Normal Weapons'),0.25],
+    b'WKPO': [2,_('Weakness to Poison'),0.1],
+    b'WKSH': [2,_('Weakness to Shock'),0.1],
+    b'Z001': [1,_('Summon Rufio\'s Ghost'),13],
+    b'Z002': [1,_('Summon Ancestor Guardian'),33.3],
+    b'Z003': [1,_('Summon Spiderling'),45],
+    b'Z004': [1,_('Summon Flesh Atronach'),1],
+    b'Z005': [1,_('Summon Bear'),47.3],
+    b'Z006': [1,_('Summon Gluttonous Hunger'),61],
+    b'Z007': [1,_('Summon Ravenous Hunger'),123.33],
+    b'Z008': [1,_('Summon Voracious Hunger'),175],
+    b'Z009': [1,_('Summon Dark Seducer'),1],
+    b'Z010': [1,_('Summon Golden Saint'),1],
+    b'Z011': [1,_('Wabba Summon'),0],
+    b'Z012': [1,_('Summon Decrepit Shambles'),45],
+    b'Z013': [1,_('Summon Shambles'),87.5],
+    b'Z014': [1,_('Summon Replete Shambles'),150],
+    b'Z015': [1,_('Summon Hunger'),22],
+    b'Z016': [1,_('Summon Mangled Flesh Atronach'),22],
+    b'Z017': [1,_('Summon Torn Flesh Atronach'),32.5],
+    b'Z018': [1,_('Summon Stitched Flesh Atronach'),75.5],
+    b'Z019': [1,_('Summon Sewn Flesh Atronach'),195],
+    b'Z020': [1,_('Extra Summon 20'),0],
+    b'ZCLA': [1,_('Summon Clannfear'),75.56],
+    b'ZDAE': [1,_('Summon Daedroth'),123.33],
+    b'ZDRE': [1,_('Summon Dremora'),72.5],
+    b'ZDRL': [1,_('Summon Dremora Lord'),157.14],
+    b'ZFIA': [1,_('Summon Flame Atronach'),45],
+    b'ZFRA': [1,_('Summon Frost Atronach'),102.86],
+    b'ZGHO': [1,_('Summon Ghost'),22],
+    b'ZHDZ': [1,_('Summon Headless Zombie'),56],
+    b'ZLIC': [1,_('Summon Lich'),350],
+    b'ZSCA': [1,_('Summon Scamp'),30],
+    b'ZSKA': [1,_('Summon Skeleton Guardian'),32.5],
+    b'ZSKC': [1,_('Summon Skeleton Champion'),152],
+    b'ZSKE': [1,_('Summon Skeleton'),11.25],
+    b'ZSKH': [1,_('Summon Skeleton Hero'),66],
+    b'ZSPD': [1,_('Summon Spider Daedra'),195],
+    b'ZSTA': [1,_('Summon Storm Atronach'),125],
+    b'ZWRA': [1,_('Summon Faded Wraith'),87.5],
+    b'ZWRL': [1,_('Summon Gloom Wraith'),260],
+    b'ZXIV': [1,_('Summon Xivilai'),200],
+    b'ZZOM': [1,_('Summon Zombie'),16.67],
     }
 _strU = struct.Struct('I').unpack
 mgef_school = dict((x, y) for x, [y, z, _num] in list(_magicEffects.items()))
@@ -2242,14 +2245,14 @@ _mgef_basevalue.update(
 #    But it is actually using an attribute rather than an actor value
 #Ex: Burden uses an actual actor value (encumbrance) but it isn't listed since its name doesn't change
 genericAVEffects = {
-    'ABAT', #--Absorb Attribute (Use Attribute)
-    'ABSK', #--Absorb Skill (Use Skill)
-    'DGAT', #--Damage Attribute (Use Attribute)
-    'DRAT', #--Drain Attribute (Use Attribute)
-    'DRSK', #--Drain Skill (Use Skill)
-    'FOAT', #--Fortify Attribute (Use Attribute)
-    'FOSK', #--Fortify Skill (Use Skill)
-    'REAT', #--Restore Attribute (Use Attribute)
+    b'ABAT', #--Absorb Attribute (Use Attribute)
+    b'ABSK', #--Absorb Skill (Use Skill)
+    b'DGAT', #--Damage Attribute (Use Attribute)
+    b'DRAT', #--Drain Attribute (Use Attribute)
+    b'DRSK', #--Drain Skill (Use Skill)
+    b'FOAT', #--Fortify Attribute (Use Attribute)
+    b'FOSK', #--Fortify Skill (Use Skill)
+    b'REAT', #--Restore Attribute (Use Attribute)
     }
 genericAVEffects |= set((_strU(x)[0] for x in genericAVEffects))
 
@@ -2391,41 +2394,41 @@ class MreHasEffects(object):
             return buff.getvalue()
 
 hostileEffects = {
-    'ABAT', #--Absorb Attribute
-    'ABFA', #--Absorb Fatigue
-    'ABHE', #--Absorb Health
-    'ABSK', #--Absorb Skill
-    'ABSP', #--Absorb Magicka
-    'BRDN', #--Burden
-    'DEMO', #--Demoralize
-    'DGAT', #--Damage Attribute
-    'DGFA', #--Damage Fatigue
-    'DGHE', #--Damage Health
-    'DGSP', #--Damage Magicka
-    'DIAR', #--Disintegrate Armor
-    'DIWE', #--Disintegrate Weapon
-    'DRAT', #--Drain Attribute
-    'DRFA', #--Drain Fatigue
-    'DRHE', #--Drain Health
-    'DRSK', #--Drain Skill
-    'DRSP', #--Drain Magicka
-    'FIDG', #--Fire Damage
-    'FRDG', #--Frost Damage
-    'FRNZ', #--Frenzy
-    'PARA', #--Paralyze
-    'SHDG', #--Shock Damage
-    'SLNC', #--Silence
-    'STMA', #--Stunted Magicka
-    'STRP', #--Soul Trap
-    'SUDG', #--Sun Damage
-    'TURN', #--Turn Undead
-    'WKDI', #--Weakness to Disease
-    'WKFI', #--Weakness to Fire
-    'WKFR', #--Weakness to Frost
-    'WKMA', #--Weakness to Magic
-    'WKNW', #--Weakness to Normal Weapons
-    'WKPO', #--Weakness to Poison
-    'WKSH', #--Weakness to Shock
+    b'ABAT', #--Absorb Attribute
+    b'ABFA', #--Absorb Fatigue
+    b'ABHE', #--Absorb Health
+    b'ABSK', #--Absorb Skill
+    b'ABSP', #--Absorb Magicka
+    b'BRDN', #--Burden
+    b'DEMO', #--Demoralize
+    b'DGAT', #--Damage Attribute
+    b'DGFA', #--Damage Fatigue
+    b'DGHE', #--Damage Health
+    b'DGSP', #--Damage Magicka
+    b'DIAR', #--Disintegrate Armor
+    b'DIWE', #--Disintegrate Weapon
+    b'DRAT', #--Drain Attribute
+    b'DRFA', #--Drain Fatigue
+    b'DRHE', #--Drain Health
+    b'DRSK', #--Drain Skill
+    b'DRSP', #--Drain Magicka
+    b'FIDG', #--Fire Damage
+    b'FRDG', #--Frost Damage
+    b'FRNZ', #--Frenzy
+    b'PARA', #--Paralyze
+    b'SHDG', #--Shock Damage
+    b'SLNC', #--Silence
+    b'STMA', #--Stunted Magicka
+    b'STRP', #--Soul Trap
+    b'SUDG', #--Sun Damage
+    b'TURN', #--Turn Undead
+    b'WKDI', #--Weakness to Disease
+    b'WKFI', #--Weakness to Fire
+    b'WKFR', #--Weakness to Frost
+    b'WKMA', #--Weakness to Magic
+    b'WKNW', #--Weakness to Normal Weapons
+    b'WKPO', #--Weakness to Poison
+    b'WKSH', #--Weakness to Shock
     }
 hostileEffects |= set((_strU(x)[0] for x in hostileEffects))
 
