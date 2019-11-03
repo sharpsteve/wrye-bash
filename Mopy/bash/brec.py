@@ -130,6 +130,9 @@ class RecordHeader(object):
         :param arg4 : For GRUP 0 for known mods (2h, form_version, unknown ?)
                     : For Records 2h, form_version, unknown
         """
+        if isinstance(recType, bytes):
+            # Record headers should only have ascii characters
+            recType = recType.decode('ascii')
         self.recType = recType
         self.size = size
         if self.recType == 'GRUP':
@@ -156,7 +159,7 @@ class RecordHeader(object):
             raise exception.ModError(ins.inName,
                                      u'Bad header type: ' + repr(rec_type))
         #--Record
-        if rec_type != 'GRUP':
+        if rec_type != b'GRUP':
             pass
         #--Top Group
         elif args[3] == 0: #groupType == 0 (Top Type)
@@ -327,7 +330,7 @@ class ModReader(object):
         selfUnpack = self.unpack
         (rec_type, size) = selfUnpack('4sH', 6, recType + '.SUB_HEAD')
         #--Extended storage?
-        while rec_type == 'XXXX':
+        while rec_type == b'XXXX':
             size = selfUnpack('I',4,recType+'.XXXX.SIZE.')[0]
             rec_type = selfUnpack('4sH', 6, recType + '.XXXX.TYPE')[0] #--Throw away size (always == 0)
         #--Match expected name?
