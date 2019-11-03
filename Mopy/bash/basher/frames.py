@@ -212,7 +212,9 @@ class DocBrowser(BaltFrame):
 
     def DoSave(self):
         """Saves doc, if necessary."""
-        if not self.plainText.IsModified(): return
+        # TODO(lojack): investigate whye 'IsModified' seems to return True
+        # always
+        if not self.plainText.IsModified() or not self.modName: return
         docPath = self.docs.get(self.modName)
         self.plainText.DiscardEdits()
         if not docPath:
