@@ -707,18 +707,11 @@ class Path(object):
         """Temp file path.  If unicodeSafe is True, the returned
         temp file will be a fileName that can be passes through Popen
         (Popen automatically tries to encode the name)"""
-        baseDir = GPath(str(tempfile.gettempdir(), Path.sys_fs_enc)).join('WryeBash_temp')
+        # TODO(lojack): see if we still need this, tempfile.gettempdir returns use
+        # unicode (str) objects in python 3
+        baseDir = GPath(tempfile.gettempdir()).join('WryeBash_temp')
         baseDir.makedirs()
-        dirJoin = baseDir.join
-        if unicodeSafe:
-            try:
-                self._s.encode('ascii')
-                return dirJoin(self.tail+'.tmp')
-            except UnicodeEncodeError:
-                ret = str(self._s.encode('ascii','xmlcharrefreplace'),'ascii')+'_unicode_safe.tmp'
-                return dirJoin(ret)
-        else:
-            return dirJoin(self.tail+'.tmp')
+        return baseDir.join(self.stail+'.tmp')
 
     @staticmethod
     def tempDir(prefix='WryeBash_'):
