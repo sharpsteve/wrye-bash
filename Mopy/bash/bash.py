@@ -34,10 +34,10 @@ import platform
 import shutil
 import sys
 import traceback
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 # Local
-import bass
-import exception
+from . import bass
+from . import exception
 # NO OTHER LOCAL IMPORTS HERE (apart from the ones above) !
 basher = balt = bolt = initialization = None
 _wx = None
@@ -51,11 +51,11 @@ def _import_bolt(opts):
     try:
         # First of all set the language, set on importing bolt
         bass.language = opts.language
-        import bolt  # bass.language must be set
+        from . import bolt  # bass.language must be set
     except Exception as e:
-        but_kwargs = {'text': u"QUIT", 'fg': 'red'}  # foreground button color
-        msg = u'\n'.join([dump_environment(), u'', u'Unable to load bolt:',
-                          traceback.format_exc(e), u'Exiting.'])
+        but_kwargs = {'text': "QUIT", 'fg': 'red'}  # foreground button color
+        msg = '\n'.join([dump_environment(), '', 'Unable to load bolt:',
+                          traceback.format_exc(e), 'Exiting.'])
         _tkinter_error_dial(msg, but_kwargs)
         sys.exit(1)
 
@@ -65,10 +65,10 @@ def _import_wx():
     try:
         import wx as _wx
     except ImportError:
-        but_kwargs = {'text': _(u"QUIT"),
+        but_kwargs = {'text': _("QUIT"),
                       'fg': 'red'}  # foreground button color
-        msg = u'\n'.join([dump_environment(), u'',
-            _(u'Unable to locate wxpython installation. Exiting.')])
+        msg = '\n'.join([dump_environment(), '',
+            _('Unable to locate wxpython installation. Exiting.')])
         _tkinter_error_dial(msg, but_kwargs)
         sys.exit(1)
 
@@ -82,10 +82,10 @@ def assure_single_instance(instance):
 
     :type instance: wx.SingleInstanceChecker"""
     if instance.IsAnotherRunning():
-        bolt.deprint(u'Only one instance of Wrye Bash can run. Exiting.')
-        msg = _(u'Only one instance of Wrye Bash can run.')
+        bolt.deprint('Only one instance of Wrye Bash can run. Exiting.')
+        msg = _('Only one instance of Wrye Bash can run.')
         _app = _wx.App(False)
-        with _wx.MessageDialog(None, msg, _(u'Wrye Bash'), _wx.OK) as dialog:
+        with _wx.MessageDialog(None, msg, _('Wrye Bash'), _wx.OK) as dialog:
             dialog.ShowModal()
         sys.exit(1)
 
@@ -95,7 +95,7 @@ def exit_cleanup():
     import tempfile
     tmpDir = bolt.GPath(tempfile.tempdir)
     for file_ in tmpDir.list():
-        if file_.cs.startswith(u'wryebash_'):
+        if file_.cs.startswith('wryebash_'):
             file_ = tmpDir.join(file_)
             try:
                 if file_.isdir():
@@ -117,9 +117,9 @@ def exit_cleanup():
                     cli = cli[1:]
                 else:
                     exe = sys.executable
-                exe = [u'%s', u'"%s"'][u' ' in exe] % exe
-                cli = u' '.join([u'%s', u'"%s"'][u' ' in x] % x for x in cli)
-                cmd_line = u'%s %s' % (exe, cli)
+                exe = ['%s', '"%s"'][' ' in exe] % exe
+                cli = ' '.join(['%s', '"%s"'][' ' in x] % x for x in cli)
+                cmd_line = '%s %s' % (exe, cli)
                 win32api.ShellExecute(0, 'runas', exe, cli, None, True)
                 return
             else:
@@ -128,40 +128,40 @@ def exit_cleanup():
                 subprocess.Popen(cmd_line, # a list, no need to escape spaces
                                  close_fds=True)
         except Exception as error:
-            print error
-            print u'Error Attempting to Restart Wrye Bash!'
-            print u'cmd line: %s' % (cmd_line, )
-            print
+            print(error)
+            print('Error Attempting to Restart Wrye Bash!')
+            print('cmd line: %s' % (cmd_line, ))
+            print()
             raise
 
 def dump_environment():
     import locale
     fse = sys.getfilesystemencoding()
-    msg = u'\n'.join([
-        u'Wrye Bash starting',
-        u'Using Wrye Bash Version %s%s' % (bass.AppVersion,
-            u' (Standalone)' if is_standalone else u''),
-        u'OS info: %s (%s) running on %s' % (
+    msg = '\n'.join([
+        'Wrye Bash starting',
+        'Using Wrye Bash Version %s%s' % (bass.AppVersion,
+            ' (Standalone)' if is_standalone else ''),
+        'OS info: %s (%s) running on %s' % (
             platform.platform(), platform.architecture()[0],
             platform.processor()
         ),
-        u'Python version: %d.%d.%d' % (
+        'Python version: %d.%d.%d' % (
             sys.version_info[0], sys.version_info[1], sys.version_info[2]
         ),
-        u'wxPython version: %s' % _wx.version() if _wx is not None else \
-            u'wxPython not found',
+        'wxPython version: %s' % _wx.version() if _wx is not None else \
+            'wxPython not found',
         # Standalone: stdout will actually be pointing to stderr, which has no
         # 'encoding' attribute
-        u'input encoding: %s; output encoding: %s' % (
+        'input encoding: %s; output encoding: %s' % (
             sys.stdin.encoding, getattr(sys.stdout, 'encoding', None),
         ),
-        u'filesystem encoding: %s%s' % (fse,
-            (u' - using %s' % bolt.Path.sys_fs_enc) if not fse else u''),
-        u'command line: %s' % sys.argv,
+        'filesystem encoding: %s%s' % (fse,
+            (' - using %s' % bolt.Path.sys_fs_enc) if not fse else ''),
+        'command line: %s' % sys.argv,
     ])
     if bolt.scandir is not None:
-        msg = u'\n'.join([msg, 'Using scandir ' + bolt.scandir.__version__])
-    print msg
+        msg = '\n'.join([msg, 'Using scandir ' + bolt.scandir.__version__])
+    print(msg)
     return msg
 
 def _bash_ini_parser(bash_ini_path):
@@ -184,13 +184,13 @@ def main(opts):
     try:
         _main(opts)
     except Exception as e:
-        msg = u'\n'.join([
-            _(u'Wrye Bash encountered an error.'),
-            _(u'Please post the information below to the official thread at'),
-            _(u'https://afkmods.com/index.php?/topic/4966-wrye-bash-all-games'),
-            _(u'or to the Wrye Bash Discord at'),
-            _(u'https://discord.gg/NwWvAFR'),
-            u'',
+        msg = '\n'.join([
+            _('Wrye Bash encountered an error.'),
+            _('Please post the information below to the official thread at'),
+            _('https://afkmods.com/index.php?/topic/4966-wrye-bash-all-games'),
+            _('or to the Wrye Bash Discord at'),
+            _('https://discord.gg/NwWvAFR'),
+            '',
             traceback.format_exc(e)
         ])
         _close_dialog_windows()
@@ -205,9 +205,9 @@ def _main(opts):
 
     :param opts: command line arguments
     """
-    import barg
+    from . import barg
     bass.sys_argv = barg.convert_to_long_options(sys.argv)
-    import env # env imports bolt (this needs fixing)
+    from . import env # env imports bolt (this needs fixing)
     bolt.deprintOn = opts.debug
     # useful for understanding context of bug reports
     if opts.debug or is_standalone:
@@ -217,7 +217,7 @@ def _main(opts):
         global _bugdump_handle
         # _bugdump_handle = io.open(os.path.join(os.getcwdu(),u'BashBugDump.log'),'w',encoding='utf-8')
         _bugdump_handle = codecs.getwriter('utf-8')(
-            open(os.path.join(os.getcwdu(), u'BashBugDump.log'), 'w'))
+            open(os.path.join(os.getcwd(), 'BashBugDump.log'), 'w'))
         sys.stdout = _bugdump_handle
         sys.stderr = _bugdump_handle
         old_stderr = _bugdump_handle
@@ -230,26 +230,26 @@ def _main(opts):
     assure_single_instance(instance)
 
     global initialization
-    import initialization
+    from . import initialization
     #--Bash installation directories, set on boot, not likely to change
     initialization.init_dirs_mopy_and_cd(is_standalone)
 
     # if HTML file generation was requested, just do it and quit
     if opts.genHtml is not None:
-        msg1 = _(u"generating HTML file from: '%s'") % opts.genHtml
-        msg2 = _(u'done')
-        try: print msg1
-        except UnicodeError: print msg1.encode(bolt.Path.sys_fs_enc)
-        import belt # this imports bosh which imports wx (DUH)
+        msg1 = _("generating HTML file from: '%s'") % opts.genHtml
+        msg2 = _('done')
+        try: print(msg1)
+        except UnicodeError: print(msg1.encode(bolt.Path.sys_fs_enc))
+        from . import belt # this imports bosh which imports wx (DUH)
         bolt.WryeText.genHtml(opts.genHtml)
-        try: print msg2
-        except UnicodeError: print msg2.encode(bolt.Path.sys_fs_enc)
+        try: print(msg2)
+        except UnicodeError: print(msg2.encode(bolt.Path.sys_fs_enc))
         return
 
     # We need the Mopy dirs to initialize restore settings instance
-    bash_ini_path, restore_ = u'bash.ini', None
+    bash_ini_path, restore_ = 'bash.ini', None
     # import barb that does not import from bosh/balt/bush
-    import barb
+    from . import barb
     if opts.restore:
         try:
             restore_ = barb.RestoreSettings(opts.filename)
@@ -257,7 +257,7 @@ def _main(opts):
             # get the bash.ini from the backup, or None - use in _detect_game
             bash_ini_path = restore_.backup_ini_path()
         except (exception.BoltError, exception.StateError, OSError, IOError):
-            bolt.deprint(u'Failed to restore backup', traceback=True)
+            bolt.deprint('Failed to restore backup', traceback=True)
             restore_ = None
     # The rest of backup/restore functionality depends on setting the game
     try:
@@ -269,20 +269,20 @@ def _main(opts):
                 # we currently disallow backup and restore on the same boot
                 if opts.quietquit: return
             except (exception.BoltError, OSError, shutil.Error):
-                bolt.deprint(u'Failed to restore backup', traceback=True)
+                bolt.deprint('Failed to restore backup', traceback=True)
                 restore_.restore_ini()
                 # reset the game and ini
-                import bush
+                from . import bush
                 bush.reset_bush_globals()
-                bashIni, bush_game, game_ini_path = _detect_game(opts, u'bash.ini')
-        import bosh # this imports balt (DUH) which imports wx
+                bashIni, bush_game, game_ini_path = _detect_game(opts, 'bash.ini')
+        from . import bosh # this imports balt (DUH) which imports wx
         bosh.initBosh(bashIni, game_ini_path)
-        env.isUAC = env.testUAC(bush_game.gamePath.join(u'Data'))
+        env.isUAC = env.testUAC(bush_game.gamePath.join('Data'))
         global basher, balt
-        import basher, balt
+        from . import basher, balt
     except (exception.BoltError, ImportError, OSError, IOError) as e:
-        msg = u'\n'.join([_(u'Error! Unable to start Wrye Bash.'), u'\n', _(
-            u'Please ensure Wrye Bash is correctly installed.'), u'\n',
+        msg = '\n'.join([_('Error! Unable to start Wrye Bash.'), '\n', _(
+            'Please ensure Wrye Bash is correctly installed.'), '\n',
                           traceback.format_exc(e)])
         _close_dialog_windows()
         _show_wx_error(msg)
@@ -312,13 +312,13 @@ def _main(opts):
         if not opts.noUac and not opts.uac:
             # Show a prompt asking if we should restart in Admin Mode
             message = _(
-                u"Wrye Bash needs Administrator Privileges to make changes "
-                u"to the %(gameName)s directory.  If you do not start Wrye "
-                u"Bash with elevated privileges, you will be prompted at "
-                u"each operation that requires elevated privileges.") % {
+                "Wrye Bash needs Administrator Privileges to make changes "
+                "to the %(gameName)s directory.  If you do not start Wrye "
+                "Bash with elevated privileges, you will be prompted at "
+                "each operation that requires elevated privileges.") % {
                           'gameName': bush_game.displayName}
             uacRestart = balt.ask_uac_restart(message,
-                                              title=_(u'UAC Protection'),
+                                              title=_('UAC Protection'),
                                               mopy=bass.dirs['mopy'])
             if uacRestart: bass.update_sys_argv(['--uac'])
         if uacRestart:
@@ -336,9 +336,9 @@ def _main(opts):
         settings_file = (opts.backup and opts.filename) or None
         if not settings_file:
             settings_file = balt.askSave(frame,
-                                         title=_(u'Backup Bash Settings'),
+                                         title=_('Backup Bash Settings'),
                                          defaultDir=base_dir,
-                                         wildcard=u'*.7z',
+                                         wildcard='*.7z',
                                          defaultFile=barb.BackupSettings.
                                          backup_filename(bush_game.fsName))
         if settings_file:
@@ -349,13 +349,13 @@ def _main(opts):
                 with balt.BusyCursor():
                     backup.backup_settings(balt)
             except exception.StateError:
-                if balt.askYes(frame, u'\n'.join([
-                    _(u'There was an error while trying to backup the '
-                      u'Bash settings!'),
-                    _(u'If you continue, your current settings may be '
-                        u'overwritten.'),
-                    _(u'Do you want to quit Wrye Bash now?')]),
-                                 title=_(u'Unable to create backup!')):
+                if balt.askYes(frame, '\n'.join([
+                    _('There was an error while trying to backup the '
+                      'Bash settings!'),
+                    _('If you continue, your current settings may be '
+                        'overwritten.'),
+                    _('Do you want to quit Wrye Bash now?')]),
+                                 title=_('Unable to create backup!')):
                     return  # Quit
 
     app.Init() # Link.Frame is set here !
@@ -367,8 +367,8 @@ def _detect_game(opts, backup_bash_ini):
     # if uArg is None, then get the UserPath from the ini file
     user_path = opts.userPath or None  ##: not sure why this must be set first
     if user_path is None:
-        ini_user_path = bass.get_ini_option(bashIni, u'sUserPath')
-        if ini_user_path and not ini_user_path == u'.':
+        ini_user_path = bass.get_ini_option(bashIni, 'sUserPath')
+        if ini_user_path and not ini_user_path == '.':
             user_path = ini_user_path
     if user_path:
         drive, path = os.path.splitdrive(user_path)
@@ -385,26 +385,26 @@ def _detect_game(opts, backup_bash_ini):
     return bashIni, bush_game, game_ini_path
 
 def _import_bush_and_set_game(opts, bashIni):
-    import bush
-    bolt.deprint(u'Searching for game to manage:')
+    from . import bush
+    bolt.deprint('Searching for game to manage:')
     ret = bush.detect_and_set_game(opts.oblivionPath, bashIni)
     if ret is not None:  # None == success
         if len(ret) == 0:
             msgtext = _(
-                u"Wrye Bash could not find a game to manage. Please use\n"
-                u"the -o command line argument to specify the game path.")
+                "Wrye Bash could not find a game to manage. Please use\n"
+                "the -o command line argument to specify the game path.")
         else:
             msgtext = _(
-                u"Wrye Bash could not determine which game to manage.\n"
-                u"The following games have been detected, please select "
-                u"one to manage.")
-            msgtext += u'\n\n'
+                "Wrye Bash could not determine which game to manage.\n"
+                "The following games have been detected, please select "
+                "one to manage.")
+            msgtext += '\n\n'
             msgtext += _(
-                u'To prevent this message in the future, use the -o command\n'
-                u'line argument or the bash.ini to specify the game path.')
+                'To prevent this message in the future, use the -o command\n'
+                'line argument or the bash.ini to specify the game path.')
         retCode = _wxSelectGame(ret, msgtext)
         if retCode is None:
-            bolt.deprint(u'No games were found or selected. Aborting.')
+            bolt.deprint('No games were found or selected. Aborting.')
             return None
         # Add the game to the command line, so we use it if we restart
         bass.update_sys_argv(['--oblivionPath', bush.game_path(retCode).s])
@@ -432,7 +432,7 @@ def _show_wx_error(msg):
                 text_ctrl.SetBackgroundColour(_wx.SystemSettings.GetColour(4))
                 sizer.Add(text_ctrl, proportion=1, flag=_wx.EXPAND | _wx.ALL,
                           border=5)
-                button = _wx.Button(self, _wx.ID_CANCEL, _(u'Quit'))
+                button = _wx.Button(self, _wx.ID_CANCEL, _('Quit'))
                 button.SetDefault()
                 sizer.Add(button, proportion=0,
                           flag=_wx.ALIGN_CENTER | _wx.ALL, border=5)
@@ -453,30 +453,30 @@ def _show_wx_error(msg):
                 app.Exit()
             else:
                 # Instantiating wx.App failed, fallback to tkinter.
-                but_kwargs = {'text': _(u"QUIT"),
+                but_kwargs = {'text': _("QUIT"),
                               'fg': 'red'}  # foreground button color
                 _tkinter_error_dial(msg, but_kwargs)
 
-    except StandardError as e:
-        print u'Wrye Bash encountered an error but could not display it.'
-        print u'The following is the error that occurred when displaying the '\
-              u'first error:'
+    except Exception as e:
+        print('Wrye Bash encountered an error but could not display it.')
+        print('The following is the error that occurred when displaying the '\
+              'first error:')
         try:
-            print traceback.format_exc(e)
+            print(traceback.format_exc(e))
         except Exception:
-            print u'   An error occurred while displaying the second error.'
+            print('   An error occurred while displaying the second error.')
 
 def _tkinter_error_dial(msg, but_kwargs):
-    import Tkinter
-    root_widget = Tkinter.Tk()
-    frame = Tkinter.Frame(root_widget)
+    import tkinter
+    root_widget = tkinter.Tk()
+    frame = tkinter.Frame(root_widget)
     frame.pack()
-    button = Tkinter.Button(frame, command=root_widget.destroy, pady=15,
-                            borderwidth=5, relief=Tkinter.GROOVE, **but_kwargs)
-    button.pack(fill=Tkinter.BOTH, expand=1, side=Tkinter.BOTTOM)
-    w = Tkinter.Text(frame)
-    w.insert(Tkinter.END, msg)
-    w.config(state=Tkinter.DISABLED)
+    button = tkinter.Button(frame, command=root_widget.destroy, pady=15,
+                            borderwidth=5, relief=tkinter.GROOVE, **but_kwargs)
+    button.pack(fill=tkinter.BOTH, expand=1, side=tkinter.BOTTOM)
+    w = tkinter.Text(frame)
+    w.insert(tkinter.END, msg)
+    w.config(state=tkinter.DISABLED)
     w.pack()
     root_widget.mainloop()
 
@@ -500,7 +500,7 @@ def _wxSelectGame(ret, msgtext):
 
     class GameSelect(_wx.Frame):
         def __init__(self, game_names, callback):
-            _wx.Frame.__init__(self, None, title=u'Wrye Bash')
+            _wx.Frame.__init__(self, None, title='Wrye Bash')
             self.callback = callback
             panel = _wx.ScrolledWindow(self, style=_wx.TAB_TRAVERSAL)
             panel.SetScrollbars(20, 20, 50, 50)
@@ -511,7 +511,7 @@ def _wxSelectGame(ret, msgtext):
             for game_name in game_names:
                 sizer.Add(_wx.Button(panel, label=game_name.title()), 0,
                           _wx.EXPAND | _wx.ALL ^ _wx.TOP, 5)
-            quit_button = _wx.Button(panel, _wx.ID_CANCEL, _(u'Quit'))
+            quit_button = _wx.Button(panel, _wx.ID_CANCEL, _('Quit'))
             quit_button.SetDefault()
             sizer.Add(quit_button, 0, _wx.EXPAND | _wx.ALL ^ _wx.TOP, 5)
             self.Bind(_wx.EVT_BUTTON, self.OnButton)
@@ -550,10 +550,10 @@ def _rightWxVersion():
 def _rightPythonVersion():
     sysVersion = sys.version_info[:3]
     if sysVersion < (2, 7) or sysVersion >= (3,):
-        balt.showError(None, _(u"Only Python 2.7 and newer is supported "
-            u"(%s.%s.%s detected). If you know what you're doing install the "
-            u"WB python version and edit this warning out. "
-            u"Wrye Bash will exit.") % sysVersion,
-            title=_(u"Incompatible Python version detected"))
+        balt.showError(None, _("Only Python 2.7 and newer is supported "
+            "(%s.%s.%s detected). If you know what you're doing install the "
+            "WB python version and edit this warning out. "
+            "Wrye Bash will exit.") % sysVersion,
+            title=_("Incompatible Python version detected"))
         return False
     return True

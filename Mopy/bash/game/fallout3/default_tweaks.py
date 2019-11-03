@@ -23,41 +23,41 @@
 # =============================================================================
 from collections import OrderedDict
 
-default_tweaks = {u'Border Regions, Disabled.ini': OrderedDict(
-    [(u'MAIN', OrderedDict([(u'bEnableBorderRegion', u'0')]))]),
-    u'Border Regions, ~Enabled.ini': OrderedDict(
-        [(u'MAIN', OrderedDict([(u'bEnableBorderRegion', u'1')]))]),
-    u'Fonts 1, ~Default.ini': OrderedDict([(u'Fonts', OrderedDict(
-        [(u'sFontFile_1', u'Textures\\Fonts\\Glow_Monofonto_Large.fnt')]))]),
-    u'Grass, Fade 4k-5k.ini': OrderedDict([(u'Grass', OrderedDict(
-        [(u'iMinGrassSize', u'140'),
-         (u'fGrassMaxStartFadeDistance', u'5000.0000')]))]),
-    u'Mouse Acceleration, Default.ini': OrderedDict([(u'CONTROLS', OrderedDict(
-        [(u'fForegroundMouseAccelBase', u''), (u'fForegroundMouseBase', u''),
-         (u'fForegroundMouseAccelTop', u''),
-         (u'fForegroundMouseMult', u'')]))]),
-    u'Mouse Acceleration, ~Fixed.ini': OrderedDict([(u'CONTROLS', OrderedDict(
-        [(u'fForegroundMouseAccelBase', u'0'), (u'fForegroundMouseBase', u'0'),
-         (u'fForegroundMouseAccelTop', u'0'),
-         (u'fForegroundMouseMult', u'0')]))]),
-    u'Refraction Shader, Disabled.ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'bUseRefractionShader', u'0')]))]),
-    u'Refraction Shader, ~Enabled.ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'bUseRefractionShader', u'1')]))]),
-    u'Save Backups, 1.ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iSaveGameBackupCount', u'1')]))]),
-    u'Save Backups, 2.ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iSaveGameBackupCount', u'2')]))]),
-    u'Save Backups, 3.ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iSaveGameBackupCount', u'3')]))]),
-    u'Save Backups, 5.ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iSaveGameBackupCount', u'5')]))]),
-    u'bInvalidateOlderFiles, ~Default.ini': OrderedDict(
-        [(u'Archive', OrderedDict([(u'bInvalidateOlderFiles', u'0')]))]),
-    u'bInvalidateOlderFiles, ~Enabled.ini': OrderedDict(
-        [(u'Archive', OrderedDict([(u'bInvalidateOlderFiles', u'1')]))]),
-    u'iConsoleTextXPos, Default.ini': OrderedDict(
-        [(u'Menu', OrderedDict([(u'iConsoleTextXPos', u'30')]))]),
-    u'iConsoleTextXPos, ~Fixed.ini': OrderedDict(
-        [(u'Menu', OrderedDict([(u'iConsoleTextXPos', u'130')]))])
+default_tweaks = {'Border Regions, Disabled.ini': OrderedDict(
+    [('MAIN', OrderedDict([('bEnableBorderRegion', '0')]))]),
+    'Border Regions, ~Enabled.ini': OrderedDict(
+        [('MAIN', OrderedDict([('bEnableBorderRegion', '1')]))]),
+    'Fonts 1, ~Default.ini': OrderedDict([('Fonts', OrderedDict(
+        [('sFontFile_1', 'Textures\\Fonts\\Glow_Monofonto_Large.fnt')]))]),
+    'Grass, Fade 4k-5k.ini': OrderedDict([('Grass', OrderedDict(
+        [('iMinGrassSize', '140'),
+         ('fGrassMaxStartFadeDistance', '5000.0000')]))]),
+    'Mouse Acceleration, Default.ini': OrderedDict([('CONTROLS', OrderedDict(
+        [('fForegroundMouseAccelBase', ''), ('fForegroundMouseBase', ''),
+         ('fForegroundMouseAccelTop', ''),
+         ('fForegroundMouseMult', '')]))]),
+    'Mouse Acceleration, ~Fixed.ini': OrderedDict([('CONTROLS', OrderedDict(
+        [('fForegroundMouseAccelBase', '0'), ('fForegroundMouseBase', '0'),
+         ('fForegroundMouseAccelTop', '0'),
+         ('fForegroundMouseMult', '0')]))]),
+    'Refraction Shader, Disabled.ini': OrderedDict(
+        [('Display', OrderedDict([('bUseRefractionShader', '0')]))]),
+    'Refraction Shader, ~Enabled.ini': OrderedDict(
+        [('Display', OrderedDict([('bUseRefractionShader', '1')]))]),
+    'Save Backups, 1.ini': OrderedDict(
+        [('General', OrderedDict([('iSaveGameBackupCount', '1')]))]),
+    'Save Backups, 2.ini': OrderedDict(
+        [('General', OrderedDict([('iSaveGameBackupCount', '2')]))]),
+    'Save Backups, 3.ini': OrderedDict(
+        [('General', OrderedDict([('iSaveGameBackupCount', '3')]))]),
+    'Save Backups, 5.ini': OrderedDict(
+        [('General', OrderedDict([('iSaveGameBackupCount', '5')]))]),
+    'bInvalidateOlderFiles, ~Default.ini': OrderedDict(
+        [('Archive', OrderedDict([('bInvalidateOlderFiles', '0')]))]),
+    'bInvalidateOlderFiles, ~Enabled.ini': OrderedDict(
+        [('Archive', OrderedDict([('bInvalidateOlderFiles', '1')]))]),
+    'iConsoleTextXPos, Default.ini': OrderedDict(
+        [('Menu', OrderedDict([('iConsoleTextXPos', '30')]))]),
+    'iConsoleTextXPos, ~Fixed.ini': OrderedDict(
+        [('Menu', OrderedDict([('iConsoleTextXPos', '130')]))])
 }

@@ -45,8 +45,8 @@ class AssortedTweak_ArmorShows(MultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self,label,tip,key):
         super(AssortedTweak_ArmorShows, self).__init__(label,tip,key)
-        self.hidesBit = {u'armorShowsRings':16,u'armorShowsAmulets':17}[key]
-        self.logMsg = u'* '+_(u'Armor Pieces Tweaked') + u': %d'
+        self.hidesBit = {'armorShowsRings':16,'armorShowsAmulets':17}[key]
+        self.logMsg = '* '+_('Armor Pieces Tweaked') + ': %d'
 
     #--Patch Phase ------------------------------------------------------------
     def scanModFile(self,modFile,progress,patchFile):
@@ -73,15 +73,15 @@ class AssortedTweak_ArmorShows(MultiTweakItem):
 
 class CBash_AssortedTweak_ArmorShows(CBash_MultiTweakItem):
     """Fix armor to show amulets/rings."""
-    name = _(u'Armor Tweaks')
+    name = _('Armor Tweaks')
     tweak_read_classes = 'ARMO',
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self,label,tip,key):
         super(CBash_AssortedTweak_ArmorShows, self).__init__(label,tip,key)
-        self.hideFlag = {u'armorShowsRings': 'IsHideRings',
-                         u'armorShowsAmulets': 'IsHideAmulets'}[key]
-        self.logMsg = u'* '+_(u'Armor Pieces Tweaked') + u': %d'
+        self.hideFlag = {'armorShowsRings': 'IsHideRings',
+                         'armorShowsAmulets': 'IsHideAmulets'}[key]
+        self.logMsg = '* '+_('Armor Pieces Tweaked') + ': %d'
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -105,8 +105,8 @@ class AssortedTweak_ClothingShows(MultiTweakItem):
     def __init__(self,label,tip,key):
         super(AssortedTweak_ClothingShows, self).__init__(label,tip,key)
         self.hidesBit = \
-            {u'ClothingShowsRings': 16, u'ClothingShowsAmulets': 17}[key]
-        self.logMsg = u'* '+_(u'Clothing Pieces Tweaked') + u': %d'
+            {'ClothingShowsRings': 16, 'ClothingShowsAmulets': 17}[key]
+        self.logMsg = '* '+_('Clothing Pieces Tweaked') + ': %d'
 
     #--Patch Phase ------------------------------------------------------------
     def scanModFile(self,modFile,progress,patchFile):
@@ -133,15 +133,15 @@ class AssortedTweak_ClothingShows(MultiTweakItem):
 
 class CBash_AssortedTweak_ClothingShows(CBash_MultiTweakItem):
     """Fix robes, gloves and the like to show amulets/rings."""
-    name = _(u'Clothing Tweaks')
+    name = _('Clothing Tweaks')
     tweak_read_classes = 'CLOT',
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self,label,tip,key):
         super(CBash_AssortedTweak_ClothingShows, self).__init__(label,tip,key)
-        self.hideFlag = {u'ClothingShowsRings': 'IsHideRings',
-                         u'ClothingShowsAmulets': 'IsHideAmulets'}[key]
-        self.logMsg = u'* '+_(u'Clothing Pieces Tweaked') + u': %d'
+        self.hideFlag = {'ClothingShowsRings': 'IsHideRings',
+                         'ClothingShowsAmulets': 'IsHideAmulets'}[key]
+        self.logMsg = '* '+_('Clothing Pieces Tweaked') + ': %d'
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -163,13 +163,13 @@ class AAssortedTweak_BowReach(AMultiTweakItem):
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
-        super(AAssortedTweak_BowReach, self).__init__(_(u"Bow Reach Fix"),
-            _(u'Fix bows with zero reach. (Zero reach causes CTDs.)'),
-            u'BowReach',
-            (u'1.0',  u'1.0'),
+        super(AAssortedTweak_BowReach, self).__init__(_("Bow Reach Fix"),
+            _('Fix bows with zero reach. (Zero reach causes CTDs.)'),
+            'BowReach',
+            ('1.0',  '1.0'),
             )
         self.defaultEnabled = True
-        self.logMsg = u'* '+_(u'Bows fixed') + u': %d'
+        self.logMsg = '* '+_('Bows fixed') + ': %d'
 
 class AssortedTweak_BowReach(AAssortedTweak_BowReach,MultiTweakItem):
 
@@ -196,7 +196,7 @@ class AssortedTweak_BowReach(AAssortedTweak_BowReach,MultiTweakItem):
 
 class CBash_AssortedTweak_BowReach(AAssortedTweak_BowReach,
                                    CBash_MultiTweakItem):
-    name = _(u'Bow Reach Fix')
+    name = _('Bow Reach Fix')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -217,10 +217,10 @@ class AAssortedTweak_SkyrimStyleWeapons(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_SkyrimStyleWeapons, self).__init__(
-            _(u"Skyrim-style Weapons"),
-            _(u'Sets all one handed weapons as blades, two handed weapons '
-              u'as blunt.'), u'skyrimweaponsstyle', (u'1.0', u'1.0'), )
-        self.logMsg = u'* '+_(u'Weapons Adjusted') + u': %d'
+            _("Skyrim-style Weapons"),
+            _('Sets all one handed weapons as blades, two handed weapons '
+              'as blunt.'), 'skyrimweaponsstyle', ('1.0', '1.0'), )
+        self.logMsg = '* '+_('Weapons Adjusted') + ': %d'
 
 class AssortedTweak_SkyrimStyleWeapons(AAssortedTweak_SkyrimStyleWeapons,
                                        MultiTweakItem):
@@ -253,7 +253,7 @@ class AssortedTweak_SkyrimStyleWeapons(AAssortedTweak_SkyrimStyleWeapons,
 
 class CBash_AssortedTweak_SkyrimStyleWeapons(AAssortedTweak_SkyrimStyleWeapons,
                                              CBash_MultiTweakItem):
-    name = _(u'Skyrim-style Weapons')
+    name = _('Skyrim-style Weapons')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -277,11 +277,11 @@ class AAssortedTweak_ConsistentRings(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_ConsistentRings, self).__init__(
-            _(u"Right Hand Rings"),
-            _(u'Fixes rings to unequip consistently by making them prefer '
-              u'the right hand.'), u'ConsistentRings', (u'1.0', u'1.0'), )
+            _("Right Hand Rings"),
+            _('Fixes rings to unequip consistently by making them prefer '
+              'the right hand.'), 'ConsistentRings', ('1.0', '1.0'), )
         self.defaultEnabled = True
-        self.logMsg = u'* '+_(u'Rings fixed') + u': %d'
+        self.logMsg = '* '+_('Rings fixed') + ': %d'
 
 class AssortedTweak_ConsistentRings(AAssortedTweak_ConsistentRings,
                                     MultiTweakItem):
@@ -310,7 +310,7 @@ class AssortedTweak_ConsistentRings(AAssortedTweak_ConsistentRings,
 
 class CBash_AssortedTweak_ConsistentRings(AAssortedTweak_ConsistentRings,
                                           CBash_MultiTweakItem):
-    name = _(u'Right Hand Rings')
+    name = _('Right Hand Rings')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -325,9 +325,9 @@ class CBash_AssortedTweak_ConsistentRings(AAssortedTweak_ConsistentRings,
                 record._RecordID = override._RecordID
 #------------------------------------------------------------------------------
 rePlayableSkips = re.compile(
-    u'(?:skin)|(?:test)|(?:mark)|(?:token)|(?:willful)|(?:see.*me)|('
-    u'?:werewolf)|(?:no wings)|(?:tsaesci tail)|(?:widget)|(?:dummy)|('
-    u'?:ghostly immobility)|(?:corpse)', re.I)
+    '(?:skin)|(?:test)|(?:mark)|(?:token)|(?:willful)|(?:see.*me)|('
+    '?:werewolf)|(?:no wings)|(?:tsaesci tail)|(?:widget)|(?:dummy)|('
+    '?:ghostly immobility)|(?:corpse)', re.I)
 
 class AAssortedTweak_ClothingPlayable(AMultiTweakItem):
     """Sets all clothes to playable"""
@@ -336,11 +336,11 @@ class AAssortedTweak_ClothingPlayable(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_ClothingPlayable, self).__init__(
-            _(u"All Clothing Playable"),
-            _(u'Sets all clothing to be playable.'), u'PlayableClothing',
-            (u'1.0', u'1.0'), )
-        self.logHeader = u'=== '+_(u'Playable Clothes')
-        self.logMsg = u'* '+_(u'Clothes set as playable') + u': %d'
+            _("All Clothing Playable"),
+            _('Sets all clothing to be playable.'), 'PlayableClothing',
+            ('1.0', '1.0'), )
+        self.logHeader = '=== '+_('Playable Clothes')
+        self.logMsg = '* '+_('Clothes set as playable') + ': %d'
 
 class AssortedTweak_ClothingPlayable(AAssortedTweak_ClothingPlayable,
                                      MultiTweakItem):
@@ -384,7 +384,7 @@ class CBash_AssortedTweak_ClothingPlayable(AAssortedTweak_ClothingPlayable,
                                            CBash_MultiTweakItem):
     scanOrder = 29 #Run before the show clothing tweaks
     editOrder = 29
-    name = _(u'Playable Clothes')
+    name = _('Playable Clothes')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -415,10 +415,10 @@ class AAssortedTweak_ArmorPlayable(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_ArmorPlayable, self).__init__(
-            _(u"All Armor Playable"), _(u'Sets all armor to be playable.'),
-            u'PlayableArmor', (u'1.0', u'1.0'), )
-        self.logHeader = u'=== '+_(u'Playable Armor')
-        self.logMsg = u'* '+_(u'Armor pieces set as playable') + u': %d'
+            _("All Armor Playable"), _('Sets all armor to be playable.'),
+            'PlayableArmor', ('1.0', '1.0'), )
+        self.logHeader = '=== '+_('Playable Armor')
+        self.logMsg = '* '+_('Armor pieces set as playable') + ': %d'
 
 class AssortedTweak_ArmorPlayable(AAssortedTweak_ArmorPlayable,MultiTweakItem):
 
@@ -462,7 +462,7 @@ class CBash_AssortedTweak_ArmorPlayable(AAssortedTweak_ArmorPlayable,
                                         CBash_MultiTweakItem):
     scanOrder = 29 #Run before the show armor tweaks
     editOrder = 29
-    name = _(u'Playable Armor')
+    name = _('Playable Armor')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -488,25 +488,25 @@ class CBash_AssortedTweak_ArmorPlayable(AAssortedTweak_ArmorPlayable,
 #------------------------------------------------------------------------------
 class AAssortedTweak_DarnBooks(AMultiTweakItem):
     """DarNifies books.""" ##: C and P implementations have very similar code
-    reColor = re.compile(u'<font color="?([a-fA-F0-9]+)"?>', re.I + re.M)
-    reTagInWord = re.compile(u'([a-z])<font face=1>', re.M)
-    reFont1 = re.compile(u'(<?<font face=1( ?color=[0-9a-zA]+)?>)+', re.I|re.M)
-    reDiv = re.compile(u'<div', re.I + re.M)
-    reFont = re.compile(u'<font', re.I + re.M)
-    reHead2 = re.compile(u'' r'^(<<|\^\^|>>|)==\s*(\w[^=]+?)==\s*\r\n', re.M)
-    reHead3 = re.compile(u'' r'^(<<|\^\^|>>|)===\s*(\w[^=]+?)\r\n', re.M)
-    reBold = re.compile(u'' r'(__|\*\*|~~)')
-    reAlign = re.compile(u'' r'^(<<|\^\^|>>)', re.M)
+    reColor = re.compile('<font color="?([a-fA-F0-9]+)"?>', re.I + re.M)
+    reTagInWord = re.compile('([a-z])<font face=1>', re.M)
+    reFont1 = re.compile('(<?<font face=1( ?color=[0-9a-zA]+)?>)+', re.I|re.M)
+    reDiv = re.compile('<div', re.I + re.M)
+    reFont = re.compile('<font', re.I + re.M)
+    reHead2 = re.compile('' r'^(<<|\^\^|>>|)==\s*(\w[^=]+?)==\s*\r\n', re.M)
+    reHead3 = re.compile('' r'^(<<|\^\^|>>|)===\s*(\w[^=]+?)\r\n', re.M)
+    reBold = re.compile('' r'(__|\*\*|~~)')
+    reAlign = re.compile('' r'^(<<|\^\^|>>)', re.M)
     tweak_read_classes = 'BOOK',
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
-        super(AAssortedTweak_DarnBooks, self).__init__(_(u"DarNified Books"),
-            _(u'Books will be reformatted for DarN UI.'),
-            u'DarnBooks',
-            (u'default',  u'default'),
+        super(AAssortedTweak_DarnBooks, self).__init__(_("DarNified Books"),
+            _('Books will be reformatted for DarN UI.'),
+            'DarnBooks',
+            ('default',  'default'),
             )
-        self.logMsg = u'* '+_(u'Books DarNified') + u': %d'
+        self.logMsg = '* '+_('Books DarNified') + ': %d'
 
 class AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,MultiTweakItem):
 
@@ -536,42 +536,42 @@ class AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,MultiTweakItem):
         reBold = self.__class__.reBold
         reAlign = self.__class__.reAlign
         keep = patchFile.getKeeper()
-        align_text = {u'^^':u'center',u'<<':u'left',u'>>':u'right'}
+        align_text = {'^^':'center','<<':'left','>>':'right'}
         self.inBold = False
         def replaceBold(mo):
             self.inBold = not self.inBold
-            return u'<font face=3 color=%s>' % (
-                u'440000' if self.inBold else u'444444')
+            return '<font face=3 color=%s>' % (
+                '440000' if self.inBold else '444444')
         def replaceAlign(mo):
-            return u'<div align=%s>' % align_text[mo.group(1)]
+            return '<div align=%s>' % align_text[mo.group(1)]
         for record in patchFile.BOOK.records:
             if record.text and not record.enchantment:
                 rec_text = record.text
-                rec_text = rec_text.replace(u'\u201d', u'')  # there are some FUNKY
+                rec_text = rec_text.replace('\u201d', '')  # there are some FUNKY
                 # quotes that don't translate properly. (they are in *latin*
                 # encoding not even cp1252 or something normal but non-unicode)
                 if reHead2.match(rec_text):
                     self.inBold = False
                     rec_text = reHead2.sub(
-                        u'' r'\1<font face=1 color=220000>\2<font face=3 '
-                        u'' r'color=444444>\r\n', rec_text)
+                        '' r'\1<font face=1 color=220000>\2<font face=3 '
+                        '' r'color=444444>\r\n', rec_text)
                     rec_text = reHead3.sub(
-                        u'' r'\1<font face=3 color=220000>\2<font face=3 '
-                        u'' r'color=444444>\r\n',
+                        '' r'\1<font face=3 color=220000>\2<font face=3 '
+                        '' r'color=444444>\r\n',
                         rec_text)
                     rec_text = reAlign.sub(replaceAlign,rec_text)
                     rec_text = reBold.sub(replaceBold,rec_text)
-                    rec_text = re.sub(u'' r'\r\n', u'' r'<br>\r\n', rec_text)
+                    rec_text = re.sub('' r'\r\n', '' r'<br>\r\n', rec_text)
                 else:
                     maColor = reColor.search(rec_text)
                     if maColor:
                         color = maColor.group(1)
                     elif record.flags.isScroll:
-                        color = u'000000'
+                        color = '000000'
                     else:
-                        color = u'444444'
-                    fontFace = u'<font face=3 color='+color+u'>'
-                    rec_text = reTagInWord.sub(u'' r'\1', rec_text)
+                        color = '444444'
+                    fontFace = '<font face=3 color='+color+'>'
+                    rec_text = reTagInWord.sub('' r'\1', rec_text)
                     rec_text.lower()
                     if reDiv.search(rec_text) and not reFont.search(rec_text):
                         rec_text = fontFace+rec_text
@@ -586,21 +586,21 @@ class AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,MultiTweakItem):
 
 class CBash_AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,
                                     CBash_MultiTweakItem):
-    name = _(u'Books DarNified')
+    name = _('Books DarNified')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired."""
         def replaceBold(mo):
             self.inBold = not self.inBold
-            return u'<font face=3 color=%s>' % (
-                u'440000' if self.inBold else u'444444')
+            return '<font face=3 color=%s>' % (
+                '440000' if self.inBold else '444444')
         def replaceAlign(mo):
-            return u'<div align=%s>' % align_text[mo.group(1)]
+            return '<div align=%s>' % align_text[mo.group(1)]
 
         if record.text and not record.enchantment:
             rec_text = record.text
-            rec_text = rec_text.replace(u'\u201d', u'')  # there are some FUNKY
+            rec_text = rec_text.replace('\u201d', '')  # there are some FUNKY
             # quotes that don't translate properly. (they are in *latin*
             # encoding not even cp1252 or something normal but non-unicode)
             reColor = self.__class__.reColor
@@ -612,28 +612,28 @@ class CBash_AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,
             reHead3 = self.__class__.reHead3
             reBold = self.__class__.reBold
             reAlign = self.__class__.reAlign
-            align_text = {u'^^':u'center',u'<<':u'left',u'>>':u'right'}
+            align_text = {'^^':'center','<<':'left','>>':'right'}
             self.inBold = False
             if reHead2.match(rec_text):
                 rec_text = reHead2.sub(
-                    u'' r'\1<font face=1 color=220000>\2<font face=3 '
-                    u'' r'color=444444>\r\n', rec_text)
+                    '' r'\1<font face=1 color=220000>\2<font face=3 '
+                    '' r'color=444444>\r\n', rec_text)
                 rec_text = reHead3.sub(
-                    u'' r'\1<font face=3 color=220000>\2<font face=3 '
-                    u'' r'color=444444>\r\n', rec_text)
+                    '' r'\1<font face=3 color=220000>\2<font face=3 '
+                    '' r'color=444444>\r\n', rec_text)
                 rec_text = reAlign.sub(replaceAlign,rec_text)
                 rec_text = reBold.sub(replaceBold,rec_text)
-                rec_text = re.sub(u'' r'\r\n', r'<br>\r\n', rec_text)
+                rec_text = re.sub('' r'\r\n', r'<br>\r\n', rec_text)
             else:
                 maColor = reColor.search(rec_text)
                 if maColor:
                     color = maColor.group(1)
                 elif record.IsScroll:
-                    color = u'000000'
+                    color = '000000'
                 else:
-                    color = u'444444'
-                fontFace = u'<font face=3 color='+color+u'>'
-                rec_text = reTagInWord.sub(u'' r'\1', rec_text)
+                    color = '444444'
+                fontFace = '<font face=3 color='+color+'>'
+                rec_text = reTagInWord.sub('' r'\1', rec_text)
                 rec_text.lower()
                 if reDiv.search(rec_text) and not reFont.search(rec_text):
                     rec_text = fontFace+rec_text
@@ -653,12 +653,12 @@ class AAssortedTweak_FogFix(AMultiTweakItem):
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
-        super(AAssortedTweak_FogFix, self).__init__(_(u"Nvidia Fog Fix"),
-            _(u'Fix fog related Nvidia black screen problems.'),
-            u'FogFix',
-            (u'0.0001',  u'0.0001'),
+        super(AAssortedTweak_FogFix, self).__init__(_("Nvidia Fog Fix"),
+            _('Fix fog related Nvidia black screen problems.'),
+            'FogFix',
+            ('0.0001',  '0.0001'),
             )
-        self.logMsg = u'* '+_(u'Cells with fog tweaked to 0.0001') + u': %d'
+        self.logMsg = '* '+_('Cells with fog tweaked to 0.0001') + ': %d'
         self.defaultEnabled = True
 
 class AssortedTweak_FogFix(AAssortedTweak_FogFix,MultiTweakItem):
@@ -688,7 +688,7 @@ class AssortedTweak_FogFix(AAssortedTweak_FogFix,MultiTweakItem):
         self._patchLog(log, count)
 
 class CBash_AssortedTweak_FogFix(AAssortedTweak_FogFix,CBash_MultiTweakItem):
-    name = _(u'Nvidia Fog Fix')
+    name = _('Nvidia Fog Fix')
     tweak_read_classes = 'CELLS',  # or 'CELL', but we want this patcher to
     # run in the same group as the CellImporter, so we'll have to skip
     # worldspaces.  It shouldn't be a problem in those CELLs.
@@ -715,12 +715,12 @@ class AAssortedTweak_NoLightFlicker(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_NoLightFlicker, self).__init__(
-            _(u"No Light Flicker"),
-            _(u'Remove flickering from lights. For use on low-end machines.'),
-            u'NoLightFlicker',
-            (u'1.0',  u'1.0'),
+            _("No Light Flicker"),
+            _('Remove flickering from lights. For use on low-end machines.'),
+            'NoLightFlicker',
+            ('1.0',  '1.0'),
             )
-        self.logMsg = u'* '+_(u'Lights unflickered') + u': %d'
+        self.logMsg = '* '+_('Lights unflickered') + ': %d'
 
 class AssortedTweak_NoLightFlicker(AAssortedTweak_NoLightFlicker,
                                    MultiTweakItem):
@@ -758,7 +758,7 @@ class AssortedTweak_NoLightFlicker(AAssortedTweak_NoLightFlicker,
 
 class CBash_AssortedTweak_NoLightFlicker(AAssortedTweak_NoLightFlicker,
                                          CBash_MultiTweakItem):
-    name = _(u'No Light Flicker')
+    name = _('No Light Flicker')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -787,8 +787,8 @@ class AMultiTweakItem_Weight(AMultiTweakItem):
         log.setHeader(self.logHeader)
         log(self.logWeightValue % self.weight)
         log(self.logMsg % sum(count.values()))
-        for srcMod in load_order.get_ordered(count.keys()):
-            log(u'  * %s: %d' % (srcMod.s,count[srcMod]))
+        for srcMod in load_order.get_ordered(list(count.keys())):
+            log('  * %s: %d' % (srcMod.s,count[srcMod]))
 
 class CBash_MultiTweakItem_Weight(CBash_MultiTweakItem,
                                   AMultiTweakItem_Weight): pass
@@ -800,17 +800,17 @@ class AAssortedTweak_PotionWeight(AMultiTweakItem_Weight):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_PotionWeight, self).__init__(
-            _(u"Reweigh: Potions (Maximum)"),
-            _(u'Potion weight will be capped.'),
-            u'MaximumPotionWeight',
-            (u'0.1',  0.1),
-            (u'0.2',  0.2),
-            (u'0.4',  0.4),
-            (u'0.6',  0.6),
-            (_(u'Custom'),0.0),
+            _("Reweigh: Potions (Maximum)"),
+            _('Potion weight will be capped.'),
+            'MaximumPotionWeight',
+            ('0.1',  0.1),
+            ('0.2',  0.2),
+            ('0.4',  0.4),
+            ('0.6',  0.6),
+            (_('Custom'),0.0),
             )
-        self.logWeightValue = _(u'Potions set to maximum weight of ') + u'%f'
-        self.logMsg = u'* '+_(u'Potions Reweighed') + u': %d'
+        self.logWeightValue = _('Potions set to maximum weight of ') + '%f'
+        self.logMsg = '* '+_('Potions Reweighed') + ': %d'
 
 class AssortedTweak_PotionWeight(AAssortedTweak_PotionWeight,MultiTweakItem):
 
@@ -842,7 +842,7 @@ class AssortedTweak_PotionWeight(AAssortedTweak_PotionWeight,MultiTweakItem):
 
 class CBash_AssortedTweak_PotionWeight(AAssortedTweak_PotionWeight,
                                        CBash_MultiTweakItem_Weight):
-    name = _(u"Reweigh: Potions (Maximum)")
+    name = _("Reweigh: Potions (Maximum)")
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
@@ -877,18 +877,18 @@ class AAssortedTweak_IngredientWeight(AMultiTweakItem_Weight):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_IngredientWeight, self).__init__(
-            _(u"Reweigh: Ingredients"),
-            _(u'Ingredient weight will be capped.'),
-            u'MaximumIngredientWeight',
-            (u'0.1',  0.1),
-            (u'0.2',  0.2),
-            (u'0.4',  0.4),
-            (u'0.6',  0.6),
-            (_(u'Custom'),0.0),
+            _("Reweigh: Ingredients"),
+            _('Ingredient weight will be capped.'),
+            'MaximumIngredientWeight',
+            ('0.1',  0.1),
+            ('0.2',  0.2),
+            ('0.4',  0.4),
+            ('0.6',  0.6),
+            (_('Custom'),0.0),
             )
-        self.logWeightValue = _(u'Ingredients set to maximum weight of') + \
-                              u' %f'
-        self.logMsg = u'* '+_(u'Ingredients Reweighed') + u': %d'
+        self.logWeightValue = _('Ingredients set to maximum weight of') + \
+                              ' %f'
+        self.logMsg = '* '+_('Ingredients Reweighed') + ': %d'
 
 class AssortedTweak_IngredientWeight(AAssortedTweak_IngredientWeight,
                                      MultiTweakItem):
@@ -920,7 +920,7 @@ class AssortedTweak_IngredientWeight(AAssortedTweak_IngredientWeight,
 
 class CBash_AssortedTweak_IngredientWeight(AAssortedTweak_IngredientWeight,
                                            CBash_MultiTweakItem_Weight):
-    name = _(u'Reweigh: Ingredients')
+    name = _('Reweigh: Ingredients')
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
@@ -950,17 +950,17 @@ class AAssortedTweak_PotionWeightMinimum(AMultiTweakItem_Weight):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_PotionWeightMinimum, self).__init__(
-            _(u"Reweigh: Potions (Minimum)"),
-            _(u'Potion weight will be floored.'),
-            u'MinimumPotionWeight',
-            (u'1',  1),
-            (u'2',  2),
-            (u'3',  3),
-            (u'4',  4),
-            (_(u'Custom'),0.0),
+            _("Reweigh: Potions (Minimum)"),
+            _('Potion weight will be floored.'),
+            'MinimumPotionWeight',
+            ('1',  1),
+            ('2',  2),
+            ('3',  3),
+            ('4',  4),
+            (_('Custom'),0.0),
             )
-        self.logWeightValue = _(u'Potions set to minimum weight of ') + u'%f'
-        self.logMsg = u'* '+_(u'Potions Reweighed') + u': %d'
+        self.logWeightValue = _('Potions set to minimum weight of ') + '%f'
+        self.logMsg = '* '+_('Potions Reweighed') + ': %d'
 
 class AssortedTweak_PotionWeightMinimum(AAssortedTweak_PotionWeightMinimum,
                                         MultiTweakItem):
@@ -994,7 +994,7 @@ class CBash_AssortedTweak_PotionWeightMinimum(
     AAssortedTweak_PotionWeightMinimum, CBash_MultiTweakItem_Weight):
     scanOrder = 33 #Have it run after the max weight for consistent results
     editOrder = 33
-    name = _(u'Reweigh: Potions (Minimum)')
+    name = _('Reweigh: Potions (Minimum)')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1016,22 +1016,22 @@ class AAssortedTweak_StaffWeight(AMultiTweakItem_Weight):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_StaffWeight, self).__init__(
-            _(u"Reweigh: Staffs/Staves"),
-            _(u'Staff weight will be capped.'),
-            u'StaffWeight',
-            (u'1',  1.0),
-            (u'2',  2.0),
-            (u'3',  3.0),
-            (u'4',  4.0),
-            (u'5',  5.0),
-            (u'6',  6.0),
-            (u'7',  7.0),
-            (u'8',  8.0),
-            (_(u'Custom'),0.0),
+            _("Reweigh: Staffs/Staves"),
+            _('Staff weight will be capped.'),
+            'StaffWeight',
+            ('1',  1.0),
+            ('2',  2.0),
+            ('3',  3.0),
+            ('4',  4.0),
+            ('5',  5.0),
+            ('6',  6.0),
+            ('7',  7.0),
+            ('8',  8.0),
+            (_('Custom'),0.0),
             )
-        self.logWeightValue = _(u'Staffs/Staves set to maximum weight of') + \
-                              u' %f'
-        self.logMsg = u'* '+_(u'Staffs/Staves Reweighed') + u': %d'
+        self.logWeightValue = _('Staffs/Staves set to maximum weight of') + \
+                              ' %f'
+        self.logMsg = '* '+_('Staffs/Staves Reweighed') + ': %d'
 
 class AssortedTweak_StaffWeight(AAssortedTweak_StaffWeight,MultiTweakItem):
 
@@ -1062,7 +1062,7 @@ class AssortedTweak_StaffWeight(AAssortedTweak_StaffWeight,MultiTweakItem):
 
 class CBash_AssortedTweak_StaffWeight(AAssortedTweak_StaffWeight,
                                       CBash_MultiTweakItem_Weight):
-    name = _(u'Reweigh: Staffs/Staves')
+    name = _('Reweigh: Staffs/Staves')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1082,18 +1082,18 @@ class AAssortedTweak_ArrowWeight(AMultiTweakItem_Weight):
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
-        super(AAssortedTweak_ArrowWeight, self).__init__(_(u"Reweigh: Arrows"),
-            _(u'Arrow weights will be capped.'),
-            u'MaximumArrowWeight',
-            (u'0',    0.0),
-            (u'0.1',  0.1),
-            (u'0.2',  0.2),
-            (u'0.4',  0.4),
-            (u'0.6',  0.6),
-            (_(u'Custom'),0.0),
+        super(AAssortedTweak_ArrowWeight, self).__init__(_("Reweigh: Arrows"),
+            _('Arrow weights will be capped.'),
+            'MaximumArrowWeight',
+            ('0',    0.0),
+            ('0.1',  0.1),
+            ('0.2',  0.2),
+            ('0.4',  0.4),
+            ('0.6',  0.6),
+            (_('Custom'),0.0),
             )
-        self.logWeightValue = _(u'Arrows set to maximum weight of ') + u'%f'
-        self.logMsg = u'* '+_(u'Arrows Reweighed') + u': %d'
+        self.logWeightValue = _('Arrows set to maximum weight of ') + '%f'
+        self.logMsg = '* '+_('Arrows Reweighed') + ': %d'
 
 class AssortedTweak_ArrowWeight(AAssortedTweak_ArrowWeight,MultiTweakItem):
 
@@ -1124,7 +1124,7 @@ class AssortedTweak_ArrowWeight(AAssortedTweak_ArrowWeight,MultiTweakItem):
 
 class CBash_AssortedTweak_ArrowWeight(AAssortedTweak_ArrowWeight,
                                       CBash_MultiTweakItem_Weight):
-    name = _(u'Reweigh: Arrows')
+    name = _('Reweigh: Arrows')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1147,16 +1147,16 @@ class AAssortedTweak_ScriptEffectSilencer(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_ScriptEffectSilencer, self).__init__(
-            _(u"Magic: Script Effect Silencer"),
-            _(u'Script Effect will be silenced and have no graphics.'),
-            u'SilentScriptEffect',
-            (u'0',    0),
+            _("Magic: Script Effect Silencer"),
+            _('Script Effect will be silenced and have no graphics.'),
+            'SilentScriptEffect',
+            ('0',    0),
             )
         self.defaultEnabled = True
 
     def _patchLog(self,log):
         log.setHeader(self.logHeader)
-        log(_(u'Script Effect silenced.'))
+        log(_('Script Effect silenced.'))
 
 class AssortedTweak_ScriptEffectSilencer(AAssortedTweak_ScriptEffectSilencer,
                                          MultiTweakItem):
@@ -1176,7 +1176,7 @@ class AssortedTweak_ScriptEffectSilencer(AAssortedTweak_ScriptEffectSilencer,
 
     def buildPatch(self,log,progress,patchFile):
         """Edits patch file as desired. Will write to log."""
-        nullRef = (GPath(u'Oblivion.esm'),0)
+        nullRef = (GPath('Oblivion.esm'),0)
         silentattrs = {
             'model' : None,
             'projectileSpeed' : 9999,
@@ -1199,7 +1199,7 @@ class AssortedTweak_ScriptEffectSilencer(AAssortedTweak_ScriptEffectSilencer,
 
 class CBash_AssortedTweak_ScriptEffectSilencer(
     AAssortedTweak_ScriptEffectSilencer, CBash_MultiTweakItem):
-    name = _(u'Magic: Script Effect Silencer')
+    name = _('Magic: Script Effect Silencer')
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
@@ -1220,11 +1220,11 @@ class CBash_AssortedTweak_ScriptEffectSilencer(
         if record.eid == self.SEFF[0]:
             attrs = self.attrs
             newValues = self.newValues
-            oldValues = map(record.__getattribute__, attrs)
+            oldValues = list(map(record.__getattribute__, attrs))
             if oldValues != newValues:
                 override = record.CopyAsOverride(self.patchFile)
                 if override:
-                    map(override.__setattr__, attrs, newValues)
+                    list(map(override.__setattr__, attrs, newValues))
                     record.UnloadRecord()
                     record._RecordID = override._RecordID
 
@@ -1236,23 +1236,23 @@ class AAssortedTweak_HarvestChance(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_HarvestChance, self).__init__(
-            _(u"Harvest Chance"),
-            _(u'Harvest chances on all plants will be set to the chosen '
-                u'percentage.'),
-            u'HarvestChance',
-            (u'10%',  10),
-            (u'20%',  20),
-            (u'30%',  30),
-            (u'40%',  40),
-            (u'50%',  50),
-            (u'60%',  60),
-            (u'70%',  70),
-            (u'80%',  80),
-            (u'90%',  90),
-            (u'100%', 100),
-            (_(u'Custom'),0),
+            _("Harvest Chance"),
+            _('Harvest chances on all plants will be set to the chosen '
+                'percentage.'),
+            'HarvestChance',
+            ('10%',  10),
+            ('20%',  20),
+            ('30%',  30),
+            ('40%',  40),
+            ('50%',  50),
+            ('60%',  60),
+            ('70%',  70),
+            ('80%',  80),
+            ('90%',  90),
+            ('100%', 100),
+            (_('Custom'),0),
             )
-        self.logMsg = u'* '+_(u'Harvest Chances Changed') + u': %d'
+        self.logMsg = '* '+_('Harvest Chances Changed') + ': %d'
 
 class AssortedTweak_HarvestChance(AAssortedTweak_HarvestChance,MultiTweakItem):
 
@@ -1286,7 +1286,7 @@ class AssortedTweak_HarvestChance(AAssortedTweak_HarvestChance,MultiTweakItem):
 
 class CBash_AssortedTweak_HarvestChance(AAssortedTweak_HarvestChance,
                                         CBash_MultiTweakItem):
-    name = _(u'Harvest Chance')
+    name = _('Harvest Chance')
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
@@ -1296,13 +1296,13 @@ class CBash_AssortedTweak_HarvestChance(AAssortedTweak_HarvestChance,
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
-        if record.eid.startswith(u'Nirnroot'): return #skip Nirnroots
+        if record.eid.startswith('Nirnroot'): return #skip Nirnroots
         newValues = [self.choiceValues[self.chosen][0]] * 4
-        oldValues = map(record.__getattribute__, self.attrs)
+        oldValues = list(map(record.__getattribute__, self.attrs))
         if oldValues != newValues:
             override = record.CopyAsOverride(self.patchFile)
             if override:
-                map(override.__setattr__, self.attrs, newValues)
+                list(map(override.__setattr__, self.attrs, newValues))
                 self.mod_count[modFile.GName] += 1
                 record.UnloadRecord()
                 record._RecordID = override._RecordID
@@ -1314,12 +1314,12 @@ class AAssortedTweak_WindSpeed(AMultiTweakItem):
 
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
-        super(AAssortedTweak_WindSpeed, self).__init__(_(u"Disable Wind"),
-            _(u'Disables the wind on all weathers.'),
-            u'windSpeed',
-            (_(u'Disable'),  0),
+        super(AAssortedTweak_WindSpeed, self).__init__(_("Disable Wind"),
+            _('Disables the wind on all weathers.'),
+            'windSpeed',
+            (_('Disable'),  0),
             )
-        self.logMsg = u'* '+_(u'Winds Disabled') + u': %d'
+        self.logMsg = '* '+_('Winds Disabled') + ': %d'
 
 class AssortedTweak_WindSpeed(AAssortedTweak_WindSpeed,MultiTweakItem):
 
@@ -1348,7 +1348,7 @@ class AssortedTweak_WindSpeed(AAssortedTweak_WindSpeed,MultiTweakItem):
 
 class CBash_AssortedTweak_WindSpeed(AAssortedTweak_WindSpeed,
                                     CBash_MultiTweakItem):
-    name = _(u'Disable Wind')
+    name = _('Disable Wind')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1369,13 +1369,13 @@ class AAssortedTweak_UniformGroundcover(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_UniformGroundcover, self).__init__(
-            _(u"Uniform Groundcover"),
-            _(u'Eliminates random variation in groundcover (grasses, '
-              u'shrubs, etc.).'),
-            u'UniformGroundcover',
-            (u'1.0', u'1.0'),
+            _("Uniform Groundcover"),
+            _('Eliminates random variation in groundcover (grasses, '
+              'shrubs, etc.).'),
+            'UniformGroundcover',
+            ('1.0', '1.0'),
             )
-        self.logMsg = u'* '+_(u'Grasses Normalized') + u': %d'
+        self.logMsg = '* '+_('Grasses Normalized') + ': %d'
 
 class AssortedTweak_UniformGroundcover(AAssortedTweak_UniformGroundcover,
                                        MultiTweakItem):
@@ -1405,7 +1405,7 @@ class AssortedTweak_UniformGroundcover(AAssortedTweak_UniformGroundcover,
 
 class CBash_AssortedTweak_UniformGroundcover(AAssortedTweak_UniformGroundcover,
                                              CBash_MultiTweakItem):
-    name = _(u'Uniform Groundcover')
+    name = _('Uniform Groundcover')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1426,29 +1426,29 @@ class AAssortedTweak_SetCastWhenUsedEnchantmentCosts(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_SetCastWhenUsedEnchantmentCosts, self).__init__(
-            _(u"Number of uses for pre-enchanted weapons and Staffs/Staves"),
-            _(u'The charge amount and cast cost will be edited so that all '
-              u'enchanted weapons and Staffs/Staves have the amount of '
-              u'uses specified. Cost will be rounded up to 1 (unless set '
-              u'to unlimited) so number of uses may not exactly match for '
-              u'all weapons.'),
-            u'Number of uses:',
-            (u'1', 1),
-            (u'5', 5),
-            (u'10', 10),
-            (u'20', 20),
-            (u'30', 30),
-            (u'40', 40),
-            (u'50', 50),
-            (u'80', 80),
-            (u'100', 100),
-            (u'250', 250),
-            (u'500', 500),
-            (_(u'Unlimited'), 0),
-            (_(u'Custom'),0),
+            _("Number of uses for pre-enchanted weapons and Staffs/Staves"),
+            _('The charge amount and cast cost will be edited so that all '
+              'enchanted weapons and Staffs/Staves have the amount of '
+              'uses specified. Cost will be rounded up to 1 (unless set '
+              'to unlimited) so number of uses may not exactly match for '
+              'all weapons.'),
+            'Number of uses:',
+            ('1', 1),
+            ('5', 5),
+            ('10', 10),
+            ('20', 20),
+            ('30', 30),
+            ('40', 40),
+            ('50', 50),
+            ('80', 80),
+            ('100', 100),
+            ('250', 250),
+            ('500', 500),
+            (_('Unlimited'), 0),
+            (_('Custom'),0),
             )
-        self.logHeader = u'=== '+_(u'Set Enchantment Number of Uses')
-        self.logMsg = u'* '+_(u'Enchantments set') + u': %d'
+        self.logHeader = '=== '+_('Set Enchantment Number of Uses')
+        self.logMsg = '* '+_('Enchantments set') + ': %d'
 
 class AssortedTweak_SetCastWhenUsedEnchantmentCosts(
     AAssortedTweak_SetCastWhenUsedEnchantmentCosts, MultiTweakItem):
@@ -1484,7 +1484,7 @@ class AssortedTweak_SetCastWhenUsedEnchantmentCosts(
 
 class CBash_AssortedTweak_SetCastWhenUsedEnchantmentCosts(
     AAssortedTweak_SetCastWhenUsedEnchantmentCosts, CBash_MultiTweakItem):
-    name = _(u'Set Enchantment Number of Uses')
+    name = _('Set Enchantment Number of Uses')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1510,14 +1510,14 @@ class AAssortedTweak_DefaultIcons(AMultiTweakItem):
     assigned."""
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
-        super(AAssortedTweak_DefaultIcons,self).__init__(_(u"Default Icons"),
-            _(u"Sets a default icon for any records that don't have any icon"
-              u" assigned"),
-            u'icons',
-            (u'1', 1),
+        super(AAssortedTweak_DefaultIcons,self).__init__(_("Default Icons"),
+            _("Sets a default icon for any records that don't have any icon"
+              " assigned"),
+            'icons',
+            ('1', 1),
             )
         self.defaultEnabled = True
-        self.logMsg = u'* '+_(u'Default Icons set') + u': %d'
+        self.logMsg = '* '+_('Default Icons set') + ': %d'
 
 class AssortedTweak_DefaultIcons(AAssortedTweak_DefaultIcons,MultiTweakItem):
     tweak_read_classes = (
@@ -1553,47 +1553,47 @@ class AssortedTweak_DefaultIcons(AAssortedTweak_DefaultIcons,MultiTweakItem):
                 if getattr(record, 'femaleIconPath', None): continue
                 changed = False
                 if type_ == 'ALCH':
-                    record.iconPath = u"Clutter\\Potions\\IconPotion01.dds"
+                    record.iconPath = "Clutter\\Potions\\IconPotion01.dds"
                     changed = True
                 elif type_ == 'AMMO':
-                    record.iconPath = u"Weapons\\IronArrow.dds"
+                    record.iconPath = "Weapons\\IronArrow.dds"
                     changed = True
                 elif type_ == 'APPA':
-                    record.iconPath = u"Clutter\\IconMortarPestle.dds"
+                    record.iconPath = "Clutter\\IconMortarPestle.dds"
                     changed = True
                 elif type_ == 'AMMO':
-                    record.iconPath = u"Weapons\\IronArrow.dds"
+                    record.iconPath = "Weapons\\IronArrow.dds"
                     changed = True
                 elif type_ == 'ARMO':
                     if record.flags.notPlayable: continue
                     #choose based on body flags:
                     if record.flags.upperBody != 0:
-                        record.maleIconPath = u"Armor\\Iron\\M\\Cuirass.dds"
-                        record.femaleIconPath = u"Armor\\Iron\\F\\Cuirass.dds"
+                        record.maleIconPath = "Armor\\Iron\\M\\Cuirass.dds"
+                        record.femaleIconPath = "Armor\\Iron\\F\\Cuirass.dds"
                         changed = True
                     elif record.flags.lowerBody != 0:
-                        record.maleIconPath = u"Armor\\Iron\\M\\Greaves.dds"
-                        record.femaleIconPath = u"Armor\\Iron\\F\\Greaves.dds"
+                        record.maleIconPath = "Armor\\Iron\\M\\Greaves.dds"
+                        record.femaleIconPath = "Armor\\Iron\\F\\Greaves.dds"
                         changed = True
                     elif record.flags.head != 0 or record.flags.hair != 0:
-                        record.maleIconPath = u"Armor\\Iron\\M\\Helmet.dds"
+                        record.maleIconPath = "Armor\\Iron\\M\\Helmet.dds"
                         changed = True
                     elif record.flags.hand != 0:
-                        record.maleIconPath = u"Armor\\Iron\\M\\Gauntlets.dds"
-                        record.femaleIconPath =u"Armor\\Iron\\F\\Gauntlets.dds"
+                        record.maleIconPath = "Armor\\Iron\\M\\Gauntlets.dds"
+                        record.femaleIconPath ="Armor\\Iron\\F\\Gauntlets.dds"
                         changed = True
                     elif record.flags.foot != 0:
-                        record.maleIconPath = u"Armor\\Iron\\M\\Boots.dds"
+                        record.maleIconPath = "Armor\\Iron\\M\\Boots.dds"
                         changed = True
                     elif record.flags.shield != 0:
-                        record.maleIconPath = u"Armor\\Iron\\M\\Shield.dds"
+                        record.maleIconPath = "Armor\\Iron\\M\\Shield.dds"
                         changed = True
                     else: #Default icon, probably a token or somesuch
-                        record.maleIconPath = u"Armor\\Iron\\M\\Shield.dds"
+                        record.maleIconPath = "Armor\\Iron\\M\\Shield.dds"
                         changed = True
                 elif type_ in ['BOOK', 'BSGN', 'CLAS']:  # just a random book
                     # icon for class/birthsign as well.
-                    record.iconPath = u"Clutter\\iconbook%d.dds" % (
+                    record.iconPath = "Clutter\\iconbook%d.dds" % (
                         random.randint(1, 13))
                     changed = True
                 elif type_ == 'CLOT':
@@ -1601,81 +1601,81 @@ class AssortedTweak_DefaultIcons(AAssortedTweak_DefaultIcons,MultiTweakItem):
                     #choose based on body flags:
                     if record.flags.upperBody != 0:
                         record.maleIconPath = \
-                            u"Clothes\\MiddleClass\\01\\M\\Shirt.dds"
+                            "Clothes\\MiddleClass\\01\\M\\Shirt.dds"
                         record.femaleIconPath = \
-                            u"Clothes\\MiddleClass\\01\\F\\Shirt.dds"
+                            "Clothes\\MiddleClass\\01\\F\\Shirt.dds"
                         changed = True
                     elif record.flags.lowerBody != 0:
                         record.maleIconPath = \
-                            u"Clothes\\MiddleClass\\01\\M\\Pants.dds"
+                            "Clothes\\MiddleClass\\01\\M\\Pants.dds"
                         record.femaleIconPath = \
-                            u"Clothes\\MiddleClass\\01\\F\\Pants.dds"
+                            "Clothes\\MiddleClass\\01\\F\\Pants.dds"
                         changed = True
                     elif record.flags.head or record.flags.hair:
                         record.maleIconPath = \
-                            u"Clothes\\MythicDawnrobe\\hood.dds"
+                            "Clothes\\MythicDawnrobe\\hood.dds"
                         changed = True
                     elif record.flags.hand != 0:
                         record.maleIconPath = \
-                         u"Clothes\\LowerClass\\Jail\\M\\JailShirtHandcuff.dds"
+                         "Clothes\\LowerClass\\Jail\\M\\JailShirtHandcuff.dds"
                         changed = True
                     elif record.flags.foot != 0:
                         record.maleIconPath = \
-                            u"Clothes\\MiddleClass\\01\\M\\Shoes.dds"
+                            "Clothes\\MiddleClass\\01\\M\\Shoes.dds"
                         record.femaleIconPath = \
-                            u"Clothes\\MiddleClass\\01\\F\\Shoes.dds"
+                            "Clothes\\MiddleClass\\01\\F\\Shoes.dds"
                         changed = True
                     elif record.flags.leftRing or record.flags.rightRing:
-                        record.maleIconPath = u"Clothes\\Ring\\RingNovice.dds"
+                        record.maleIconPath = "Clothes\\Ring\\RingNovice.dds"
                         changed = True
                     else: #amulet
                         record.maleIconPath = \
-                            u"Clothes\\Amulet\\AmuletSilver.dds"
+                            "Clothes\\Amulet\\AmuletSilver.dds"
                         changed = True
                 elif type_ == 'FACT':
                     #todo
                     #changed = True
                     pass
                 elif type_ == 'INGR':
-                    record.iconPath = u"Clutter\\IconSeeds.dds"
+                    record.iconPath = "Clutter\\IconSeeds.dds"
                     changed = True
                 elif type_ == 'KEYM':
                     record.iconPath = \
-                        [u"Clutter\\Key\\Key.dds", u"Clutter\\Key\\Key02.dds"][
+                        ["Clutter\\Key\\Key.dds", "Clutter\\Key\\Key02.dds"][
                             random.randint(0, 1)]
                     changed = True
                 elif type_ == 'LIGH':
                     if not record.flags.canTake: continue
-                    record.iconPath = u"Lights\\IconTorch02.dds"
+                    record.iconPath = "Lights\\IconTorch02.dds"
                     changed = True
                 elif type_ == 'MISC':
-                    record.iconPath = u"Clutter\\Soulgems\\AzurasStar.dds"
+                    record.iconPath = "Clutter\\Soulgems\\AzurasStar.dds"
                     changed = True
                 elif type_ == 'QUST':
                     if not record.stages: continue
-                    record.iconPath = u"Quest\\icon_miscellaneous.dds"
+                    record.iconPath = "Quest\\icon_miscellaneous.dds"
                     changed = True
                 elif type_ == 'SGST':
-                    record.iconPath = u"IconSigilStone.dds"
+                    record.iconPath = "IconSigilStone.dds"
                     changed = True
                 elif type_ == 'SLGM':
-                    record.iconPath = u"Clutter\\Soulgems\\AzurasStar.dds"
+                    record.iconPath = "Clutter\\Soulgems\\AzurasStar.dds"
                     changed = True
                 elif type_ == 'WEAP':
                     if record.weaponType == 0:
-                        record.iconPath = u"Weapons\\IronDagger.dds"
+                        record.iconPath = "Weapons\\IronDagger.dds"
                     elif record.weaponType == 1:
-                        record.iconPath = u"Weapons\\IronClaymore.dds"
+                        record.iconPath = "Weapons\\IronClaymore.dds"
                     elif record.weaponType == 2:
-                        record.iconPath = u"Weapons\\IronMace.dds"
+                        record.iconPath = "Weapons\\IronMace.dds"
                     elif record.weaponType == 3:
-                        record.iconPath = u"Weapons\\IronBattleAxe.dds"
+                        record.iconPath = "Weapons\\IronBattleAxe.dds"
                     elif record.weaponType == 4:
-                        record.iconPath = u"Weapons\\Staff.dds"
+                        record.iconPath = "Weapons\\Staff.dds"
                     elif record.weaponType == 5:
-                        record.iconPath = u"Weapons\\IronBow.dds"
+                        record.iconPath = "Weapons\\IronBow.dds"
                     else: #Should never reach this point
-                        record.iconPath = u"Weapons\\IronDagger.dds"
+                        record.iconPath = "Weapons\\IronDagger.dds"
                     changed = True
                 if changed:
                     keep(record.fid)
@@ -1687,51 +1687,51 @@ class CBash_AssortedTweak_DefaultIcons(AAssortedTweak_DefaultIcons,
                                        CBash_MultiTweakItem):
     """Sets a default icon for any records that don't have any icon
     assigned."""
-    name = _(u'Default Icons')
+    name = _('Default Icons')
     type_defaultIcon = {
-                'ALCH': u"Clutter\\Potions\\IconPotion01.dds",
-                'AMMO': u"Weapons\\IronArrow.dds",
-                'APPA': u"Clutter\\IconMortarPestle.dds",
-                'ARMO': ((u"Armor\\Iron\\M\\Cuirass.dds",
-                          u"Armor\\Iron\\F\\Cuirass.dds"),
-                         (u"Armor\\Iron\\M\\Greaves.dds",
-                          u"Armor\\Iron\\F\\Greaves.dds"),
-                         (u"Armor\\Iron\\M\\Helmet.dds",),
-                         (u"Armor\\Iron\\M\\Gauntlets.dds",
-                          u"Armor\\Iron\\F\\Gauntlets.dds"),
-                         (u"Armor\\Iron\\M\\Boots.dds",),
-                         (u"Armor\\Iron\\M\\Shield.dds",),
-                         (u"Armor\\Iron\\M\\Shield.dds",), #Default Armor icon
+                'ALCH': "Clutter\\Potions\\IconPotion01.dds",
+                'AMMO': "Weapons\\IronArrow.dds",
+                'APPA': "Clutter\\IconMortarPestle.dds",
+                'ARMO': (("Armor\\Iron\\M\\Cuirass.dds",
+                          "Armor\\Iron\\F\\Cuirass.dds"),
+                         ("Armor\\Iron\\M\\Greaves.dds",
+                          "Armor\\Iron\\F\\Greaves.dds"),
+                         ("Armor\\Iron\\M\\Helmet.dds",),
+                         ("Armor\\Iron\\M\\Gauntlets.dds",
+                          "Armor\\Iron\\F\\Gauntlets.dds"),
+                         ("Armor\\Iron\\M\\Boots.dds",),
+                         ("Armor\\Iron\\M\\Shield.dds",),
+                         ("Armor\\Iron\\M\\Shield.dds",), #Default Armor icon
                          ),
-                'BOOK': u"Clutter\\iconbook%d.dds",
-                'BSGN': u"Clutter\\iconbook%d.dds",
-                'CLAS': u"Clutter\\iconbook%d.dds",
-                'CLOT': ((u"Clothes\\MiddleClass\\01\\M\\Shirt.dds",
-                          u"Clothes\\MiddleClass\\01\\F\\Shirt.dds"),
-                         (u"Clothes\\MiddleClass\\01\\M\\Pants.dds",
-                          u"Clothes\\MiddleClass\\01\\F\\Pants.dds"),
-                         (u"Clothes\\MythicDawnrobe\\hood.dds",),
-                         (u"Clothes\\LowerClass\\Jail\\M\\"
-                          u"JailShirtHandcuff.dds",),
-                         (u"Clothes\\MiddleClass\\01\\M\\Shoes.dds",
-                          u"Clothes\\MiddleClass\\01\\F\\Shoes.dds"),
-                         (u"Clothes\\Ring\\RingNovice.dds",),
-                         (u"Clothes\\Amulet\\AmuletSilver.dds",),
+                'BOOK': "Clutter\\iconbook%d.dds",
+                'BSGN': "Clutter\\iconbook%d.dds",
+                'CLAS': "Clutter\\iconbook%d.dds",
+                'CLOT': (("Clothes\\MiddleClass\\01\\M\\Shirt.dds",
+                          "Clothes\\MiddleClass\\01\\F\\Shirt.dds"),
+                         ("Clothes\\MiddleClass\\01\\M\\Pants.dds",
+                          "Clothes\\MiddleClass\\01\\F\\Pants.dds"),
+                         ("Clothes\\MythicDawnrobe\\hood.dds",),
+                         ("Clothes\\LowerClass\\Jail\\M\\"
+                          "JailShirtHandcuff.dds",),
+                         ("Clothes\\MiddleClass\\01\\M\\Shoes.dds",
+                          "Clothes\\MiddleClass\\01\\F\\Shoes.dds"),
+                         ("Clothes\\Ring\\RingNovice.dds",),
+                         ("Clothes\\Amulet\\AmuletSilver.dds",),
                          ),
 ##                'FACT': u"", ToDo
-                'INGR': u"Clutter\\IconSeeds.dds",
-                'KEYM': (u"Clutter\\Key\\Key.dds",u"Clutter\\Key\\Key02.dds"),
-                'LIGH': u"Lights\\IconTorch02.dds",
-                'MISC': u"Clutter\\Soulgems\\AzurasStar.dds",
-                'QUST': u"Quest\\icon_miscellaneous.dds",
-                'SGST': u"IconSigilStone.dds",
-                'SLGM': u"Clutter\\Soulgems\\AzurasStar.dds",
-                'WEAP': (u"Weapons\\IronDagger.dds",
-                         u"Weapons\\IronClaymore.dds",
-                         u"Weapons\\IronMace.dds",
-                         u"Weapons\\IronBattleAxe.dds",
-                         u"Weapons\\Staff.dds",
-                         u"Weapons\\IronBow.dds",
+                'INGR': "Clutter\\IconSeeds.dds",
+                'KEYM': ("Clutter\\Key\\Key.dds","Clutter\\Key\\Key02.dds"),
+                'LIGH': "Lights\\IconTorch02.dds",
+                'MISC': "Clutter\\Soulgems\\AzurasStar.dds",
+                'QUST': "Quest\\icon_miscellaneous.dds",
+                'SGST': "IconSigilStone.dds",
+                'SLGM': "Clutter\\Soulgems\\AzurasStar.dds",
+                'WEAP': ("Weapons\\IronDagger.dds",
+                         "Weapons\\IronClaymore.dds",
+                         "Weapons\\IronMace.dds",
+                         "Weapons\\IronBattleAxe.dds",
+                         "Weapons\\Staff.dds",
+                         "Weapons\\IronBow.dds",
                          ),
                 }
     tweak_read_classes = list(type_defaultIcon)
@@ -1802,10 +1802,10 @@ class CBash_AssortedTweak_DefaultIcons(AAssortedTweak_DefaultIcons,
                 else:
                     override.iconPath = icons
             except ValueError as error:
-                print override._Type
-                print icons
-                print error
-                print self.patchFile.Current.Debug_DumpModFiles()
+                print(override._Type)
+                print(icons)
+                print(error)
+                print(self.patchFile.Current.Debug_DumpModFiles())
                 raise
             self.mod_count[modFile.GName] += 1
             record.UnloadRecord()
@@ -1819,19 +1819,19 @@ class AAssortedTweak_SetSoundAttenuationLevels(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_SetSoundAttenuationLevels,self).__init__(
-            _(u"Set Sound Attenuation Levels"),
-            _(u'The sound attenuation levels will be set to tweak%*current'
-              u' level, thereby increasing (or decreasing) the sound volume.'),
-            u'Attenuation%:',
-            (u'0%', 0),
-            (u'5%', 5),
-            (u'10%', 10),
-            (u'20%', 20),
-            (u'50%', 50),
-            (u'80%', 80),
-            (_(u'Custom'),0),
+            _("Set Sound Attenuation Levels"),
+            _('The sound attenuation levels will be set to tweak%*current'
+              ' level, thereby increasing (or decreasing) the sound volume.'),
+            'Attenuation%:',
+            ('0%', 0),
+            ('5%', 5),
+            ('10%', 10),
+            ('20%', 20),
+            ('50%', 50),
+            ('80%', 80),
+            (_('Custom'),0),
             )
-        self.logMsg = u'* '+_(u'Sounds Modified') + u': %d'
+        self.logMsg = '* '+_('Sounds Modified') + ': %d'
 
 class AssortedTweak_SetSoundAttenuationLevels(
     AAssortedTweak_SetSoundAttenuationLevels, MultiTweakItem):
@@ -1862,7 +1862,7 @@ class AssortedTweak_SetSoundAttenuationLevels(
 
 class CBash_AssortedTweak_SetSoundAttenuationLevels(
     AAssortedTweak_SetSoundAttenuationLevels, CBash_MultiTweakItem):
-    name = _(u'Set Sound Attenuation Levels')
+    name = _('Set Sound Attenuation Levels')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1888,20 +1888,20 @@ class AAssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(AMultiTweakItem):
     def __init__(self):
         super(AAssortedTweak_SetSoundAttenuationLevels_NirnrootOnly,
               self).__init__(
-            _(u"Set Sound Attenuation Levels: Nirnroots Only"),
-            _(u'The sound attenuation levels will be set to tweak%*current '
-              u'level, thereby increasing (or decreasing) the sound '
-              u'volume. This one only affects Nirnroots.'),
-            u'Nirnroot Attenuation%:',
-            (u'0%', 0),
-            (u'5%', 5),
-            (u'10%', 10),
-            (u'20%', 20),
-            (u'50%', 50),
-            (u'80%', 80),
-            (_(u'Custom'),0),
+            _("Set Sound Attenuation Levels: Nirnroots Only"),
+            _('The sound attenuation levels will be set to tweak%*current '
+              'level, thereby increasing (or decreasing) the sound '
+              'volume. This one only affects Nirnroots.'),
+            'Nirnroot Attenuation%:',
+            ('0%', 0),
+            ('5%', 5),
+            ('10%', 10),
+            ('20%', 20),
+            ('50%', 50),
+            ('80%', 80),
+            (_('Custom'),0),
             )
-        self.logMsg = u'* '+_(u'Sounds Modified') + u': %d'
+        self.logMsg = '* '+_('Sounds Modified') + ': %d'
 
 class AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
     AAssortedTweak_SetSoundAttenuationLevels_NirnrootOnly, MultiTweakItem):
@@ -1913,7 +1913,7 @@ class AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
         id_records = patchBlock.id_records
         for record in modFile.SOUN.getActiveRecords():
             if mapper(record.fid) in id_records: continue
-            if record.staticAtten and u'nirnroot' in record.eid.lower():
+            if record.staticAtten and 'nirnroot' in record.eid.lower():
                 record = record.getTypeCopy(mapper)
                 patchBlock.setRecord(record)
 
@@ -1922,7 +1922,7 @@ class AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
         count = {}
         keep = patchFile.getKeeper()
         for record in patchFile.SOUN.records:
-            if record.staticAtten and u'nirnroot' in record.eid.lower():
+            if record.staticAtten and 'nirnroot' in record.eid.lower():
                 record.staticAtten = record.staticAtten * \
                                      self.choiceValues[self.chosen][0] / 100
                 keep(record.fid)
@@ -1933,7 +1933,7 @@ class AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
 class CBash_AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
     AAssortedTweak_SetSoundAttenuationLevels_NirnrootOnly,
     CBash_MultiTweakItem):
-    name = _(u'Set Sound Attenuation Levels: Nirnroots Only')
+    name = _('Set Sound Attenuation Levels: Nirnroots Only')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -1942,7 +1942,7 @@ class CBash_AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
         if choice == 1:  # Prevent any pointless changes if a custom value
             # of 100 is used.
             return
-        if record.staticAtten and u'nirnroot' in record.eid.lower() :
+        if record.staticAtten and 'nirnroot' in record.eid.lower() :
             override = record.CopyAsOverride(self.patchFile)
             if override:
                 override.staticAtten *= choice
@@ -1959,13 +1959,13 @@ class AAssortedTweak_FactioncrimeGoldMultiplier(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_FactioncrimeGoldMultiplier,self).__init__(
-            _(u"Faction crime Gold Multiplier Fix"),
-            _(u'Fix factions with unset crimeGoldMultiplier to have a '
-              u'crimeGoldMultiplier of 1.0.'),
-            u'FactioncrimeGoldMultiplier',
-            (u'1.0',  u'1.0'),
+            _("Faction crime Gold Multiplier Fix"),
+            _('Fix factions with unset crimeGoldMultiplier to have a '
+              'crimeGoldMultiplier of 1.0.'),
+            'FactioncrimeGoldMultiplier',
+            ('1.0',  '1.0'),
             )
-        self.logMsg = u'* '+_(u'Factions fixed') + u': %d'
+        self.logMsg = '* '+_('Factions fixed') + ': %d'
 
 class AssortedTweak_FactioncrimeGoldMultiplier(
     AAssortedTweak_FactioncrimeGoldMultiplier, MultiTweakItem):
@@ -1993,7 +1993,7 @@ class AssortedTweak_FactioncrimeGoldMultiplier(
 
 class CBash_AssortedTweak_FactioncrimeGoldMultiplier(
     AAssortedTweak_FactioncrimeGoldMultiplier, CBash_MultiTweakItem):
-    name = _(u'Faction crime Gold Multiplier Fix')
+    name = _('Faction crime Gold Multiplier Fix')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -2014,12 +2014,12 @@ class AAssortedTweak_LightFadeValueFix(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_LightFadeValueFix, self).__init__(
-            _(u"No Light Fade Value Fix"),
-            _(u"Sets Light's Fade values to default of 1.0 if not set."),
-            u'NoLightFadeValueFix',
-            (u'1.0',  u'1.0'),
+            _("No Light Fade Value Fix"),
+            _("Sets Light's Fade values to default of 1.0 if not set."),
+            'NoLightFadeValueFix',
+            ('1.0',  '1.0'),
             )
-        self.logMsg = u'* '+_(u'Lights with fade values added') + u': %d'
+        self.logMsg = '* '+_('Lights with fade values added') + ': %d'
 
 class AssortedTweak_LightFadeValueFix(AAssortedTweak_LightFadeValueFix,
                                       MultiTweakItem):
@@ -2046,7 +2046,7 @@ class AssortedTweak_LightFadeValueFix(AAssortedTweak_LightFadeValueFix,
 
 class CBash_AssortedTweak_LightFadeValueFix(AAssortedTweak_LightFadeValueFix,
                                             CBash_MultiTweakItem):
-    name = _(u'No Light Fade Value Fix')
+    name = _('No Light Fade Value Fix')
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -2067,12 +2067,12 @@ class AAssortedTweak_TextlessLSCRs(AMultiTweakItem):
     #--Config Phase -----------------------------------------------------------
     def __init__(self):
         super(AAssortedTweak_TextlessLSCRs, self).__init__(
-            _(u"No Description Loading Screens"),
-            _(u"Removes the description from loading screens."),
-            u'NoDescLSCR',
-            (u'1.0',  u'1.0'),
+            _("No Description Loading Screens"),
+            _("Removes the description from loading screens."),
+            'NoDescLSCR',
+            ('1.0',  '1.0'),
             )
-        self.logMsg = u'* '+_(u'Loading screens tweaked') + u': %d'
+        self.logMsg = '* '+_('Loading screens tweaked') + ': %d'
 
 class AssortedTweak_TextlessLSCRs(AAssortedTweak_TextlessLSCRs,MultiTweakItem):
 
@@ -2091,7 +2091,7 @@ class AssortedTweak_TextlessLSCRs(AAssortedTweak_TextlessLSCRs,MultiTweakItem):
         keep = patchFile.getKeeper()
         for record in patchFile.LSCR.records:
             if record.text:
-                record.text = u''
+                record.text = ''
                 keep(record.fid)
                 srcMod = record.fid[0]
                 count[srcMod] = count.get(srcMod,0) + 1
@@ -2099,7 +2099,7 @@ class AssortedTweak_TextlessLSCRs(AAssortedTweak_TextlessLSCRs,MultiTweakItem):
 
 class CBash_AssortedTweak_TextlessLSCRs(AAssortedTweak_TextlessLSCRs,
                                         CBash_MultiTweakItem):
-    name = _(u"No Description Loading Screens")
+    name = _("No Description Loading Screens")
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
@@ -2107,7 +2107,7 @@ class CBash_AssortedTweak_TextlessLSCRs(AAssortedTweak_TextlessLSCRs,
         if record.text:
             override = record.CopyAsOverride(self.patchFile)
             if override:
-                override.text = u''
+                override.text = ''
                 self.mod_count[modFile.GName] += 1
                 record.UnloadRecord()
                 record._RecordID = override._RecordID
@@ -2116,26 +2116,26 @@ class AssortedTweaker(MultiTweaker):
     """Tweaks assorted stuff. Sub-tweaks behave like patchers themselves."""
     scanOrder = 32
     editOrder = 32
-    name = _(u'Tweak Assorted')
-    text = _(u"Tweak various records in miscellaneous ways.")
+    name = _('Tweak Assorted')
+    text = _("Tweak various records in miscellaneous ways.")
 
-    if bush.game.fsName == u'Oblivion':
+    if bush.game.fsName == 'Oblivion':
         tweaks = sorted([
-            AssortedTweak_ArmorShows(_(u"Armor Shows Amulets"),
-                _(u"Prevents armor from hiding amulets."),
-                u'armorShowsAmulets',
+            AssortedTweak_ArmorShows(_("Armor Shows Amulets"),
+                _("Prevents armor from hiding amulets."),
+                'armorShowsAmulets',
                 ),
-            AssortedTweak_ArmorShows(_(u"Armor Shows Rings"),
-                _(u"Prevents armor from hiding rings."),
-                u'armorShowsRings',
+            AssortedTweak_ArmorShows(_("Armor Shows Rings"),
+                _("Prevents armor from hiding rings."),
+                'armorShowsRings',
                 ),
-            AssortedTweak_ClothingShows(_(u"Clothing Shows Amulets"),
-                _(u"Prevents Clothing from hiding amulets."),
-                u'ClothingShowsAmulets',
+            AssortedTweak_ClothingShows(_("Clothing Shows Amulets"),
+                _("Prevents Clothing from hiding amulets."),
+                'ClothingShowsAmulets',
                 ),
-            AssortedTweak_ClothingShows(_(u"Clothing Shows Rings"),
-                _(u"Prevents Clothing from hiding rings."),
-                u'ClothingShowsRings',
+            AssortedTweak_ClothingShows(_("Clothing Shows Rings"),
+                _("Prevents Clothing from hiding rings."),
+                'ClothingShowsRings',
                 ),
             AssortedTweak_ArmorPlayable(),
             AssortedTweak_ClothingPlayable(),
@@ -2185,25 +2185,25 @@ class CBash_AssortedTweaker(CBash_MultiTweaker):
     """Tweaks assorted stuff. Sub-tweaks behave like patchers themselves."""
     scanOrder = 32
     editOrder = 32
-    name = _(u'Tweak Assorted')
-    text = _(u"Tweak various records in miscellaneous ways.")
+    name = _('Tweak Assorted')
+    text = _("Tweak various records in miscellaneous ways.")
 
     tweaks = sorted([
-        CBash_AssortedTweak_ArmorShows(_(u"Armor Shows Amulets"),
-            _(u"Prevents armor from hiding amulets."),
-            u'armorShowsAmulets',
+        CBash_AssortedTweak_ArmorShows(_("Armor Shows Amulets"),
+            _("Prevents armor from hiding amulets."),
+            'armorShowsAmulets',
             ),
-        CBash_AssortedTweak_ArmorShows(_(u"Armor Shows Rings"),
-            _(u"Prevents armor from hiding rings."),
-            u'armorShowsRings',
+        CBash_AssortedTweak_ArmorShows(_("Armor Shows Rings"),
+            _("Prevents armor from hiding rings."),
+            'armorShowsRings',
             ),
-        CBash_AssortedTweak_ClothingShows(_(u"Clothing Shows Amulets"),
-            _(u"Prevents Clothing from hiding amulets."),
-            u'ClothingShowsAmulets',
+        CBash_AssortedTweak_ClothingShows(_("Clothing Shows Amulets"),
+            _("Prevents Clothing from hiding amulets."),
+            'ClothingShowsAmulets',
             ),
-        CBash_AssortedTweak_ClothingShows(_(u"Clothing Shows Rings"),
-            _(u"Prevents Clothing from hiding rings."),
-            u'ClothingShowsRings',
+        CBash_AssortedTweak_ClothingShows(_("Clothing Shows Rings"),
+            _("Prevents Clothing from hiding rings."),
+            'ClothingShowsRings',
             ),
         CBash_AssortedTweak_ArmorPlayable(),
         CBash_AssortedTweak_ClothingPlayable(),

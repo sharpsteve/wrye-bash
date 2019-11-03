@@ -30,12 +30,12 @@ import re as _re
 import shutil as _shutil
 import stat
 
-from bolt import GPath, deprint, Path, decode, struct_unpack
-from exception import BoltError, CancelError, SkipError, AccessDeniedError, \
+from .bolt import GPath, deprint, Path, decode, struct_unpack
+from .exception import BoltError, CancelError, SkipError, AccessDeniedError, \
     DirectoryFileCollisionError, FileOperationError, NonExistentDriveError
 
 try:
-    import _winreg as winreg
+    import winreg as winreg
 except ImportError: # we're on linux
     winreg = None
 try:
@@ -51,10 +51,10 @@ def get_registry_path(subkey, entry, detection_file):
     """Check registry for a path to a program."""
     if not winreg: return None
     for hkey in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
-        for wow6432 in (u'', u'Wow6432Node\\'):
+        for wow6432 in ('', 'Wow6432Node\\'):
             try:
                 key = winreg.OpenKey(
-                    hkey, u'Software\\%s%s' % (wow6432, subkey), 0,
+                    hkey, 'Software\\%s%s' % (wow6432, subkey), 0,
                     winreg.KEY_READ | winreg.KEY_WOW64_64KEY)
                 value = winreg.QueryValueEx(key, entry)
             except OSError:
@@ -87,29 +87,29 @@ except ImportError:
     FO_DELETE = 3
     FO_RENAME = 4
     FOF_NOCONFIRMMKDIR = 512
-    reEnv = _re.compile(u'%(\w+)%', _re.U)
+    reEnv = _re.compile('%(\w+)%', _re.U)
     envDefs = _os.environ
 
     def subEnv(match):
         key = match.group(1).upper()
         if not envDefs.get(key):
-            raise BoltError(u'Can\'t find user directories in windows registry'
-                    u'.\n>> See "If Bash Won\'t Start" in bash docs for help.')
+            raise BoltError('Can\'t find user directories in windows registry'
+                    '.\n>> See "If Bash Won\'t Start" in bash docs for help.')
         return envDefs[key]
 
     def _getShellPath(folderKey): ##: mkdirs
         if not winreg:  # Linux HACK
             home = _os.path.expanduser("~")
             return {'Personal': home,
-                    'Local AppData': home + u'/.local/share'}[folderKey]
+                    'Local AppData': home + '/.local/share'}[folderKey]
         regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                                 r'Software\Microsoft\Windows\CurrentVersion'
                                 r'\Explorer\User Shell Folders')
         try:
             path = winreg.QueryValueEx(regKey, folderKey)[0]
         except WindowsError:
-            raise BoltError(u'Can\'t find user directories in windows registry'
-                    u'.\n>> See "If Bash Won\'t Start" in bash docs for help.')
+            raise BoltError('Can\'t find user directories in windows registry'
+                    '.\n>> See "If Bash Won\'t Start" in bash docs for help.')
         regKey.Close()
         path = reEnv.sub(subEnv, path)
         return path
@@ -120,12 +120,12 @@ except ImportError:
     win32client = None
 
 def clear_read_only(filepath): # copied from bolt
-    _os.chmod(u'%s' % filepath, stat.S_IWUSR | stat.S_IWOTH)
+    _os.chmod('%s' % filepath, stat.S_IWUSR | stat.S_IWOTH)
 
 def get_personal_path():
     if shell and shellcon:
         path = _getShellPath(shellcon.CSIDL_PERSONAL)
-        sErrorInfo = _(u"Folder path extracted from win32com.shell.")
+        sErrorInfo = _("Folder path extracted from win32com.shell.")
     else:
         path = _getShellPath('Personal')
         sErrorInfo = __get_error_info()
@@ -134,7 +134,7 @@ def get_personal_path():
 def get_local_app_data_path():
     if shell and shellcon:
         path = _getShellPath(shellcon.CSIDL_LOCAL_APPDATA)
-        sErrorInfo = _(u"Folder path extracted from win32com.shell.")
+        sErrorInfo = _("Folder path extracted from win32com.shell.")
     else:
         path = _getShellPath('Local AppData')
         sErrorInfo = __get_error_info()
@@ -142,11 +142,11 @@ def get_local_app_data_path():
 
 def __get_error_info():
     try:
-        sErrorInfo = u'\n'.join(u'  %s: %s' % (key, envDefs[key])
+        sErrorInfo = '\n'.join('  %s: %s' % (key, envDefs[key])
                                 for key in sorted(envDefs))
     except UnicodeDecodeError:
-        deprint(u'Error decoding _os.environ', traceback=True)
-        sErrorInfo = u'\n'.join(u'  %s: %s' % (key, decode(envDefs[key]))
+        deprint('Error decoding _os.environ', traceback=True)
+        sErrorInfo = '\n'.join('  %s: %s' % (key, decode(envDefs[key]))
                                 for key in sorted(envDefs))
     return sErrorInfo
 
@@ -154,14 +154,14 @@ __folderIcon = None # cached here
 def _get_default_app_icon(idex, target):
     # Use the default icon for that file type
     if winreg is None:
-        return u'not\\a\\path', idex
+        return 'not\\a\\path', idex
     try:
         if target.isdir():
             global __folderIcon
             if not __folderIcon:
                 # Special handling of the Folder icon
-                folderkey = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, u'Folder')
-                iconkey = winreg.OpenKey(folderkey, u'DefaultIcon')
+                folderkey = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, 'Folder')
+                iconkey = winreg.OpenKey(folderkey, 'DefaultIcon')
                 filedata = winreg.EnumValue(iconkey, 0)
                 # filedata == ('', u'%SystemRoot%\\System32\\shell32.dll,3', 2)
                 filedata = filedata[1]
@@ -172,24 +172,24 @@ def _get_default_app_icon(idex, target):
             file_association = winreg.QueryValue(winreg.HKEY_CLASSES_ROOT,
                                                  target.cext)
             pathKey = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT,
-                                     u'%s\\DefaultIcon' % file_association)
+                                     '%s\\DefaultIcon' % file_association)
             filedata = winreg.EnumValue(pathKey, 0)[1]
             winreg.CloseKey(pathKey)
         if _os.path.isabs(filedata) and _os.path.isfile(filedata):
             icon = filedata
         else:
-            icon, idex = filedata.split(u',')
+            icon, idex = filedata.split(',')
             icon = _os.path.expandvars(icon)
         if not _os.path.isabs(icon):
             # Get the correct path to the dll
-            for dir_ in _os.environ['PATH'].split(u';'):
+            for dir_ in _os.environ['PATH'].split(';'):
                 test = _os.path.join(dir_, icon)
                 if _os.path.exists(test):
                     icon = test
                     break
     except: # TODO(ut) comment the code above - what exception can I get here?
-        deprint(_(u'Error finding icon for %s:') % target.s, traceback=True)
-        icon = u'not\\a\\path'
+        deprint(_('Error finding icon for %s:') % target.s, traceback=True)
+        icon = 'not\\a\\path'
     return icon, idex
 
 def _get_app_links(apps_dir):
@@ -205,49 +205,49 @@ def _get_app_links(apps_dir):
         sh = win32client.Dispatch('WScript.Shell')
         for lnk in apps_dir.list():
             lnk = apps_dir.join(lnk)
-            if lnk.cext == u'.lnk' and lnk.isfile():
+            if lnk.cext == '.lnk' and lnk.isfile():
                 shortcut = sh.CreateShortCut(lnk.s)
                 description = shortcut.Description
                 if not description:
-                    description = u' '.join((_(u'Launch'), lnk.sbody))
+                    description = ' '.join((_('Launch'), lnk.sbody))
                 links[lnk] = (shortcut.TargetPath, shortcut.IconLocation,
                               # shortcut.WorkingDirectory, shortcut.Arguments,
                               description)
     except:
-        deprint(_(u"Error initializing links:"), traceback=True)
+        deprint(_("Error initializing links:"), traceback=True)
     return links
 
 def init_app_links(apps_dir, badIcons, iconList):
     init_params = []
     for path, (target, icon, description) in _get_app_links(
-            apps_dir).iteritems():
-        if target.lower().find(u'' r'installer\{') != -1: # msi shortcuts: dc0c8de
+            apps_dir).items():
+        if target.lower().find('' r'installer\{') != -1: # msi shortcuts: dc0c8de
             target = path
         else:
             target = GPath(target)
         if not target.exists(): continue
         # Target exists - extract path, icon and description
         # First try a custom icon #TODO(ut) docs - also comments methods here!
-        fileName = u'%s%%i.png' % path.sbody
+        fileName = '%s%%i.png' % path.sbody
         customIcons = [apps_dir.join(fileName % x) for x in (16, 24, 32)]
         if customIcons[0].exists():
             icon = customIcons
         # Next try the shortcut specified icon
         else:
-            icon, idex = icon.split(u',')
-            if icon == u'':
-                if target.cext == u'.exe':
+            icon, idex = icon.split(',')
+            if icon == '':
+                if target.cext == '.exe':
                     if win32gui and win32gui.ExtractIconEx(target.s, -1):
                         # -1 queries num of icons embedded in the exe
                         icon = target
                     else: # generic exe icon, hardcoded and good to go
                         icon, idex = _os.path.expandvars(
-                            u'%SystemRoot%\\System32\\shell32.dll'), u'2'
+                            '%SystemRoot%\\System32\\shell32.dll'), '2'
                 else:
                     icon, idex = _get_default_app_icon(idex, target)
             icon = GPath(icon)
             if icon.exists():
-                fileName = u';'.join((icon.s, idex))
+                fileName = ';'.join((icon.s, idex))
                 icon = iconList(fileName)
                 # Last, use the 'x' icon
             else:
@@ -266,7 +266,7 @@ def test_permissions(path, permissions='rwcd'):
     permissions = permissions.lower()
     def getTemp(path_):  # Get a temp file name
         if path_.isdir():
-            tmp = path_.join(u'temp.temp')
+            tmp = path_.join('temp.temp')
         else:
             tmp = path_.temp
         while tmp.exists():
@@ -341,8 +341,8 @@ def get_file_version(filename):
     :return A 4-int tuple, for example (1, 9, 32, 0).
     """
     # If it's a symbolic link (i.e. a user-added app), resolve it first
-    if win32client and filename.endswith(u'.lnk'):
-        sh = win32client.Dispatch(u'WScript.Shell')
+    if win32client and filename.endswith('.lnk'):
+        sh = win32client.Dispatch('WScript.Shell')
         shortcut = sh.CreateShortCut(filename)
         filename = shortcut.TargetPath
     if win32api is None:
@@ -353,16 +353,16 @@ def get_file_version(filename):
         # FileVersion is almost always enough, so that's first. SSE needs the
         # string fields with ProductVersion, so that's the second one. After
         # that, we prefer the fixed one since it's faster.
-        curr_ver = _query_fixed_field_version(filename, u'FileVersion')
+        curr_ver = _query_fixed_field_version(filename, 'FileVersion')
         if not _should_ignore_ver(curr_ver):
             return curr_ver
-        curr_ver = _query_string_field_version(filename, u'ProductVersion')
+        curr_ver = _query_string_field_version(filename, 'ProductVersion')
         if not _should_ignore_ver(curr_ver):
             return curr_ver
-        curr_ver = _query_fixed_field_version(filename, u'ProductVersion')
+        curr_ver = _query_fixed_field_version(filename, 'ProductVersion')
         if not _should_ignore_ver(curr_ver):
             return curr_ver
-        return _query_string_field_version(filename, u'FileVersion')
+        return _query_string_field_version(filename, 'FileVersion')
 
 def _should_ignore_ver(test_ver):
     """
@@ -386,17 +386,17 @@ def _query_string_field_version(file_name, version_prefix):
     """
     # We need to ask for language and copepage first, before we can
     # query the actual version.
-    l_query = u'\\VarFileInfo\\Translation'
+    l_query = '\\VarFileInfo\\Translation'
     try:
         lang, codepage = win32api.GetFileVersionInfo(file_name, l_query)[0]
     except win32api.error:
         # File does not have a string field section
         return (0, 0, 0, 0)
-    ver_query = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage,
+    ver_query = '\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage,
                                                      version_prefix)
     full_ver = win32api.GetFileVersionInfo(file_name, ver_query)
     # xSE uses commas in its version fields, so use this 'heuristic'
-    splitter = u',' if u',' in full_ver else u'.'
+    splitter = ',' if ',' in full_ver else '.'
     try:
         return tuple([int(part) for part in full_ver.split(splitter)])
     except ValueError:
@@ -414,12 +414,12 @@ def _query_fixed_field_version(file_name, version_prefix):
     :return: A 4-tuple of integers containing the version of the file.
     """
     try:
-        info = win32api.GetFileVersionInfo(file_name, u'\\')
+        info = win32api.GetFileVersionInfo(file_name, '\\')
     except win32api.error:
         # File does not have a fixed field section
         return (0, 0, 0, 0)
-    ms = info[u'%sMS' % version_prefix]
-    ls = info[u'%sLS' % version_prefix]
+    ms = info['%sMS' % version_prefix]
+    ls = info['%sLS' % version_prefix]
     return win32api.HIWORD(ms), win32api.LOWORD(ms), win32api.HIWORD(ls), \
            win32api.LOWORD(ls)
 
@@ -431,7 +431,7 @@ def _linux_get_file_version_info(filename):
         """Read one or more chunks from the file, either a word or dword."""
         file_obj.seek(offset, not absolute)
         result = [struct_unpack('<' + fmt[0], file_obj.read(fmt[1]))[0]
-                  for _ in xrange(count)]
+                  for _ in range(count)]
         return result[0] if count == 1 else result
     def _find_version(file_obj, pos, offset):
         """Look through the RT_VERSION and return VS_VERSION_INFO."""
@@ -439,10 +439,10 @@ def _linux_get_file_version_info(filename):
             return num if num % 4 == 0 else num + 4 - (num % 4)
         file_obj.seek(pos + offset)
         len_, val_len, type_ = _read(_WORD, file_obj, count=3)
-        info = u''
-        for i in xrange(200):
-            info += unichr(_read(_WORD, file_obj))
-            if info[-1] == u'\x00': break
+        info = ''
+        for i in range(200):
+            info += chr(_read(_WORD, file_obj))
+            if info[-1] == '\x00': break
         offset = _pad(file_obj.tell()) - pos
         file_obj.seek(pos + offset)
         if type_ == 0: # binary data
@@ -471,7 +471,7 @@ def _linux_get_file_version_info(filename):
         # jump to the datatable and check the third entry
         resources_va = _read(_DWORD, f, offset=98 + 2*8)
         section_table_pos = optional_header_pos + optional_header_size
-        for section_num in xrange(section_count):
+        for section_num in range(section_count):
             section_pos = section_table_pos + 40 * section_num
             f.seek(section_pos)
             if f.read(8).rstrip('\x00') != '.rsrc':  # section name
@@ -481,11 +481,11 @@ def _linux_get_file_version_info(filename):
             section_resources_pos = raw_data_pos + resources_va - section_va
             num_named, num_id = _read(_WORD, f, count=2, absolute=True,
                                       offset=section_resources_pos + 12)
-            for resource_num in xrange(num_named + num_id):
+            for resource_num in range(num_named + num_id):
                 resource_pos = section_resources_pos + 16 + 8 * resource_num
                 name = _read(_DWORD, f, offset=resource_pos, absolute=True)
                 if name != 16: continue # RT_VERSION
-                for i in xrange(3):
+                for i in range(3):
                     res_offset = _read(_DWORD, f)
                     if i < 2:
                         res_offset &= 0x7FFFFFFF
@@ -559,16 +559,16 @@ def _fileOperation(operation, source, target=None, allowUndo=True,
         return {}
     abspath = _os.path.abspath
     # source may be anything - see SHFILEOPSTRUCT - accepts list or item
-    if isinstance(source, (Path, basestring)):
-        source = [abspath(u'%s' % source)]
+    if isinstance(source, (Path, str)):
+        source = [abspath('%s' % source)]
     else:
-        source = [abspath(u'%s' % x) for x in source]
+        source = [abspath('%s' % x) for x in source]
     # target may be anything ...
-    target = target if target else u'' # abspath(u''): cwd (must be Mopy/)
-    if isinstance(target, (Path, basestring)):
-        target = [abspath(u'%s' % target)]
+    target = target if target else '' # abspath(u''): cwd (must be Mopy/)
+    if isinstance(target, (Path, str)):
+        target = [abspath('%s' % target)]
     else:
-        target = [abspath(u'%s' % x) for x in target]
+        target = [abspath('%s' % x) for x in target]
     _source = source; _target = target
     if __shell and shell is not None:
         # flags
@@ -580,8 +580,8 @@ def _fileOperation(operation, source, target=None, allowUndo=True,
         if renameOnCollision: flgs |= shellcon.FOF_RENAMEONCOLLISION
         if silent: flgs |= shellcon.FOF_SILENT
         # null terminated strings
-        source = u'\x00'.join(source) # nope: + u'\x00'
-        target = u'\x00'.join(target)
+        source = '\x00'.join(source) # nope: + u'\x00'
+        target = '\x00'.join(target)
         # get the handle to parent window to feed to win api
         parent = parent.GetHandle() if parent else None
         # See SHFILEOPSTRUCT for deciphering return values
@@ -598,27 +598,27 @@ def _fileOperation(operation, source, target=None, allowUndo=True,
             return dict(mapping)
         else:
             if result == 124:
-                deprint(u'Invalid paths:\nsource: %s\ntarget: %s\nRetrying' % (
-                    source.replace(u'\x00', u'\n'),
-                    target.replace(u'\x00', u'\n')))
+                deprint('Invalid paths:\nsource: %s\ntarget: %s\nRetrying' % (
+                    source.replace('\x00', '\n'),
+                    target.replace('\x00', '\n')))
                 return _fileOperation(operation, _source, _target, allowUndo,
                                       confirm, renameOnCollision, silent,
                                       parent, __shell=False)
             raise FileOperationErrorMap.get(result, FileOperationError(result))
     else: # Use custom dialogs and such
-        import balt # TODO(ut): local import, env should be above balt...
-        source = map(GPath, source)
-        target = map(GPath, target)
+        from . import balt # TODO(ut): local import, env should be above balt...
+        source = list(map(GPath, source))
+        target = list(map(GPath, target))
         if operation == FO_DELETE:
             # allowUndo - no effect, can't use recycle bin this way
             # confirm - ask if confirm is True
             # renameOnCollision - no effect, deleting files
             # silent - no real effect (we don't show visuals deleting this way)
             if confirm:
-                message = _(u'Are you sure you want to permanently delete '
-                            u'these %(count)d items?') % {'count':len(source)}
-                message += u'\n\n' + '\n'.join([u' * %s' % x for x in source])
-                if not balt.askYes(parent,message,_(u'Delete Multiple Items')):
+                message = _('Are you sure you want to permanently delete '
+                            'these %(count)d items?') % {'count':len(source)}
+                message += '\n\n' + '\n'.join([' * %s' % x for x in source])
+                if not balt.askYes(parent,message,_('Delete Multiple Items')):
                     return {}
             # Do deletion
             for toDelete in source:
@@ -648,7 +648,7 @@ def shellDeletePass(node, parent=None):
     """Delete tmp dirs/files - ignore errors (but log them)."""
     if node.exists():
         try: shellDelete(node, parent=parent, confirm=False, recycle=False)
-        except OSError: deprint(u"Error deleting %s:" % node, traceback=True)
+        except OSError: deprint("Error deleting %s:" % node, traceback=True)
 
 def shellMove(filesFrom, filesTo, parent=None, askOverwrite=False,
               allowUndo=False, autoRename=False, silent=False):
@@ -670,7 +670,7 @@ def shellMakeDirs(dirs, parent=None):
     #--Check for dirs that are impossible to create (the drive they are
     #  supposed to be on doesn't exist
     def _filterUnixPaths(path):
-        return _os.name != 'posix' and not path.s.startswith(u"\\")\
+        return _os.name != 'posix' and not path.s.startswith("\\")\
                and not path.drive().exists()
     errorPaths = [d for d in dirs if _filterUnixPaths(d)]
     if errorPaths:
@@ -719,10 +719,10 @@ def setUAC(handle, uac=True):
 def testUAC(gameDataPath):
     if _os.name != 'nt': # skip this when not in Windows
         return False
-    print 'testing UAC'
+    print('testing UAC')
     tmpDir = Path.tempDir()
-    tempFile = tmpDir.join(u'_tempfile.tmp')
-    dest = gameDataPath.join(u'_tempfile.tmp')
+    tempFile = tmpDir.join('_tempfile.tmp')
+    dest = gameDataPath.join('_tempfile.tmp')
     with tempFile.open('wb'): pass # create the file
     try: # to move it into the Game/Data/ directory
         shellMove(tempFile, dest, silent=True)
@@ -746,13 +746,13 @@ def getJava():
         return GPath(java_bin_path)
     try:
         java_home = GPath(_os.environ['JAVA_HOME'])
-        java = java_home.join('bin', u'javaw.exe')
+        java = java_home.join('bin', 'javaw.exe')
         if java.exists(): return java
     except KeyError: # no JAVA_HOME
         pass
     win = GPath(_os.environ['SYSTEMROOT'])
     # Default location: Windows\System32\javaw.exe
-    java = win.join(u'system32', u'javaw.exe')
+    java = win.join('system32', 'javaw.exe')
     if not java.exists():
         # 1st possibility:
         #  - Bash is running as 32-bit
@@ -760,11 +760,11 @@ def getJava():
         # Because Bash is 32-bit, Windows\System32 redirects to
         # Windows\SysWOW64.  So look in the ACTUAL System32 folder
         # by using Windows\SysNative
-        java = win.join(u'sysnative', u'javaw.exe')
+        java = win.join('sysnative', 'javaw.exe')
     if not java.exists():
         # 2nd possibility
         #  - Bash is running as 64-bit
         #  - The only Java installed is 32-bit
         # So javaw.exe would actually be in Windows\SysWOW64
-        java = win.join(u'syswow64', u'javaw.exe')
+        java = win.join('syswow64', 'javaw.exe')
     return java

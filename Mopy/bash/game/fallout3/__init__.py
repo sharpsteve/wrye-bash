@@ -27,21 +27,21 @@ from ... import brec
 from ...brec import MreGlob
 
 class Fallout3GameInfo(GameInfo):
-    displayName = u'Fallout 3'
-    fsName = u'Fallout3'
-    altName = u'Wrye Flash'
-    defaultIniFile = u'Fallout_default.ini'
-    launch_exe = u'Fallout3.exe'
-    game_detect_file = [u'Fallout3.exe']
-    version_detect_file = [u'Fallout3.exe']
-    masterFiles = [u'Fallout3.esm']
-    iniFiles = [u'Fallout.ini', u'FalloutPrefs.ini']
-    pklfile = u'bash\\db\\Fallout3_ids.pkl'
-    masterlist_dir = u'Fallout3'
-    regInstallKeys = (u'Bethesda Softworks\\Fallout3',u'Installed Path')
-    nexusUrl = u'https://www.nexusmods.com/fallout3/'
-    nexusName = u'Fallout 3 Nexus'
-    nexusKey = u'bash.installers.openFallout3Nexus'
+    displayName = 'Fallout 3'
+    fsName = 'Fallout3'
+    altName = 'Wrye Flash'
+    defaultIniFile = 'Fallout_default.ini'
+    launch_exe = 'Fallout3.exe'
+    game_detect_file = ['Fallout3.exe']
+    version_detect_file = ['Fallout3.exe']
+    masterFiles = ['Fallout3.esm']
+    iniFiles = ['Fallout.ini', 'FalloutPrefs.ini']
+    pklfile = 'bash\\db\\Fallout3_ids.pkl'
+    masterlist_dir = 'Fallout3'
+    regInstallKeys = ('Bethesda Softworks\\Fallout3','Installed Path')
+    nexusUrl = 'https://www.nexusmods.com/fallout3/'
+    nexusName = 'Fallout 3 Nexus'
+    nexusKey = 'bash.installers.openFallout3Nexus'
 
     allow_reset_bsa_timestamps = True
     supports_mod_inis = False
@@ -49,54 +49,54 @@ class Fallout3GameInfo(GameInfo):
     using_txt_file = False
 
     class cs(GameInfo.cs):
-        cs_abbrev = u'GECK'
-        long_name = u'Garden of Eden Creation Kit'
-        exe = u'GECK.exe'
-        se_args = u'-editor'
-        image_name = u'geck%s.png'
+        cs_abbrev = 'GECK'
+        long_name = 'Garden of Eden Creation Kit'
+        exe = 'GECK.exe'
+        se_args = '-editor'
+        image_name = 'geck%s.png'
 
     class se(GameInfo.se):
-        se_abbrev = u'FOSE'
-        long_name = u'Fallout 3 Script Extender'
-        exe = u'fose_loader.exe'
-        steam_exe = u'fose_loader.dll'
-        plugin_dir = u'FOSE'
-        cosave_ext = u'.fose'
-        url = u'http://fose.silverlock.org/'
-        url_tip = u'http://fose.silverlock.org/'
+        se_abbrev = 'FOSE'
+        long_name = 'Fallout 3 Script Extender'
+        exe = 'fose_loader.exe'
+        steam_exe = 'fose_loader.dll'
+        plugin_dir = 'FOSE'
+        cosave_ext = '.fose'
+        url = 'http://fose.silverlock.org/'
+        url_tip = 'http://fose.silverlock.org/'
 
     class ess(GameInfo.ess):
-        ext = u'.fos'
+        ext = '.fos'
 
     class pnd(GameInfo.pnd):
-        facegen_dir_1 = [u'textures', u'characters', u'BodyMods']
-        facegen_dir_2 = [u'textures', u'characters', u'FaceMods']
+        facegen_dir_1 = ['textures', 'characters', 'BodyMods']
+        facegen_dir_2 = ['textures', 'characters', 'FaceMods']
 
     # BAIN:
     dataDirs = GameInfo.dataDirs | {
-        u'distantlod',
-        u'docs',
-        u'facegen',
-        u'fonts',
-        u'menus',
-        u'shaders',
-        u'trees',
+        'distantlod',
+        'docs',
+        'facegen',
+        'fonts',
+        'menus',
+        'shaders',
+        'trees',
         }
     dataDirsPlus = {
-        u'scripts',
-        u'ini',
-        u'fose',
+        'scripts',
+        'ini',
+        'fose',
         }
-    SkipBAINRefresh = {u'fo3edit backups', u'fo3edit cache'}
+    SkipBAINRefresh = {'fo3edit backups', 'fo3edit cache'}
     wryeBashDataFiles = GameInfo.wryeBashDataFiles | {
-        u'ArchiveInvalidationInvalidated!.bsa'
-        u'Fallout - AI!.bsa'
+        'ArchiveInvalidationInvalidated!.bsa'
+        'Fallout - AI!.bsa'
     }
     ignoreDataFiles = {
         #    u'FOSE\\Plugins\\Construction Set Extender.dll',
         #    u'FOSE\\Plugins\\Construction Set Extender.ini'
     }
-    ignoreDataDirs = {u'LSData'} # u'FOSE\\Plugins\\ComponentDLLs\\CSE',
+    ignoreDataDirs = {'LSData'} # u'FOSE\\Plugins\\ComponentDLLs\\CSE',
 
     class esp(GameInfo.esp):
         canBash = True
@@ -117,11 +117,11 @@ class Fallout3GameInfo(GameInfo):
     # 'Actors.CombatStyle', 'Creatures.Blood', 'NPC.Race','Actors.Skeleton',
     # 'NpcFacesForceFullImport', 'MustBeActiveIfImported', 'Deflst',
     # 'Destructible'
-    allTags = {u'C.Acoustic', u'C.Climate', u'C.Encounter', u'C.ImageSpace',
-               u'C.Light', u'C.Music', u'C.Name', u'C.Owner', u'C.RecordFlags',
-               u'C.Water', u'Deactivate', u'Deflst', u'Delev', u'Destructible',
-               u'Factions', u'Filter', u'Graphics', u'Invent', u'Names',
-               u'NoMerge', u'Relev', u'Sound', u'Stats',}
+    allTags = {'C.Acoustic', 'C.Climate', 'C.Encounter', 'C.ImageSpace',
+               'C.Light', 'C.Music', 'C.Name', 'C.Owner', 'C.RecordFlags',
+               'C.Water', 'Deactivate', 'Deflst', 'Delev', 'Destructible',
+               'Factions', 'Filter', 'Graphics', 'Invent', 'Names',
+               'NoMerge', 'Relev', 'Sound', 'Stats',}
 
     # ActorImporter, AliasesPatcher, AssortedTweaker, CellImporter, ContentsChecker,
     # DeathItemPatcher, DestructiblePatcher, FidListsMerger, GlobalsTweaker,
@@ -131,68 +131,68 @@ class Fallout3GameInfo(GameInfo):
     # RoadImporter, SoundPatcher, StatsPatcher, UpdateReferences,
     #--Patcher available when building a Bashed Patch (referenced by class name)
     patchers = (
-        u'AliasesPatcher', u'CellImporter', u'DestructiblePatcher',
-        u'FidListsMerger', u'GmstTweaker', u'GraphicsPatcher',
-        u'ImportFactions', u'ImportInventory', u'ListsMerger', u'NamesPatcher',
-        u'PatchMerger', u'SoundPatcher', u'StatsPatcher',
+        'AliasesPatcher', 'CellImporter', 'DestructiblePatcher',
+        'FidListsMerger', 'GmstTweaker', 'GraphicsPatcher',
+        'ImportFactions', 'ImportInventory', 'ListsMerger', 'NamesPatcher',
+        'PatchMerger', 'SoundPatcher', 'StatsPatcher',
     )
 
     weaponTypes = (
-        _(u'Big gun'),
-        _(u'Energy'),
-        _(u'Small gun'),
-        _(u'Melee'),
-        _(u'Unarmed'),
-        _(u'Thrown'),
-        _(u'Mine'),
+        _('Big gun'),
+        _('Energy'),
+        _('Small gun'),
+        _('Melee'),
+        _('Unarmed'),
+        _('Thrown'),
+        _('Mine'),
         )
 
     raceNames = {
-        0x000019 : _(u'Caucasian'),
-        0x0038e5 : _(u'Hispanic'),
-        0x0038e6 : _(u'Asian'),
-        0x003b3e : _(u'Ghoul'),
-        0x00424a : _(u'AfricanAmerican'),
-        0x0042be : _(u'AfricanAmerican Child'),
-        0x0042bf : _(u'AfricanAmerican Old'),
-        0x0042c0 : _(u'Asian Child'),
-        0x0042c1 : _(u'Asian Old'),
-        0x0042c2 : _(u'Caucasian Child'),
-        0x0042c3 : _(u'Caucasian Old'),
-        0x0042c4 : _(u'Hispanic Child'),
-        0x0042c5 : _(u'Hispanic Old'),
-        0x04bb8d : _(u'Caucasian Raider'),
-        0x04bf70 : _(u'Hispanic Raider'),
-        0x04bf71 : _(u'Asian Raider'),
-        0x04bf72 : _(u'AfricanAmerican Raider'),
-        0x0987dc : _(u'Hispanic Old Aged'),
-        0x0987dd : _(u'Asian Old Aged'),
-        0x0987de : _(u'AfricanAmerican Old Aged'),
-        0x0987df : _(u'Caucasian Old Aged'),
+        0x000019 : _('Caucasian'),
+        0x0038e5 : _('Hispanic'),
+        0x0038e6 : _('Asian'),
+        0x003b3e : _('Ghoul'),
+        0x00424a : _('AfricanAmerican'),
+        0x0042be : _('AfricanAmerican Child'),
+        0x0042bf : _('AfricanAmerican Old'),
+        0x0042c0 : _('Asian Child'),
+        0x0042c1 : _('Asian Old'),
+        0x0042c2 : _('Caucasian Child'),
+        0x0042c3 : _('Caucasian Old'),
+        0x0042c4 : _('Hispanic Child'),
+        0x0042c5 : _('Hispanic Old'),
+        0x04bb8d : _('Caucasian Raider'),
+        0x04bf70 : _('Hispanic Raider'),
+        0x04bf71 : _('Asian Raider'),
+        0x04bf72 : _('AfricanAmerican Raider'),
+        0x0987dc : _('Hispanic Old Aged'),
+        0x0987dd : _('Asian Old Aged'),
+        0x0987de : _('AfricanAmerican Old Aged'),
+        0x0987df : _('Caucasian Old Aged'),
         }
 
     raceShortNames = {
-        0x000019 : u'Cau',
-        0x0038e5 : u'His',
-        0x0038e6 : u'Asi',
-        0x003b3e : u'Gho',
-        0x00424a : u'Afr',
-        0x0042be : u'AfC',
-        0x0042bf : u'AfO',
-        0x0042c0 : u'AsC',
-        0x0042c1 : u'AsO',
-        0x0042c2 : u'CaC',
-        0x0042c3 : u'CaO',
-        0x0042c4 : u'HiC',
-        0x0042c5 : u'HiO',
-        0x04bb8d : u'CaR',
-        0x04bf70 : u'HiR',
-        0x04bf71 : u'AsR',
-        0x04bf72 : u'AfR',
-        0x0987dc : u'HOA',
-        0x0987dd : u'AOA',
-        0x0987de : u'FOA',
-        0x0987df : u'COA',
+        0x000019 : 'Cau',
+        0x0038e5 : 'His',
+        0x0038e6 : 'Asi',
+        0x003b3e : 'Gho',
+        0x00424a : 'Afr',
+        0x0042be : 'AfC',
+        0x0042bf : 'AfO',
+        0x0042c0 : 'AsC',
+        0x0042c1 : 'AsO',
+        0x0042c2 : 'CaC',
+        0x0042c3 : 'CaO',
+        0x0042c4 : 'HiC',
+        0x0042c5 : 'HiO',
+        0x04bb8d : 'CaR',
+        0x04bf70 : 'HiR',
+        0x04bf71 : 'AsR',
+        0x04bf72 : 'AfR',
+        0x0987dc : 'HOA',
+        0x0987dd : 'AOA',
+        0x0987de : 'FOA',
+        0x0987df : 'COA',
         }
 
     raceHairMale = {

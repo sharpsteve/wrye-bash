@@ -24,8 +24,8 @@
 
 """This module contains all of the basic types used to read ESP/ESM mod files.
 """
-import StringIO
-import cPickle
+import io
+import pickle
 import copy
 import os
 import re
@@ -33,10 +33,10 @@ import struct
 import zlib
 from operator import attrgetter
 
-import bolt
-import exception
-from bass import null1
-from bolt import decode, encode, sio, GPath, struct_pack, struct_unpack
+from . import bolt
+from . import exception
+from .bass import null1
+from .bolt import decode, encode, sio, GPath, struct_pack, struct_unpack
 
 # Util Functions --------------------------------------------------------------
 #--Type coercion
@@ -46,17 +46,17 @@ def _coerce(value, newtype, base=None, AllowNone=False):
             #--Force standard precision
             return round(struct_unpack('f', struct_pack('f', float(value)))[0], 6)
         elif newtype is bool:
-            if isinstance(value,basestring):
+            if isinstance(value,str):
                 retValue = value.strip().lower()
-                if AllowNone and retValue == u'none': return None
-                return retValue not in (u'',u'none',u'false',u'no',u'0',u'0.0')
+                if AllowNone and retValue == 'none': return None
+                return retValue not in ('','none','false','no','0','0.0')
             else: return bool(value)
         elif base: retValue = newtype(value, base)
-        elif newtype is unicode: retValue = decode(value)
+        elif newtype is str: retValue = decode(value)
         else: retValue = newtype(value)
         if (AllowNone and
             (isinstance(retValue,str) and retValue.lower() == 'none') or
-            (isinstance(retValue,unicode) and retValue.lower() == u'none')
+            (isinstance(retValue,str) and retValue.lower() == 'none')
             ):
             return None
         return retValue
@@ -68,13 +68,13 @@ def _coerce(value, newtype, base=None, AllowNone=False):
 def strFid(fid):
     """Returns a string representation of the fid."""
     if isinstance(fid,tuple):
-        return u'(%s,0x%06X)' % (fid[0].s,fid[1])
+        return '(%s,0x%06X)' % (fid[0].s,fid[1])
     else:
-        return u'%08X' % fid
+        return '%08X' % fid
 
 def genFid(modIndex,objectIndex):
     """Generates a fid from modIndex and ObjectIndex."""
-    return long(objectIndex) | (long(modIndex) << 24)
+    return int(objectIndex) | (int(modIndex) << 24)
 
 def getModIndex(fid):
     """Returns the modIndex portion of a fid."""
@@ -82,11 +82,11 @@ def getModIndex(fid):
 
 def getObjectIndex(fid):
     """Returns the objectIndex portion of a fid."""
-    return int(fid & 0x00FFFFFFL)
+    return int(fid & 0x00FFFFFF)
 
 def getFormIndices(fid):
     """Returns tuple of modIndex and ObjectIndex of fid."""
-    return int(fid >> 24),int(fid & 0x00FFFFFFL)
+    return int(fid >> 24),int(fid & 0x00FFFFFF)
 
 # Mod I/O ---------------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ class RecordHeader(object):
         rec_type = args[0]
         if rec_type not in RecordHeader.recordTypes:
             raise exception.ModError(ins.inName,
-                                     u'Bad header type: ' + repr(rec_type))
+                                     'Bad header type: ' + repr(rec_type))
         #--Record
         if rec_type != 'GRUP':
             pass
@@ -167,7 +167,7 @@ class RecordHeader(object):
                 args[2] = str0
             else:
                 raise exception.ModError(ins.inName,
-                                         u'Bad Top GRUP type: ' + repr(str0))
+                                         'Bad Top GRUP type: ' + repr(str0))
         return RecordHeader(*args)
 
     def pack(self):
@@ -261,7 +261,7 @@ class ModReader:
         if endPos == -1:
             return filePos == self.size
         elif filePos > endPos:
-            raise exception.ModError(self.inName, u'Exceeded limit of: ' + recType)
+            raise exception.ModError(self.inName, 'Exceeded limit of: ' + recType)
         else:
             return filePos == endPos
 
@@ -282,8 +282,8 @@ class ModReader:
                 endPos = self.ins.tell() + size
                 raise exception.ModReadError(self.inName, recType, endPos, self.size)
             id_, = self.unpack('I',4,recType)
-            if id_ == 0: return u''
-            else: return self.strings.get(id_,u'LOOKUP FAILED!') #--Same as Skyrim
+            if id_ == 0: return ''
+            else: return self.strings.get(id_,'LOOKUP FAILED!') #--Same as Skyrim
         else:
             return self.readString(size,recType)
 
@@ -299,7 +299,7 @@ class ModReader:
 
     def readString(self,size,recType='----'):
         """Read string from file, stripping zero terminator."""
-        return u'\n'.join(decode(x,bolt.pluginEncoding,avoidEncodings=('utf8','utf-8')) for x in
+        return '\n'.join(decode(x,bolt.pluginEncoding,avoidEncodings=('utf8','utf-8')) for x in
                           bolt.cstrip(self.read(size,recType)).split('\n'))
 
     def readStrings(self,size,recType='----'):
@@ -331,8 +331,8 @@ class ModReader:
             rec_type = selfUnpack('4sH', 6, recType + '.XXXX.TYPE')[0] #--Throw away size (always == 0)
         #--Match expected name?
         if expType and expType != rec_type:
-            raise exception.ModError(self.inName, u'%s: Expected %s subrecord, but '
-                           u'found %s instead.' % (recType, expType, rec_type))
+            raise exception.ModError(self.inName, '%s: Expected %s subrecord, but '
+                           'found %s instead.' % (recType, expType, rec_type))
         #--Match expected size?
         if expSize and expSize != size:
             raise exception.ModSizeError(self.inName, recType + '.' + rec_type, size,
@@ -395,14 +395,14 @@ class ModWriter:
                 outWrite(struct_pack('=4sH', sub_rec_type, 0))
             outWrite(data)
         except Exception as e:
-            print e
-            print self,sub_rec_type,data,values
+            print(e)
+            print(self,sub_rec_type,data,values)
 
     def packSub0(self, sub_rec_type, data):
         """Write subrecord header plus zero terminated string to output
         stream."""
         if data is None: return
-        elif isinstance(data,unicode):
+        elif isinstance(data,str):
             data = encode(data,firstEncoding=bolt.pluginEncoding)
         lenData = len(data) + 1
         outWrite = self.out.write
@@ -520,7 +520,7 @@ class MelBase:
             attrs[index] = element[attrIndex]
             if len(element) - attrIndex == 2:
                 defaults[index] = element[-1] # else leave to 0
-        return map(tuple,(attrs,defaults,actions,formAttrs))
+        return list(map(tuple,(attrs,defaults,actions,formAttrs)))
 
     def getDefaulters(self,defaulters,base):
         """Registers self as a getDefault(attr) provider."""
@@ -541,7 +541,7 @@ class MelBase:
     def loadData(self, record, ins, sub_type, size_, readId):
         """Reads data from ins into record attribute."""
         record.__setattr__(self.attr, ins.read(size_, readId))
-        if self._debug: print u'%s' % record.__getattribute__(self.attr)
+        if self._debug: print('%s' % record.__getattribute__(self.attr))
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -564,7 +564,7 @@ class MelFid(MelBase):
     def loadData(self, record, ins, sub_type, size_, readId):
         """Reads data from ins into record attribute."""
         record.__setattr__(self.attr,ins.unpackRef())
-        if self._debug: print u'  %08X' % (record.__getattribute__(self.attr),)
+        if self._debug: print('  %08X' % (record.__getattribute__(self.attr),))
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -601,7 +601,7 @@ class MelFids(MelBase):
         """Reads data from ins into record attribute."""
         fid = ins.unpackRef()
         record.__getattribute__(self.attr).append(fid)
-        if self._debug: print u' ',hex(fid)
+        if self._debug: print(' ',hex(fid))
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -638,7 +638,7 @@ class MelNull(MelBase):
     def loadData(self, record, ins, sub_type, size_, readId):
         """Reads data from ins into record attribute."""
         junk = ins.read(size_, readId)
-        if self._debug: print u' ',record.fid,unicode(junk)
+        if self._debug: print(' ',record.fid,str(junk))
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -683,17 +683,17 @@ class MelFidList(MelFids):
     def loadData(self, record, ins, sub_type, size_, readId):
         """Reads data from ins into record attribute."""
         if not size_: return
-        fids = ins.unpack(`size_ / 4` + 'I', size_, readId)
+        fids = ins.unpack(repr(size_ / 4) + 'I', size_, readId)
         record.__setattr__(self.attr,list(fids))
         if self._debug:
             for fid in fids:
-                print u'  %08X' % fid
+                print('  %08X' % fid)
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
         fids = record.__getattribute__(self.attr)
         if not fids: return
-        out.packSub(self.subType,`len(fids)`+'I',*fids)
+        out.packSub(self.subType,repr(len(fids))+'I',*fids)
 
 #------------------------------------------------------------------------------
 class MelCountedFidList(MelFidList):
@@ -743,7 +743,7 @@ class MelSortedFidList(MelFidList):
         # NOTE: fids.sort sorts from lowest to highest, so lowest values FormID will sort first
         #       if it should be opposite, use this instead:
         #  fids.sort(key=self.sortKeyFn, reverse=True)
-        out.packSub(self.subType, `len(fids)` + 'I', *fids)
+        out.packSub(self.subType, repr(len(fids)) + 'I', *fids)
 
 #------------------------------------------------------------------------------
 class MelGroup(MelBase):
@@ -866,7 +866,7 @@ class MelXpci(MelNull):
         else:
             full = None
             ins.seek(pos)
-        if self._debug: print u' ',strFid(record.fid),strFid(xpci),full
+        if self._debug: print(' ',strFid(record.fid),strFid(xpci),full)
 
 #------------------------------------------------------------------------------
 class MelString(MelBase):
@@ -881,7 +881,7 @@ class MelString(MelBase):
         """Reads data from ins into record attribute."""
         value = ins.readString(size_, readId)
         record.__setattr__(self.attr,value)
-        if self._debug: print u' ',record.__getattribute__(self.attr)
+        if self._debug: print(' ',record.__getattribute__(self.attr))
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -899,7 +899,7 @@ class MelUnicode(MelString):
 
     def loadData(self, record, ins, sub_type, size_, readId):
         """Reads data from ins into record attribute"""
-        value = u'\n'.join(decode(x,self.encoding,avoidEncodings=('utf8','utf-8'))
+        value = '\n'.join(decode(x,self.encoding,avoidEncodings=('utf8','utf-8'))
                            for x in bolt.cstrip(ins.read(size_, readId)).split('\n'))
         record.__setattr__(self.attr,value)
 
@@ -915,7 +915,7 @@ class MelLString(MelString):
     def loadData(self, record, ins, sub_type, size_, readId):
         value = ins.readLString(size_, readId)
         record.__setattr__(self.attr,value)
-        if self._debug: print u' ',record.__getattribute__(self.attr)
+        if self._debug: print(' ',record.__getattribute__(self.attr))
 
 #------------------------------------------------------------------------------
 class MelStrings(MelString):
@@ -933,7 +933,7 @@ class MelStrings(MelString):
         """Reads data from ins into record attribute."""
         value = ins.readStrings(size_, readId)
         record.__setattr__(self.attr,value)
-        if self._debug: print u' ',value
+        if self._debug: print(' ',value)
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -985,9 +985,9 @@ class MelStruct(MelBase):
             # Dump remaining subrecord data into an attribute
             setter(self.attrs[-1], ins.read(size_ - self.formatLen))
         if self._debug:
-            print u' ',zip(self.attrs,unpacked)
+            print(' ',list(zip(self.attrs,unpacked)))
             if len(unpacked) != len(self.attrs):
-                print u' ',unpacked
+                print(' ',unpacked)
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -1000,13 +1000,13 @@ class MelStruct(MelBase):
             valuesAppend(value)
         if self.formatLen >= 0:
             extraLen = len(values[-1])
-            format = self.format + `extraLen` + 's'
+            format = self.format + repr(extraLen) + 's'
         else:
             format = self.format
         try:
             out.packSub(self.subType,format,*values)
         except struct.error:
-            print self.subType,self.format,values
+            print(self.subType,self.format,values)
             raise
 
     def mapFids(self,record,function,save=False):
@@ -1082,7 +1082,7 @@ class MelStructA(MelStructs):
         itemSize = struct.calcsize(self.format)
         melLoadData = MelStruct.loadData
         # Note for py3: we want integer division here!
-        for x in xrange(size_/itemSize):
+        for x in range(size_/itemSize):
             target = selfDefault()
             recordAppend(target)
             target.__slots__ = selfAttrs
@@ -1141,7 +1141,7 @@ class MelTuple(MelBase):
         """Reads data from ins into record attribute."""
         unpacked = ins.unpack(self.format, size_, readId)
         record.__setattr__(self.attr,list(unpacked))
-        if self._debug: print record.__getattribute__(self.attr)
+        if self._debug: print(record.__getattribute__(self.attr))
 
     def dumpData(self,record,out):
         """Dumps data from record to outstream."""
@@ -1226,17 +1226,17 @@ class MelSet:
         loaders = self.loaders
         _debug = self._debug
         #--Read Records
-        if _debug: print u'\n>>>> %08X' % record.fid
+        if _debug: print('\n>>>> %08X' % record.fid)
         insAtEnd = ins.atEnd
         insSubHeader = ins.unpackSubHeader
         # fullLoad = self.full0.loadData
         while not insAtEnd(endPos,recType):
             (Type,size) = insSubHeader(recType)
-            if _debug: print Type,size
+            if _debug: print(Type,size)
             readId = recType + '.' + Type
             try:
                 if Type not in loaders:
-                    raise exception.ModError(ins.inName, u'Unexpected subrecord: ' + repr(readId))
+                    raise exception.ModError(ins.inName, 'Unexpected subrecord: ' + repr(readId))
                 #--Hack to handle the fact that there can be two types of FULL in spell/ench/ingr records.
                 elif doFullTest and Type == 'FULL':
                     self.full0.loadData(record, ins, Type, size, readId)
@@ -1244,12 +1244,12 @@ class MelSet:
                     loaders[Type].loadData(record, ins, Type, size, readId)
                 doFullTest = doFullTest and (Type != 'EFID')
             except Exception as error:
-                print error
-                eid = getattr(record,'eid',u'<<NO EID>>')
-                if not eid: eid = u'<<NO EID>>'
-                print u'Error loading %s record and/or subrecord: %08X\n  eid = %s\n  subrecord = %s\n  subrecord size = %d\n  file pos = %d' % (repr(record.recType),record.fid,repr(eid),repr(Type),size,ins.tell())
+                print(error)
+                eid = getattr(record,'eid','<<NO EID>>')
+                if not eid: eid = '<<NO EID>>'
+                print('Error loading %s record and/or subrecord: %08X\n  eid = %s\n  subrecord = %s\n  subrecord size = %d\n  file pos = %d' % (repr(record.recType),record.fid,repr(eid),repr(Type),size,ins.tell()))
                 raise
-        if _debug: print u'<<<<',getattr(record,'eid',u'[NO EID]')
+        if _debug: print('<<<<',getattr(record,'eid','[NO EID]'))
 
     def dumpData(self,record, out):
         """Dumps state into out. Called by getSize()."""
@@ -1258,10 +1258,10 @@ class MelSet:
                 element.dumpData(record,out)
             except:
                 bolt.deprint('error dumping data:',traceback=True)
-                print u'Dumping:',getattr(record,'eid',u'<<NO EID>>'),record.fid,element
+                print('Dumping:',getattr(record,'eid','<<NO EID>>'),record.fid,element)
                 for attr in record.__slots__:
                     if hasattr(record,attr):
-                        print u"> %s: %s" % (attr,repr(getattr(record,attr)))
+                        print("> %s: %s" % (attr,repr(getattr(record,attr))))
                 raise
 
     def mapFids(self,record,mapper,save=False):
@@ -1290,9 +1290,9 @@ class MelSet:
 
     def getReport(self):
         """Returns a report of structure."""
-        buff = StringIO.StringIO()
+        buff = io.StringIO()
         for element in self.elements:
-            element.report(None,buff,u'')
+            element.report(None,buff,'')
         ret = buff.getvalue()
         buff.close()
         return ret
@@ -1338,15 +1338,15 @@ class MreSubrecord:
         raise exception.AbstractError
 
     def dump(self,out):
-        if self.changed: raise exception.StateError(u'Data changed: ' + self.subType)
-        if not self.data: raise exception.StateError(u'Data undefined: ' + self.subType)
+        if self.changed: raise exception.StateError('Data changed: ' + self.subType)
+        if not self.data: raise exception.StateError('Data undefined: ' + self.subType)
         out.packSub(self.subType,self.data)
 
 #------------------------------------------------------------------------------
 class MreRecord(object):
     """Generic Record. flags1 are game specific see comments."""
     subtype_attr = {'EDID':'eid','FULL':'full','MODL':'model'}
-    flags1_ = bolt.Flags(0L, bolt.Flags.getNames(
+    flags1_ = bolt.Flags(0, bolt.Flags.getNames(
         # {Sky}, {FNV} 0x00000000 ACTI: Collision Geometry (default)
         ( 0,'esm'), # {0x00000001}
         # {Sky}, {FNV} 0x00000004 ARMO: Not playable
@@ -1466,10 +1466,10 @@ class MreRecord(object):
 
     def __repr__(self):
         if hasattr(self,'eid') and self.eid is not None:
-            eid=u' '+self.eid
+            eid=' '+self.eid
         else:
-            eid=u''
-        return u'<%s object: %s (%s)%s>' % (unicode(type(self)).split(u"'")[1], self.recType, strFid(self.fid), eid)
+            eid=''
+        return '<%s object: %s (%s)%s>' % (str(type(self)).split("'")[1], self.recType, strFid(self.fid), eid)
 
     def getHeader(self):
         """Returns header tuple."""
@@ -1510,7 +1510,7 @@ class MreRecord(object):
         decomp = zlib.decompress(self.data[4:])
         if len(decomp) != size:
             raise exception.ModError(self.inName,
-                u'Mis-sized compressed data. Expected %d, got %d.'
+                'Mis-sized compressed data. Expected %d, got %d.'
                                      % (size,len(decomp)))
         return decomp
 
@@ -1585,7 +1585,7 @@ class MreRecord(object):
         """Return size of self.data, after, if necessary, packing it."""
         if not self.changed: return self.size
         if self.longFids: raise exception.StateError(
-            u'Packing Error: %s %s: Fids in long format.'
+            'Packing Error: %s %s: Fids in long format.'
             % (self.recType,self.fid))
         #--Pack data and return size.
         with ModWriter(sio()) as out:
@@ -1603,16 +1603,16 @@ class MreRecord(object):
         """Dumps state into data. Called by getSize(). This default version
         just calls subrecords to dump to out."""
         if self.subrecords is None:
-            raise exception.StateError(u'Subrecords not unpacked. [%s: %s %08X]' %
+            raise exception.StateError('Subrecords not unpacked. [%s: %s %08X]' %
                                        (self.inName, self.recType, self.fid))
         for subrecord in self.subrecords:
             subrecord.dump(out)
 
     def dump(self,out):
         """Dumps all data to output stream."""
-        if self.changed: raise exception.StateError(u'Data changed: ' + self.recType)
+        if self.changed: raise exception.StateError('Data changed: ' + self.recType)
         if not self.data and not self.flags1.deleted and self.size > 0:
-            raise exception.StateError(u'Data undefined: ' + self.recType + u' ' + hex(self.fid))
+            raise exception.StateError('Data undefined: ' + self.recType + ' ' + hex(self.fid))
         #--Update the header so it 'packs' correctly
         self.header.size = self.size
         if self.recType != 'GRUP':
@@ -1751,21 +1751,21 @@ class MreGmstBase(MelRecord):
     class MelGmstValue(MelBase):
         def loadData(self, record, ins, sub_type, size_, readId):
             # Possibles values: s|i|f|b; If empty, default to int
-            gmst_type = encode(record.eid[0]) if record.eid else u'I'
-            if gmst_type == u's':
+            gmst_type = encode(record.eid[0]) if record.eid else 'I'
+            if gmst_type == 's':
                 record.value = ins.readLString(size_, readId)
                 return
-            elif gmst_type == u'b':
-                gmst_type = u'I'
+            elif gmst_type == 'b':
+                gmst_type = 'I'
             record.value, = ins.unpack(gmst_type, size_, readId)
         def dumpData(self,record,out):
             # Possibles values: s|i|f|b; If empty, default to int
-            gmst_type = encode(record.eid[0]) if record.eid else u'I'
-            if gmst_type == u's':
+            gmst_type = encode(record.eid[0]) if record.eid else 'I'
+            if gmst_type == 's':
                 out.packSub0(self.subType, record.value)
                 return
-            elif gmst_type == u'b':
-                gmst_type = u'I'
+            elif gmst_type == 'b':
+                gmst_type = 'I'
             out.packSub(self.subType,gmst_type, record.value)
     melSet = MelSet(
         MelString('EDID','eid'),
@@ -1777,17 +1777,17 @@ class MreGmstBase(MelRecord):
         """Returns <Oblivion/Skyrim/etc>.esm fid in long format for specified
            eid."""
         cls = self.__class__
-        import bosh # Late import to avoid circular imports
+        from . import bosh # Late import to avoid circular imports
         if not cls.Ids:
-            import bush
+            from . import bush
             fname = bush.game.pklfile
             try:
                 with open(fname) as pkl_file:
-                    cls.Ids = cPickle.load(pkl_file)[cls.classType]
+                    cls.Ids = pickle.load(pkl_file)[cls.classType]
             except:
                 old = bolt.deprintOn
                 bolt.deprintOn = True
-                bolt.deprint(u'Error loading %s:' % fname, traceback=True)
+                bolt.deprint('Error loading %s:' % fname, traceback=True)
                 bolt.deprintOn = old
                 raise
         return bosh.modInfos.masterName,cls.Ids[self.eid]
@@ -1874,7 +1874,7 @@ class MreLeveledListBase(MelRecord):
           chanceNone
           flags
     """
-    _flags = bolt.Flags(0L,bolt.Flags.getNames(
+    _flags = bolt.Flags(0,bolt.Flags.getNames(
         (0, 'calcFromAllLevels'),
         (1, 'calcForEachItem'),
         (2, 'useAllSpells'),
@@ -1895,14 +1895,14 @@ class MreLeveledListBase(MelRecord):
 
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
-        if not self.longFids: raise exception.StateError(u'Fids not in long format')
+        if not self.longFids: raise exception.StateError('Fids not in long format')
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
 
     def mergeWith(self,other,otherMod):
         """Merges newLevl settings and entries with self.
         Requires that: self.items, other.delevs and other.relevs be defined."""
         if not self.longFids or not other.longFids:
-            raise exception.StateError(u'Fids not in long format')
+            raise exception.StateError('Fids not in long format')
         #--Relevel or not?
         if other.relevs:
             for attr in self.__class__.copyAttrs:
@@ -1983,8 +1983,8 @@ class MreDial(MelRecord):
                 append_info(infoClass(header, ins, True))
             else:
                 raise exception.ModError(ins.inName,
-                  _(u'Unexpected %s record in %s group.') % (
-                                             header.recType, u'INFO'))
+                  _('Unexpected %s record in %s group.') % (
+                                             header.recType, 'INFO'))
 
     def dump(self,out):
         """Dumps self., then group header and then records."""
@@ -2035,7 +2035,7 @@ class MelMODS(MelBase):
         count, = insUnpack('I',4,readId)
         data = []
         dataAppend = data.append
-        for x in xrange(count):
+        for x in range(count):
             string = insRead32(readId)
             fid = ins.unpackRef()
             index, = insUnpack('I',4,readId)
@@ -2066,176 +2066,176 @@ class MelMODS(MelBase):
 ##: Ripped from bush.py may belong to game/
 # Magic Info ------------------------------------------------------------------
 _magicEffects = {
-    'ABAT': [5,_(u'Absorb Attribute'),0.95],
-    'ABFA': [5,_(u'Absorb Fatigue'),6],
-    'ABHE': [5,_(u'Absorb Health'),16],
-    'ABSK': [5,_(u'Absorb Skill'),2.1],
-    'ABSP': [5,_(u'Absorb Magicka'),7.5],
-    'BA01': [1,_(u'Bound Armor Extra 01'),0],#--Formid == 0
-    'BA02': [1,_(u'Bound Armor Extra 02'),0],#--Formid == 0
-    'BA03': [1,_(u'Bound Armor Extra 03'),0],#--Formid == 0
-    'BA04': [1,_(u'Bound Armor Extra 04'),0],#--Formid == 0
-    'BA05': [1,_(u'Bound Armor Extra 05'),0],#--Formid == 0
-    'BA06': [1,_(u'Bound Armor Extra 06'),0],#--Formid == 0
-    'BA07': [1,_(u'Bound Armor Extra 07'),0],#--Formid == 0
-    'BA08': [1,_(u'Bound Armor Extra 08'),0],#--Formid == 0
-    'BA09': [1,_(u'Bound Armor Extra 09'),0],#--Formid == 0
-    'BA10': [1,_(u'Bound Armor Extra 10'),0],#--Formid == 0
-    'BABO': [1,_(u'Bound Boots'),12],
-    'BACU': [1,_(u'Bound Cuirass'),12],
-    'BAGA': [1,_(u'Bound Gauntlets'),8],
-    'BAGR': [1,_(u'Bound Greaves'),12],
-    'BAHE': [1,_(u'Bound Helmet'),12],
-    'BASH': [1,_(u'Bound Shield'),12],
-    'BRDN': [0,_(u'Burden'),0.21],
-    'BW01': [1,_(u'Bound Order Weapon 1'),1],
-    'BW02': [1,_(u'Bound Order Weapon 2'),1],
-    'BW03': [1,_(u'Bound Order Weapon 3'),1],
-    'BW04': [1,_(u'Bound Order Weapon 4'),1],
-    'BW05': [1,_(u'Bound Order Weapon 5'),1],
-    'BW06': [1,_(u'Bound Order Weapon 6'),1],
-    'BW07': [1,_(u'Summon Staff of Sheogorath'),1],
-    'BW08': [1,_(u'Bound Priest Dagger'),1],
-    'BW09': [1,_(u'Bound Weapon Extra 09'),0],#--Formid == 0
-    'BW10': [1,_(u'Bound Weapon Extra 10'),0],#--Formid == 0
-    'BWAX': [1,_(u'Bound Axe'),39],
-    'BWBO': [1,_(u'Bound Bow'),95],
-    'BWDA': [1,_(u'Bound Dagger'),14],
-    'BWMA': [1,_(u'Bound Mace'),91],
-    'BWSW': [1,_(u'Bound Sword'),235],
-    'CALM': [3,_(u'Calm'),0.47],
-    'CHML': [3,_(u'Chameleon'),0.63],
-    'CHRM': [3,_(u'Charm'),0.2],
-    'COCR': [3,_(u'Command Creature'),0.6],
-    'COHU': [3,_(u'Command Humanoid'),0.75],
-    'CUDI': [5,_(u'Cure Disease'),1400],
-    'CUPA': [5,_(u'Cure Paralysis'),500],
-    'CUPO': [5,_(u'Cure Poison'),600],
-    'DARK': [3,_(u'DO NOT USE - Darkness'),0],
-    'DEMO': [3,_(u'Demoralize'),0.49],
-    'DGAT': [2,_(u'Damage Attribute'),100],
-    'DGFA': [2,_(u'Damage Fatigue'),4.4],
-    'DGHE': [2,_(u'Damage Health'),12],
-    'DGSP': [2,_(u'Damage Magicka'),2.45],
-    'DIAR': [2,_(u'Disintegrate Armor'),6.2],
-    'DISE': [2,_(u'Disease Info'),0], #--Formid == 0
-    'DIWE': [2,_(u'Disintegrate Weapon'),6.2],
-    'DRAT': [2,_(u'Drain Attribute'),0.7],
-    'DRFA': [2,_(u'Drain Fatigue'),0.18],
-    'DRHE': [2,_(u'Drain Health'),0.9],
-    'DRSK': [2,_(u'Drain Skill'),0.65],
-    'DRSP': [2,_(u'Drain Magicka'),0.18],
-    'DSPL': [4,_(u'Dispel'),3.6],
-    'DTCT': [4,_(u'Detect Life'),0.08],
-    'DUMY': [2,_(u'Mehrunes Dagon'),0], #--Formid == 0
-    'FIDG': [2,_(u'Fire Damage'),7.5],
-    'FISH': [0,_(u'Fire Shield'),0.95],
-    'FOAT': [5,_(u'Fortify Attribute'),0.6],
-    'FOFA': [5,_(u'Fortify Fatigue'),0.04],
-    'FOHE': [5,_(u'Fortify Health'),0.14],
-    'FOMM': [5,_(u'Fortify Magicka Multiplier'),0.04],
-    'FOSK': [5,_(u'Fortify Skill'),0.6],
-    'FOSP': [5,_(u'Fortify Magicka'),0.15],
-    'FRDG': [2,_(u'Frost Damage'),7.4],
-    'FRNZ': [3,_(u'Frenzy'),0.04],
-    'FRSH': [0,_(u'Frost Shield'),0.95],
-    'FTHR': [0,_(u'Feather'),0.1],
-    'INVI': [3,_(u'Invisibility'),40],
-    'LGHT': [3,_(u'Light'),0.051],
-    'LISH': [0,_(u'Shock Shield'),0.95],
-    'LOCK': [0,_(u'DO NOT USE - Lock'),30],
-    'MYHL': [1,_(u'Summon Mythic Dawn Helm'),110],
-    'MYTH': [1,_(u'Summon Mythic Dawn Armor'),120],
-    'NEYE': [3,_(u'Night-Eye'),22],
-    'OPEN': [0,_(u'Open'),4.3],
-    'PARA': [3,_(u'Paralyze'),475],
-    'POSN': [2,_(u'Poison Info'),0],
-    'RALY': [3,_(u'Rally'),0.03],
-    'REAN': [1,_(u'Reanimate'),10],
-    'REAT': [5,_(u'Restore Attribute'),38],
-    'REDG': [4,_(u'Reflect Damage'),2.5],
-    'REFA': [5,_(u'Restore Fatigue'),2],
-    'REHE': [5,_(u'Restore Health'),10],
-    'RESP': [5,_(u'Restore Magicka'),2.5],
-    'RFLC': [4,_(u'Reflect Spell'),3.5],
-    'RSDI': [5,_(u'Resist Disease'),0.5],
-    'RSFI': [5,_(u'Resist Fire'),0.5],
-    'RSFR': [5,_(u'Resist Frost'),0.5],
-    'RSMA': [5,_(u'Resist Magic'),2],
-    'RSNW': [5,_(u'Resist Normal Weapons'),1.5],
-    'RSPA': [5,_(u'Resist Paralysis'),0.75],
-    'RSPO': [5,_(u'Resist Poison'),0.5],
-    'RSSH': [5,_(u'Resist Shock'),0.5],
-    'RSWD': [5,_(u'Resist Water Damage'),0], #--Formid == 0
-    'SABS': [4,_(u'Spell Absorption'),3],
-    'SEFF': [0,_(u'Script Effect'),0],
-    'SHDG': [2,_(u'Shock Damage'),7.8],
-    'SHLD': [0,_(u'Shield'),0.45],
-    'SLNC': [3,_(u'Silence'),60],
-    'STMA': [2,_(u'Stunted Magicka'),0],
-    'STRP': [4,_(u'Soul Trap'),30],
-    'SUDG': [2,_(u'Sun Damage'),9],
-    'TELE': [4,_(u'Telekinesis'),0.49],
-    'TURN': [1,_(u'Turn Undead'),0.083],
-    'VAMP': [2,_(u'Vampirism'),0],
-    'WABR': [0,_(u'Water Breathing'),14.5],
-    'WAWA': [0,_(u'Water Walking'),13],
-    'WKDI': [2,_(u'Weakness to Disease'),0.12],
-    'WKFI': [2,_(u'Weakness to Fire'),0.1],
-    'WKFR': [2,_(u'Weakness to Frost'),0.1],
-    'WKMA': [2,_(u'Weakness to Magic'),0.25],
-    'WKNW': [2,_(u'Weakness to Normal Weapons'),0.25],
-    'WKPO': [2,_(u'Weakness to Poison'),0.1],
-    'WKSH': [2,_(u'Weakness to Shock'),0.1],
-    'Z001': [1,_(u'Summon Rufio\'s Ghost'),13],
-    'Z002': [1,_(u'Summon Ancestor Guardian'),33.3],
-    'Z003': [1,_(u'Summon Spiderling'),45],
-    'Z004': [1,_(u'Summon Flesh Atronach'),1],
-    'Z005': [1,_(u'Summon Bear'),47.3],
-    'Z006': [1,_(u'Summon Gluttonous Hunger'),61],
-    'Z007': [1,_(u'Summon Ravenous Hunger'),123.33],
-    'Z008': [1,_(u'Summon Voracious Hunger'),175],
-    'Z009': [1,_(u'Summon Dark Seducer'),1],
-    'Z010': [1,_(u'Summon Golden Saint'),1],
-    'Z011': [1,_(u'Wabba Summon'),0],
-    'Z012': [1,_(u'Summon Decrepit Shambles'),45],
-    'Z013': [1,_(u'Summon Shambles'),87.5],
-    'Z014': [1,_(u'Summon Replete Shambles'),150],
-    'Z015': [1,_(u'Summon Hunger'),22],
-    'Z016': [1,_(u'Summon Mangled Flesh Atronach'),22],
-    'Z017': [1,_(u'Summon Torn Flesh Atronach'),32.5],
-    'Z018': [1,_(u'Summon Stitched Flesh Atronach'),75.5],
-    'Z019': [1,_(u'Summon Sewn Flesh Atronach'),195],
-    'Z020': [1,_(u'Extra Summon 20'),0],
-    'ZCLA': [1,_(u'Summon Clannfear'),75.56],
-    'ZDAE': [1,_(u'Summon Daedroth'),123.33],
-    'ZDRE': [1,_(u'Summon Dremora'),72.5],
-    'ZDRL': [1,_(u'Summon Dremora Lord'),157.14],
-    'ZFIA': [1,_(u'Summon Flame Atronach'),45],
-    'ZFRA': [1,_(u'Summon Frost Atronach'),102.86],
-    'ZGHO': [1,_(u'Summon Ghost'),22],
-    'ZHDZ': [1,_(u'Summon Headless Zombie'),56],
-    'ZLIC': [1,_(u'Summon Lich'),350],
-    'ZSCA': [1,_(u'Summon Scamp'),30],
-    'ZSKA': [1,_(u'Summon Skeleton Guardian'),32.5],
-    'ZSKC': [1,_(u'Summon Skeleton Champion'),152],
-    'ZSKE': [1,_(u'Summon Skeleton'),11.25],
-    'ZSKH': [1,_(u'Summon Skeleton Hero'),66],
-    'ZSPD': [1,_(u'Summon Spider Daedra'),195],
-    'ZSTA': [1,_(u'Summon Storm Atronach'),125],
-    'ZWRA': [1,_(u'Summon Faded Wraith'),87.5],
-    'ZWRL': [1,_(u'Summon Gloom Wraith'),260],
-    'ZXIV': [1,_(u'Summon Xivilai'),200],
-    'ZZOM': [1,_(u'Summon Zombie'),16.67],
+    'ABAT': [5,_('Absorb Attribute'),0.95],
+    'ABFA': [5,_('Absorb Fatigue'),6],
+    'ABHE': [5,_('Absorb Health'),16],
+    'ABSK': [5,_('Absorb Skill'),2.1],
+    'ABSP': [5,_('Absorb Magicka'),7.5],
+    'BA01': [1,_('Bound Armor Extra 01'),0],#--Formid == 0
+    'BA02': [1,_('Bound Armor Extra 02'),0],#--Formid == 0
+    'BA03': [1,_('Bound Armor Extra 03'),0],#--Formid == 0
+    'BA04': [1,_('Bound Armor Extra 04'),0],#--Formid == 0
+    'BA05': [1,_('Bound Armor Extra 05'),0],#--Formid == 0
+    'BA06': [1,_('Bound Armor Extra 06'),0],#--Formid == 0
+    'BA07': [1,_('Bound Armor Extra 07'),0],#--Formid == 0
+    'BA08': [1,_('Bound Armor Extra 08'),0],#--Formid == 0
+    'BA09': [1,_('Bound Armor Extra 09'),0],#--Formid == 0
+    'BA10': [1,_('Bound Armor Extra 10'),0],#--Formid == 0
+    'BABO': [1,_('Bound Boots'),12],
+    'BACU': [1,_('Bound Cuirass'),12],
+    'BAGA': [1,_('Bound Gauntlets'),8],
+    'BAGR': [1,_('Bound Greaves'),12],
+    'BAHE': [1,_('Bound Helmet'),12],
+    'BASH': [1,_('Bound Shield'),12],
+    'BRDN': [0,_('Burden'),0.21],
+    'BW01': [1,_('Bound Order Weapon 1'),1],
+    'BW02': [1,_('Bound Order Weapon 2'),1],
+    'BW03': [1,_('Bound Order Weapon 3'),1],
+    'BW04': [1,_('Bound Order Weapon 4'),1],
+    'BW05': [1,_('Bound Order Weapon 5'),1],
+    'BW06': [1,_('Bound Order Weapon 6'),1],
+    'BW07': [1,_('Summon Staff of Sheogorath'),1],
+    'BW08': [1,_('Bound Priest Dagger'),1],
+    'BW09': [1,_('Bound Weapon Extra 09'),0],#--Formid == 0
+    'BW10': [1,_('Bound Weapon Extra 10'),0],#--Formid == 0
+    'BWAX': [1,_('Bound Axe'),39],
+    'BWBO': [1,_('Bound Bow'),95],
+    'BWDA': [1,_('Bound Dagger'),14],
+    'BWMA': [1,_('Bound Mace'),91],
+    'BWSW': [1,_('Bound Sword'),235],
+    'CALM': [3,_('Calm'),0.47],
+    'CHML': [3,_('Chameleon'),0.63],
+    'CHRM': [3,_('Charm'),0.2],
+    'COCR': [3,_('Command Creature'),0.6],
+    'COHU': [3,_('Command Humanoid'),0.75],
+    'CUDI': [5,_('Cure Disease'),1400],
+    'CUPA': [5,_('Cure Paralysis'),500],
+    'CUPO': [5,_('Cure Poison'),600],
+    'DARK': [3,_('DO NOT USE - Darkness'),0],
+    'DEMO': [3,_('Demoralize'),0.49],
+    'DGAT': [2,_('Damage Attribute'),100],
+    'DGFA': [2,_('Damage Fatigue'),4.4],
+    'DGHE': [2,_('Damage Health'),12],
+    'DGSP': [2,_('Damage Magicka'),2.45],
+    'DIAR': [2,_('Disintegrate Armor'),6.2],
+    'DISE': [2,_('Disease Info'),0], #--Formid == 0
+    'DIWE': [2,_('Disintegrate Weapon'),6.2],
+    'DRAT': [2,_('Drain Attribute'),0.7],
+    'DRFA': [2,_('Drain Fatigue'),0.18],
+    'DRHE': [2,_('Drain Health'),0.9],
+    'DRSK': [2,_('Drain Skill'),0.65],
+    'DRSP': [2,_('Drain Magicka'),0.18],
+    'DSPL': [4,_('Dispel'),3.6],
+    'DTCT': [4,_('Detect Life'),0.08],
+    'DUMY': [2,_('Mehrunes Dagon'),0], #--Formid == 0
+    'FIDG': [2,_('Fire Damage'),7.5],
+    'FISH': [0,_('Fire Shield'),0.95],
+    'FOAT': [5,_('Fortify Attribute'),0.6],
+    'FOFA': [5,_('Fortify Fatigue'),0.04],
+    'FOHE': [5,_('Fortify Health'),0.14],
+    'FOMM': [5,_('Fortify Magicka Multiplier'),0.04],
+    'FOSK': [5,_('Fortify Skill'),0.6],
+    'FOSP': [5,_('Fortify Magicka'),0.15],
+    'FRDG': [2,_('Frost Damage'),7.4],
+    'FRNZ': [3,_('Frenzy'),0.04],
+    'FRSH': [0,_('Frost Shield'),0.95],
+    'FTHR': [0,_('Feather'),0.1],
+    'INVI': [3,_('Invisibility'),40],
+    'LGHT': [3,_('Light'),0.051],
+    'LISH': [0,_('Shock Shield'),0.95],
+    'LOCK': [0,_('DO NOT USE - Lock'),30],
+    'MYHL': [1,_('Summon Mythic Dawn Helm'),110],
+    'MYTH': [1,_('Summon Mythic Dawn Armor'),120],
+    'NEYE': [3,_('Night-Eye'),22],
+    'OPEN': [0,_('Open'),4.3],
+    'PARA': [3,_('Paralyze'),475],
+    'POSN': [2,_('Poison Info'),0],
+    'RALY': [3,_('Rally'),0.03],
+    'REAN': [1,_('Reanimate'),10],
+    'REAT': [5,_('Restore Attribute'),38],
+    'REDG': [4,_('Reflect Damage'),2.5],
+    'REFA': [5,_('Restore Fatigue'),2],
+    'REHE': [5,_('Restore Health'),10],
+    'RESP': [5,_('Restore Magicka'),2.5],
+    'RFLC': [4,_('Reflect Spell'),3.5],
+    'RSDI': [5,_('Resist Disease'),0.5],
+    'RSFI': [5,_('Resist Fire'),0.5],
+    'RSFR': [5,_('Resist Frost'),0.5],
+    'RSMA': [5,_('Resist Magic'),2],
+    'RSNW': [5,_('Resist Normal Weapons'),1.5],
+    'RSPA': [5,_('Resist Paralysis'),0.75],
+    'RSPO': [5,_('Resist Poison'),0.5],
+    'RSSH': [5,_('Resist Shock'),0.5],
+    'RSWD': [5,_('Resist Water Damage'),0], #--Formid == 0
+    'SABS': [4,_('Spell Absorption'),3],
+    'SEFF': [0,_('Script Effect'),0],
+    'SHDG': [2,_('Shock Damage'),7.8],
+    'SHLD': [0,_('Shield'),0.45],
+    'SLNC': [3,_('Silence'),60],
+    'STMA': [2,_('Stunted Magicka'),0],
+    'STRP': [4,_('Soul Trap'),30],
+    'SUDG': [2,_('Sun Damage'),9],
+    'TELE': [4,_('Telekinesis'),0.49],
+    'TURN': [1,_('Turn Undead'),0.083],
+    'VAMP': [2,_('Vampirism'),0],
+    'WABR': [0,_('Water Breathing'),14.5],
+    'WAWA': [0,_('Water Walking'),13],
+    'WKDI': [2,_('Weakness to Disease'),0.12],
+    'WKFI': [2,_('Weakness to Fire'),0.1],
+    'WKFR': [2,_('Weakness to Frost'),0.1],
+    'WKMA': [2,_('Weakness to Magic'),0.25],
+    'WKNW': [2,_('Weakness to Normal Weapons'),0.25],
+    'WKPO': [2,_('Weakness to Poison'),0.1],
+    'WKSH': [2,_('Weakness to Shock'),0.1],
+    'Z001': [1,_('Summon Rufio\'s Ghost'),13],
+    'Z002': [1,_('Summon Ancestor Guardian'),33.3],
+    'Z003': [1,_('Summon Spiderling'),45],
+    'Z004': [1,_('Summon Flesh Atronach'),1],
+    'Z005': [1,_('Summon Bear'),47.3],
+    'Z006': [1,_('Summon Gluttonous Hunger'),61],
+    'Z007': [1,_('Summon Ravenous Hunger'),123.33],
+    'Z008': [1,_('Summon Voracious Hunger'),175],
+    'Z009': [1,_('Summon Dark Seducer'),1],
+    'Z010': [1,_('Summon Golden Saint'),1],
+    'Z011': [1,_('Wabba Summon'),0],
+    'Z012': [1,_('Summon Decrepit Shambles'),45],
+    'Z013': [1,_('Summon Shambles'),87.5],
+    'Z014': [1,_('Summon Replete Shambles'),150],
+    'Z015': [1,_('Summon Hunger'),22],
+    'Z016': [1,_('Summon Mangled Flesh Atronach'),22],
+    'Z017': [1,_('Summon Torn Flesh Atronach'),32.5],
+    'Z018': [1,_('Summon Stitched Flesh Atronach'),75.5],
+    'Z019': [1,_('Summon Sewn Flesh Atronach'),195],
+    'Z020': [1,_('Extra Summon 20'),0],
+    'ZCLA': [1,_('Summon Clannfear'),75.56],
+    'ZDAE': [1,_('Summon Daedroth'),123.33],
+    'ZDRE': [1,_('Summon Dremora'),72.5],
+    'ZDRL': [1,_('Summon Dremora Lord'),157.14],
+    'ZFIA': [1,_('Summon Flame Atronach'),45],
+    'ZFRA': [1,_('Summon Frost Atronach'),102.86],
+    'ZGHO': [1,_('Summon Ghost'),22],
+    'ZHDZ': [1,_('Summon Headless Zombie'),56],
+    'ZLIC': [1,_('Summon Lich'),350],
+    'ZSCA': [1,_('Summon Scamp'),30],
+    'ZSKA': [1,_('Summon Skeleton Guardian'),32.5],
+    'ZSKC': [1,_('Summon Skeleton Champion'),152],
+    'ZSKE': [1,_('Summon Skeleton'),11.25],
+    'ZSKH': [1,_('Summon Skeleton Hero'),66],
+    'ZSPD': [1,_('Summon Spider Daedra'),195],
+    'ZSTA': [1,_('Summon Storm Atronach'),125],
+    'ZWRA': [1,_('Summon Faded Wraith'),87.5],
+    'ZWRL': [1,_('Summon Gloom Wraith'),260],
+    'ZXIV': [1,_('Summon Xivilai'),200],
+    'ZZOM': [1,_('Summon Zombie'),16.67],
     }
 _strU = struct.Struct('I').unpack
-mgef_school = dict((x, y) for x, [y, z, _num] in _magicEffects.items())
-mgef_name = dict((x, z) for x, [y, z, __num] in _magicEffects.items())
-_mgef_basevalue = dict((x, a) for x, [y, z, a] in _magicEffects.items())
-mgef_school.update({_strU(x)[0]:y for x,[y,z,a] in _magicEffects.items()})
-mgef_name.update({_strU(x)[0]:z for x,[y,z,a] in _magicEffects.items()})
+mgef_school = dict((x, y) for x, [y, z, _num] in list(_magicEffects.items()))
+mgef_name = dict((x, z) for x, [y, z, __num] in list(_magicEffects.items()))
+_mgef_basevalue = dict((x, a) for x, [y, z, a] in list(_magicEffects.items()))
+mgef_school.update({_strU(x)[0]:y for x,[y,z,a] in list(_magicEffects.items())})
+mgef_name.update({_strU(x)[0]:z for x,[y,z,a] in list(_magicEffects.items())})
 _mgef_basevalue.update(
-    {_strU(x)[0]: a for x, [y, z, a] in _magicEffects.items()})
+    {_strU(x)[0]: a for x, [y, z, a] in list(_magicEffects.items())})
 
 #Doesn't list mgefs that use actor values, but rather mgefs that have a generic name
 #Ex: Absorb Attribute becomes Absorb Magicka if the effect's actorValue field contains 9
@@ -2254,85 +2254,85 @@ genericAVEffects = {
 genericAVEffects |= set((_strU(x)[0] for x in genericAVEffects))
 
 actorValues = [
-    _(u'Strength'), #--00
-    _(u'Intelligence'),
-    _(u'Willpower'),
-    _(u'Agility'),
-    _(u'Speed'),
-    _(u'Endurance'),
-    _(u'Personality'),
-    _(u'Luck'),
-    _(u'Health'),
-    _(u'Magicka'),
+    _('Strength'), #--00
+    _('Intelligence'),
+    _('Willpower'),
+    _('Agility'),
+    _('Speed'),
+    _('Endurance'),
+    _('Personality'),
+    _('Luck'),
+    _('Health'),
+    _('Magicka'),
 
-    _(u'Fatigue'), #--10
-    _(u'Encumbrance'),
-    _(u'Armorer'),
-    _(u'Athletics'),
-    _(u'Blade'),
-    _(u'Block'),
-    _(u'Blunt'),
-    _(u'Hand To Hand'),
-    _(u'Heavy Armor'),
-    _(u'Alchemy'),
+    _('Fatigue'), #--10
+    _('Encumbrance'),
+    _('Armorer'),
+    _('Athletics'),
+    _('Blade'),
+    _('Block'),
+    _('Blunt'),
+    _('Hand To Hand'),
+    _('Heavy Armor'),
+    _('Alchemy'),
 
-    _(u'Alteration'), #--20
-    _(u'Conjuration'),
-    _(u'Destruction'),
-    _(u'Illusion'),
-    _(u'Mysticism'),
-    _(u'Restoration'),
-    _(u'Acrobatics'),
-    _(u'Light Armor'),
-    _(u'Marksman'),
-    _(u'Mercantile'),
+    _('Alteration'), #--20
+    _('Conjuration'),
+    _('Destruction'),
+    _('Illusion'),
+    _('Mysticism'),
+    _('Restoration'),
+    _('Acrobatics'),
+    _('Light Armor'),
+    _('Marksman'),
+    _('Mercantile'),
 
-    _(u'Security'), #--30
-    _(u'Sneak'),
-    _(u'Speechcraft'),
-    u'Aggression',
-    u'Confidence',
-    u'Energy',
-    u'Responsibility',
-    u'Bounty',
-    u'UNKNOWN 38',
-    u'UNKNOWN 39',
+    _('Security'), #--30
+    _('Sneak'),
+    _('Speechcraft'),
+    'Aggression',
+    'Confidence',
+    'Energy',
+    'Responsibility',
+    'Bounty',
+    'UNKNOWN 38',
+    'UNKNOWN 39',
 
-    u'MagickaMultiplier', #--40
-    u'NightEyeBonus',
-    u'AttackBonus',
-    u'DefendBonus',
-    u'CastingPenalty',
-    u'Blindness',
-    u'Chameleon',
-    u'Invisibility',
-    u'Paralysis',
-    u'Silence',
+    'MagickaMultiplier', #--40
+    'NightEyeBonus',
+    'AttackBonus',
+    'DefendBonus',
+    'CastingPenalty',
+    'Blindness',
+    'Chameleon',
+    'Invisibility',
+    'Paralysis',
+    'Silence',
 
-    u'Confusion', #--50
-    u'DetectItemRange',
-    u'SpellAbsorbChance',
-    u'SpellReflectChance',
-    u'SwimSpeedMultiplier',
-    u'WaterBreathing',
-    u'WaterWalking',
-    u'StuntedMagicka',
-    u'DetectLifeRange',
-    u'ReflectDamage',
+    'Confusion', #--50
+    'DetectItemRange',
+    'SpellAbsorbChance',
+    'SpellReflectChance',
+    'SwimSpeedMultiplier',
+    'WaterBreathing',
+    'WaterWalking',
+    'StuntedMagicka',
+    'DetectLifeRange',
+    'ReflectDamage',
 
-    u'Telekinesis', #--60
-    u'ResistFire',
-    u'ResistFrost',
-    u'ResistDisease',
-    u'ResistMagic',
-    u'ResistNormalWeapons',
-    u'ResistParalysis',
-    u'ResistPoison',
-    u'ResistShock',
-    u'Vampirism',
+    'Telekinesis', #--60
+    'ResistFire',
+    'ResistFrost',
+    'ResistDisease',
+    'ResistMagic',
+    'ResistNormalWeapons',
+    'ResistParalysis',
+    'ResistPoison',
+    'ResistShock',
+    'Vampirism',
 
-    u'Darkness', #--70
-    u'ResistWaterDamage',
+    'Darkness', #--70
+    'ResistWaterDamage',
     ]
 
 #------------------------------------------------------------------------------
@@ -2375,19 +2375,19 @@ class MreHasEffects(object):
             buffWrite = buff.write
             if self.effects:
                 school = self.getSpellSchool()
-                buffWrite(actorValues[20+school] + u'\n')
+                buffWrite(actorValues[20+school] + '\n')
             for index,effect in enumerate(self.effects):
                 if effect.scriptEffect:
-                    effectName = effect.scriptEffect.full or u'Script Effect'
+                    effectName = effect.scriptEffect.full or 'Script Effect'
                 else:
                     effectName = mgef_name[effect.name]
                     if effect.name in avEffects:
-                        effectName = re.sub(_(u'(Attribute|Skill)'),aValues[effect.actorValue],effectName)
-                buffWrite(u'o+*'[effect.recipient]+u' '+effectName)
-                if effect.magnitude: buffWrite(u' %sm'%effect.magnitude)
-                if effect.area: buffWrite(u' %sa'%effect.area)
-                if effect.duration > 1: buffWrite(u' %sd'%effect.duration)
-                buffWrite(u'\n')
+                        effectName = re.sub(_('(Attribute|Skill)'),aValues[effect.actorValue],effectName)
+                buffWrite('o+*'[effect.recipient]+' '+effectName)
+                if effect.magnitude: buffWrite(' %sm'%effect.magnitude)
+                if effect.area: buffWrite(' %sa'%effect.area)
+                if effect.duration > 1: buffWrite(' %sd'%effect.duration)
+                buffWrite('\n')
             return buff.getvalue()
 
 hostileEffects = {

@@ -38,8 +38,8 @@ from ...brec import MreRecord
 class ListPatcher(AListPatcher,Patcher): pass
 
 class CBash_ListPatcher(AListPatcher,CBash_Patcher):
-    unloadedText = u'\n\n'+_(u'Any non-active, non-merged mods in the'
-                             u' following list will be IGNORED.')
+    unloadedText = '\n\n'+_('Any non-active, non-merged mods in the'
+                             ' following list will be IGNORED.')
 
     def initPatchFile(self, patchFile):
         super(CBash_ListPatcher, self).initPatchFile(patchFile)
@@ -114,7 +114,7 @@ class MultiTweaker(AMultiTweaker,Patcher):
     def buildPatch(self,log,progress):
         """Applies individual tweaks."""
         if not self.isActive: return
-        log.setHeader(u'= '+self.__class__.name,True)
+        log.setHeader('= '+self.__class__.name,True)
         for tweak in self.enabledTweaks:
             tweak.buildPatch(log,progress,self.patchFile)
 
@@ -136,7 +136,7 @@ class CBash_MultiTweaker(AMultiTweaker,CBash_Patcher):
     def buildPatchLog(self,log):
         """Will write to log."""
         if not self.isActive: return
-        log.setHeader(u'= '+self.__class__.name,True)
+        log.setHeader('= '+self.__class__.name,True)
         for tweak in self.enabledTweaks:
             tweak.buildPatchLog(log)
 
@@ -168,9 +168,9 @@ class UpdateReferences(AUpdateReferences,ListPatcher):
         aliases = self.patchFile.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 7 or fields[2][:2] != u'0x' or fields[6][:2] != u'0x': continue
+                if len(fields) < 7 or fields[2][:2] != '0x' or fields[6][:2] != '0x': continue
                 oldMod,oldObj,oldEid,newEid,newMod,newObj = fields[1:7]
-                oldMod,newMod = map(GPath,(oldMod,newMod))
+                oldMod,newMod = list(map(GPath,(oldMod,newMod)))
                 oldId = (GPath(aliases.get(oldMod,oldMod)),int(oldObj,16))
                 newId = (GPath(aliases.get(newMod,newMod)),int(newObj,16))
                 old_new[oldId] = newId
@@ -335,11 +335,11 @@ class UpdateReferences(AUpdateReferences,ListPatcher):
             if keepWorld:
                 keep(worldBlock.world.fid)
 
-        log.setHeader(u'= '+self.__class__.name)
+        log.setHeader('= '+self.__class__.name)
         self._srcMods(log)
-        log(u'\n=== '+_(u'Records Patched'))
-        for srcMod in load_order.get_ordered(count.keys()):
-            log(u'* %s: %d' % (srcMod.s,count[srcMod]))
+        log('\n=== '+_('Records Patched'))
+        for srcMod in load_order.get_ordered(list(count.keys())):
+            log('* %s: %d' % (srcMod.s,count[srcMod]))
 
 from ...parsers import CBash_FidReplacer
 
@@ -390,7 +390,7 @@ class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
         counts = modFile.UpdateReferences(self.old_new)
         #--Done
         if sum(counts):
-            self.mod_count_old_new[modFile.GName] = [(count,self.old_eid[old_newId[0]],self.new_eid[old_newId[1]]) for count, old_newId in zip(counts, self.old_new.iteritems())]
+            self.mod_count_old_new[modFile.GName] = [(count,self.old_eid[old_newId[0]],self.new_eid[old_newId[1]]) for count, old_newId in zip(counts, iter(self.old_new.items()))]
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -405,15 +405,15 @@ class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
         #--Log
         mod_count_old_new = self.mod_count_old_new
 
-        log.setHeader(u'= ' +self.__class__.name)
+        log.setHeader('= ' +self.__class__.name)
         self._srcMods(log)
-        log(u'\n')
-        for mod in load_order.get_ordered(mod_count_old_new.keys()):
+        log('\n')
+        for mod in load_order.get_ordered(list(mod_count_old_new.keys())):
             entries = mod_count_old_new[mod]
-            log(u'\n=== %s' % mod.s)
+            log('\n=== %s' % mod.s)
             entries.sort(key=itemgetter(1))
-            log(u'  * '+_(u'Updated References') + u': %d' % sum([count for count, old, new in entries]))
-            log(u'\n'.join([u'    * %3d %s >> %s' % entry for entry in entries if entry[0] > 0]))
+            log('  * '+_('Updated References') + ': %d' % sum([count for count, old, new in entries]))
+            log('\n'.join(['    * %3d %s >> %s' % entry for entry in entries if entry[0] > 0]))
 
         self.old_new = {} #--Maps old fid to new fid
         self.old_eid = {} #--Maps old fid to old editor id
@@ -424,7 +424,7 @@ class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
 class SpecialPatcher(object):
     """Provides scan_more method only used in CBash importers (17) and CBash
     race patchers (3/4 except CBash_RacePatcher_Eyes)."""
-    group = _(u'Special')
+    group = _('Special')
     scanOrder = 40
     editOrder = 40
 
@@ -444,7 +444,7 @@ class SpecialPatcher(object):
 # Patchers: 20 ----------------------------------------------------------------
 class ImportPatcher(AImportPatcher, ListPatcher):
     # Override in subclasses as needed
-    logMsg = u'\n=== ' + _(u'Modified Records')
+    logMsg = '\n=== ' + _('Modified Records')
 
     def getReadClasses(self):
         """Returns load factory classes needed for reading."""
@@ -457,7 +457,7 @@ class ImportPatcher(AImportPatcher, ListPatcher):
             x.classType for x in self.srcClasses) if self.isActive else ()
 
     def _patchLog(self,log,type_count):
-        log.setHeader(u'= ' + self.__class__.name)
+        log.setHeader('= ' + self.__class__.name)
         self._srcMods(log)
         self._plog(log,type_count)
 
@@ -469,23 +469,23 @@ class ImportPatcher(AImportPatcher, ListPatcher):
         ImportFactions, ImportScripts, NamesPatcher, SoundPatcher.
         """
         log(self.__class__.logMsg)
-        for type_,count in sorted(type_count.iteritems()):
-            if count: log(u'* ' + _(u'Modified %(type)s Records: %(count)d')
+        for type_,count in sorted(type_count.items()):
+            if count: log('* ' + _('Modified %(type)s Records: %(count)d')
                           % {'type': type_, 'count': count})
 
     def _plog1(self,log,mod_count): # common logging variation
         log(self.__class__.logMsg % sum(mod_count.values()))
         for mod in load_order.get_ordered(mod_count):
-            log(u'* %s: %3d' % (mod.s,mod_count[mod]))
+            log('* %s: %3d' % (mod.s,mod_count[mod]))
 
     def _plog2(self,log,allCounts):
         log(self.__class__.logMsg)
         for top_rec_type, count, counts in allCounts:
             if not count: continue
             typeName = bush.game.record_type_name[top_rec_type]
-            log(u'* %s: %d' % (typeName, count))
+            log('* %s: %d' % (typeName, count))
             for modName in sorted(counts):
-                log(u'  * %s: %d' % (modName.s, counts[modName]))
+                log('  * %s: %d' % (modName.s, counts[modName]))
 
     # helpers WIP
     def _parse_sources(self, progress, parser):
@@ -503,7 +503,7 @@ class ImportPatcher(AImportPatcher, ListPatcher):
                 try:
                     fullNames.readFromText(getPatchesPath(srcFile))
                 except UnicodeError as e: # originally in NamesPatcher, keep ?
-                    print srcPath.stail, u'is not saved in UTF-8 format:', e
+                    print(srcPath.stail, 'is not saved in UTF-8 format:', e)
             progress.plus()
         return fullNames
 
@@ -515,7 +515,7 @@ class CBash_ImportPatcher(AImportPatcher, CBash_ListPatcher, SpecialPatcher):
         """Will write to log."""
         if not self.isActive: return
         #--Log
-        log.setHeader(u'= ' +self.__class__.name)
+        log.setHeader('= ' +self.__class__.name)
         self._clog(log)
 
     def _clog(self,log):
@@ -529,8 +529,8 @@ class CBash_ImportPatcher(AImportPatcher, CBash_ListPatcher, SpecialPatcher):
         """
         mod_count = self.mod_count
         log(self.__class__.logMsg % sum(mod_count.values()))
-        for srcMod in load_order.get_ordered(mod_count.keys()):
-            log(u'  * %s: %d' % (srcMod.s,mod_count[srcMod]))
+        for srcMod in load_order.get_ordered(list(mod_count.keys())):
+            log('  * %s: %d' % (srcMod.s,mod_count[srcMod]))
         self.mod_count = collections.defaultdict(int)
 
     # helpers WIP

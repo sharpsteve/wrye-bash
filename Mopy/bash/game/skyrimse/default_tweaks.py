@@ -24,120 +24,120 @@
 from collections import OrderedDict
 
 default_tweaks = {
-    u'Archery, ArrowTilt 0.0 ~Default [Skyrim].ini': OrderedDict(
-        [(u'Combat', OrderedDict(
-            [(u'f1PArrowTiltUpAngle', u'0.0'),
-             (u'f3PArrowTiltUpAngle', u'0.0')]))]),
-    u'Archery, ArrowTilt 0.7 [Skyrim].ini': OrderedDict(
-        [(u'Combat', OrderedDict(
-            [(u'f1PArrowTiltUpAngle', u'0.7'),
-             (u'f3PArrowTiltUpAngle', u'0.7')]))]),
-    u'Archery, NavMeshMove 12288 [Skyrim].ini': OrderedDict(
-        [(u'Actor', OrderedDict(
-            [(u'fVisibleNavmeshMoveDist', u'12288.0000')]))]),
-    u'Archery, NavMeshMove 4096 ~Default [Skyrim].ini': OrderedDict(
-        [(u'Actor', OrderedDict(
-            [(u'fVisibleNavmeshMoveDist', u'4096.0000')]))]),
-    u'Archery, NavMeshMove 8192 [Skyrim].ini': OrderedDict(
-        [(u'Actor', OrderedDict(
-            [(u'fVisibleNavmeshMoveDist', u'8192.0000')]))]),
-    u'BGS Intro sequence, Disabled [Skyrim].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'sIntroSequence', u'')]))]),
-    u'BGS Intro sequence, Enabled ~Default [Skyrim].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'sIntroSequence', u'BGS_LOGO.BIK')]))]),
-    u'Border Regions, Disabled [Skyrim].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'bBorderRegionsEnabled', u'0')]))]),
-    u'Border Regions, Enabled ~Default [Skyrim].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'bBorderRegionsEnabled', u'1')]))]),
-    u'Debug Log, Disabled [Skyrim].ini': OrderedDict(
-        [(u'Papyrus', OrderedDict(
-            [(u'bEnableLogging', u'0'), (u'bLoadDebugInformation', u'0'),
-             (u'bEnableTrace', u'0')]))]),
-    u'Debug Log, Enabled [Skyrim].ini': OrderedDict(
-        [(u'Papyrus', OrderedDict(
-        [(u'bEnableLogging', u'1'), (u'bLoadDebugInformation', u'1'),
-         (u'bEnableTrace', u'1')]))]),
-    u'Grass, Spacing 20 ~Default [Skyrim].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'20')]))]),
-    u'Grass, Spacing 40 [Skyrim].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'40')]))]),
-    u'Grass, Spacing 60 [Skyrim].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'60')]))]),
-    u'Grass, Spacing 80 [Skyrim].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'80')]))]),
-    u'Large Interiors Static Limit Fix [Skyrim].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iLargeIntRefCount', u'999999')]))]),
-    u'Large Interiors Static Limit ~Default [Skyrim].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iLargeIntRefCount', u'1000')]))]),
-    u'Particles, 100 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'100')]))]),
-    u'Particles, 150 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'150')]))]),
-    u'Particles, 250 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'250')]))]),
-    u'Particles, 350 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'350')]))]),
-    u'Particles, 450 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'450')]))]),
-    u'Particles, 550 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'550')]))]),
-    u'Particles, 650 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'650')]))]),
-    u'Particles, 750 ~Default [SkyrimPrefs].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'750')]))]),
-    u'Screenshot, Disabled ~Default [Skyrim].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'bAllowScreenShot', u'0')]))]),
-    u'Screenshot, Enabled [Skyrim].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'bAllowScreenShot', u'1')]))]),
-    u'Shadows, Res512 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'512')]))]),
-    u'Shadows, Res1024 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'1024')]))]),
-    u'Shadows, Res2048 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'2048')]))]),
-    u'Shadows, Res4096 [SkyrimPrefs].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'4096')]))]),
-    u'Vanity Camera, 120 ~Default [Skyrim].ini': OrderedDict(
-        [(u'Camera', OrderedDict([(u'fAutoVanityModeDelay', u'120.0000')]))]),
-    u'Vanity Camera, 600 [Skyrim].ini': OrderedDict(
-        [(u'Camera', OrderedDict([(u'fAutoVanityModeDelay', u'600.0000')]))]),
-    u'Vanity Camera, Disable [Skyrim].ini': OrderedDict(
-        [(u'Camera', OrderedDict([(u'fAutoVanityModeDelay', u'0')]))]),
-    u'Window Mode Top left, 20-225 [Skyrim].ini': OrderedDict(
-        [(u'Display', OrderedDict(
-            [(u'iLocation Y', u'20'), (u'iLocation X', u'225')]))]),
-    u'Window Mode Top left, 5-5 ~Default [Skyrim].ini': OrderedDict(
-        [(u'Display', OrderedDict(
-            [(u'iLocation Y', u'5'), (u'iLocation X', u'5')]))]),
-    u'Window Mode Top left, 5-60 [Skyrim].ini': OrderedDict(
-        [(u'Display', OrderedDict(
-            [(u'iLocation Y', u'5'), (u'iLocation X', u'60')]))]),
-    u'Invalidate, Allow loose files [Skyrim].ini': OrderedDict(
-        [(u'Archive', OrderedDict([(u'bInvalidateOlderFiles', u'1')]))]),
-    u'Invalidate, Disallow loose files ~Default [Skyrim].ini': OrderedDict(
-        [(u'Archive', OrderedDict([(u'bInvalidateOlderFiles', u'0')]))]),
-    u'Depth Of Field, Off [SkyrimPrefs].ini': OrderedDict(
-        [(u'Imagespace', OrderedDict([(u'bDoDepthOfField', u'0')]))]),
-    u'Depth Of Field, On ~Default [SkyrimPrefs].ini': OrderedDict(
-        [(u'Imagespace', OrderedDict([(u'bDoDepthOfField', u'1')]))]),
-    u'In Game Compass, Off [SkyrimPrefs].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowCompass', u'0')]))]),
-    u'In Game Compass, On ~Default [SkyrimPrefs].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowCompass', u'1')]))]),
-    u'In Game Crosshair, Off [SkyrimPrefs].ini': OrderedDict(
-        [(u'Main', OrderedDict([(u'bCrosshairEnabled', u'0')]))]),
-    u'In Game Crosshair, On ~Default [SkyrimPrefs].ini': OrderedDict(
-        [(u'Main', OrderedDict([(u'bCrosshairEnabled', u'1')]))]),
-    u'In Game Quest Markers, Off [SkyrimPrefs].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowFloatingQuestMarkers', u'0')]))]),
-    u'In Game Quest Markers, On ~Default [SkyrimPrefs].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowFloatingQuestMarkers', u'1')]))]),
-    u'Map Quest Markers, Off [SkyrimPrefs].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowQuestMarkers', u'0')]))]),
-    u'Map Quest Markers, On ~Default [SkyrimPrefs].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowQuestMarkers', u'1')]))]),
-    u'Tutorials, Off [Skyrim].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowTutorials', u'0')]))]),
-    u'Tutorials, On [Skyrim].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowTutorials', u'1')]))]),
+    'Archery, ArrowTilt 0.0 ~Default [Skyrim].ini': OrderedDict(
+        [('Combat', OrderedDict(
+            [('f1PArrowTiltUpAngle', '0.0'),
+             ('f3PArrowTiltUpAngle', '0.0')]))]),
+    'Archery, ArrowTilt 0.7 [Skyrim].ini': OrderedDict(
+        [('Combat', OrderedDict(
+            [('f1PArrowTiltUpAngle', '0.7'),
+             ('f3PArrowTiltUpAngle', '0.7')]))]),
+    'Archery, NavMeshMove 12288 [Skyrim].ini': OrderedDict(
+        [('Actor', OrderedDict(
+            [('fVisibleNavmeshMoveDist', '12288.0000')]))]),
+    'Archery, NavMeshMove 4096 ~Default [Skyrim].ini': OrderedDict(
+        [('Actor', OrderedDict(
+            [('fVisibleNavmeshMoveDist', '4096.0000')]))]),
+    'Archery, NavMeshMove 8192 [Skyrim].ini': OrderedDict(
+        [('Actor', OrderedDict(
+            [('fVisibleNavmeshMoveDist', '8192.0000')]))]),
+    'BGS Intro sequence, Disabled [Skyrim].ini': OrderedDict(
+        [('General', OrderedDict([('sIntroSequence', '')]))]),
+    'BGS Intro sequence, Enabled ~Default [Skyrim].ini': OrderedDict(
+        [('General', OrderedDict([('sIntroSequence', 'BGS_LOGO.BIK')]))]),
+    'Border Regions, Disabled [Skyrim].ini': OrderedDict(
+        [('General', OrderedDict([('bBorderRegionsEnabled', '0')]))]),
+    'Border Regions, Enabled ~Default [Skyrim].ini': OrderedDict(
+        [('General', OrderedDict([('bBorderRegionsEnabled', '1')]))]),
+    'Debug Log, Disabled [Skyrim].ini': OrderedDict(
+        [('Papyrus', OrderedDict(
+            [('bEnableLogging', '0'), ('bLoadDebugInformation', '0'),
+             ('bEnableTrace', '0')]))]),
+    'Debug Log, Enabled [Skyrim].ini': OrderedDict(
+        [('Papyrus', OrderedDict(
+        [('bEnableLogging', '1'), ('bLoadDebugInformation', '1'),
+         ('bEnableTrace', '1')]))]),
+    'Grass, Spacing 20 ~Default [Skyrim].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '20')]))]),
+    'Grass, Spacing 40 [Skyrim].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '40')]))]),
+    'Grass, Spacing 60 [Skyrim].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '60')]))]),
+    'Grass, Spacing 80 [Skyrim].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '80')]))]),
+    'Large Interiors Static Limit Fix [Skyrim].ini': OrderedDict(
+        [('General', OrderedDict([('iLargeIntRefCount', '999999')]))]),
+    'Large Interiors Static Limit ~Default [Skyrim].ini': OrderedDict(
+        [('General', OrderedDict([('iLargeIntRefCount', '1000')]))]),
+    'Particles, 100 [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '100')]))]),
+    'Particles, 150 [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '150')]))]),
+    'Particles, 250 [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '250')]))]),
+    'Particles, 350 [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '350')]))]),
+    'Particles, 450 [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '450')]))]),
+    'Particles, 550 [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '550')]))]),
+    'Particles, 650 [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '650')]))]),
+    'Particles, 750 ~Default [SkyrimPrefs].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '750')]))]),
+    'Screenshot, Disabled ~Default [Skyrim].ini': OrderedDict(
+        [('Display', OrderedDict([('bAllowScreenShot', '0')]))]),
+    'Screenshot, Enabled [Skyrim].ini': OrderedDict(
+        [('Display', OrderedDict([('bAllowScreenShot', '1')]))]),
+    'Shadows, Res512 [SkyrimPrefs].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '512')]))]),
+    'Shadows, Res1024 [SkyrimPrefs].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '1024')]))]),
+    'Shadows, Res2048 [SkyrimPrefs].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '2048')]))]),
+    'Shadows, Res4096 [SkyrimPrefs].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '4096')]))]),
+    'Vanity Camera, 120 ~Default [Skyrim].ini': OrderedDict(
+        [('Camera', OrderedDict([('fAutoVanityModeDelay', '120.0000')]))]),
+    'Vanity Camera, 600 [Skyrim].ini': OrderedDict(
+        [('Camera', OrderedDict([('fAutoVanityModeDelay', '600.0000')]))]),
+    'Vanity Camera, Disable [Skyrim].ini': OrderedDict(
+        [('Camera', OrderedDict([('fAutoVanityModeDelay', '0')]))]),
+    'Window Mode Top left, 20-225 [Skyrim].ini': OrderedDict(
+        [('Display', OrderedDict(
+            [('iLocation Y', '20'), ('iLocation X', '225')]))]),
+    'Window Mode Top left, 5-5 ~Default [Skyrim].ini': OrderedDict(
+        [('Display', OrderedDict(
+            [('iLocation Y', '5'), ('iLocation X', '5')]))]),
+    'Window Mode Top left, 5-60 [Skyrim].ini': OrderedDict(
+        [('Display', OrderedDict(
+            [('iLocation Y', '5'), ('iLocation X', '60')]))]),
+    'Invalidate, Allow loose files [Skyrim].ini': OrderedDict(
+        [('Archive', OrderedDict([('bInvalidateOlderFiles', '1')]))]),
+    'Invalidate, Disallow loose files ~Default [Skyrim].ini': OrderedDict(
+        [('Archive', OrderedDict([('bInvalidateOlderFiles', '0')]))]),
+    'Depth Of Field, Off [SkyrimPrefs].ini': OrderedDict(
+        [('Imagespace', OrderedDict([('bDoDepthOfField', '0')]))]),
+    'Depth Of Field, On ~Default [SkyrimPrefs].ini': OrderedDict(
+        [('Imagespace', OrderedDict([('bDoDepthOfField', '1')]))]),
+    'In Game Compass, Off [SkyrimPrefs].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowCompass', '0')]))]),
+    'In Game Compass, On ~Default [SkyrimPrefs].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowCompass', '1')]))]),
+    'In Game Crosshair, Off [SkyrimPrefs].ini': OrderedDict(
+        [('Main', OrderedDict([('bCrosshairEnabled', '0')]))]),
+    'In Game Crosshair, On ~Default [SkyrimPrefs].ini': OrderedDict(
+        [('Main', OrderedDict([('bCrosshairEnabled', '1')]))]),
+    'In Game Quest Markers, Off [SkyrimPrefs].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowFloatingQuestMarkers', '0')]))]),
+    'In Game Quest Markers, On ~Default [SkyrimPrefs].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowFloatingQuestMarkers', '1')]))]),
+    'Map Quest Markers, Off [SkyrimPrefs].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowQuestMarkers', '0')]))]),
+    'Map Quest Markers, On ~Default [SkyrimPrefs].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowQuestMarkers', '1')]))]),
+    'Tutorials, Off [Skyrim].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowTutorials', '0')]))]),
+    'Tutorials, On [Skyrim].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowTutorials', '1')]))]),
 }

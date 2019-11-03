@@ -32,9 +32,9 @@ import imp, os, sys
 
 class UnicodeImporter(object):
     def find_module(self,fullname,path=None):
-        if isinstance(fullname,unicode):
-            fullname = fullname.replace(u'.',u'\\')
-            exts = (u'.pyc',u'.pyo',u'.py')
+        if isinstance(fullname,str):
+            fullname = fullname.replace('.','\\')
+            exts = ('.pyc','.pyo','.py')
         else:
             fullname = fullname.replace('.','\\')
             exts = ('.pyc','.pyo','.py')
@@ -49,10 +49,10 @@ class UnicodeImporter(object):
             return sys.modules[fullname]
         else: # set to avoid reimporting recursively
             sys.modules[fullname] = imp.new_module(fullname)
-        if isinstance(fullname,unicode):
-            filename = fullname.replace(u'.',u'\\')
-            ext = u'.py'
-            initfile = u'__init__'
+        if isinstance(fullname,str):
+            filename = fullname.replace('.','\\')
+            ext = '.py'
+            initfile = '__init__'
         else:
             filename = fullname.replace('.','\\')
             ext = '.py'
@@ -73,12 +73,12 @@ class UnicodeImporter(object):
                 if os.path.exists(initfile):
                     with open(initfile,'U') as fp:
                         code = fp.read()
-                    exec compile(code, initfile, 'exec') in mod.__dict__
+                    exec(compile(code, initfile, 'exec'), mod.__dict__)
             return mod
         except Exception as e: # wrap in ImportError a la python2 - will keep
             # the original traceback even if import errors nest
-            print 'fail', filename+ext
-            raise ImportError, u'caused by ' + repr(e), sys.exc_info()[2]
+            print('fail', filename+ext)
+            raise ImportError('caused by ' + repr(e)).with_traceback(sys.exc_info()[2])
 
 if not hasattr(sys,'frozen'):
     sys.meta_path = [UnicodeImporter()]

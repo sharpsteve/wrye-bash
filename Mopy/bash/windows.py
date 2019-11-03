@@ -28,7 +28,7 @@
 #
 
 from ctypes import *
-from bolt import deprint
+from .bolt import deprint
 import subprocess
 
 try:
@@ -46,7 +46,7 @@ try:
 except ImportError: # linux
     win32gui = None
     raise
-from env import winreg
+from .env import winreg
 
 BUTTONID_OFFSET                 = 1000
 
@@ -252,13 +252,13 @@ class SHSTOCKICONINFO(Structure):
 # Need to do this specially, because doing it via os.startfile, ShellExecute,
 # etc drops off the anchor part of the url
 def StartURL(url):
-    url = u'%s' % url # stringify if a Path instance
+    url = '%s' % url # stringify if a Path instance
     # Get default browser location
     try:
-        key = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT,u'http\\shell\\open\\command')
+        key = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT,'http\\shell\\open\\command')
         value = winreg.EnumValue(key,0)
         cmd = value[1]
-        cmd = cmd.replace(u'%1',url)
+        cmd = cmd.replace('%1',url)
         subprocess.Popen(cmd)
     except WindowsError:
         # Registry detection failed, fallback
@@ -340,7 +340,7 @@ class TaskDialog(object):
 
     def bind(self, task_dialog_event, func):
         """Bind a function to one of the task dialog events."""
-        if task_dialog_event not in self.__events.keys():
+        if task_dialog_event not in list(self.__events.keys()):
             raise Exception("The control does not support the event.")
         self.__events[task_dialog_event].append(func)
         return self
@@ -401,7 +401,7 @@ class TaskDialog(object):
 
     def set_footer_icon(self, icon):
         """Set the icon that appears in the footer of the dialog."""
-        self._footer_is_stock = icon in self.stock_icons.keys()
+        self._footer_is_stock = icon in list(self.stock_icons.keys())
         self._footer_icon = self.stock_icons[
             icon] if self._footer_is_stock else icon
         return self
@@ -450,7 +450,7 @@ class TaskDialog(object):
         if button.value >= BUTTONID_OFFSET:
             button = self.__custom_buttons[button.value - BUTTONID_OFFSET][0]
         else:
-            for key, value in self.stock_button_ids.items():
+            for key, value in list(self.stock_button_ids.items()):
                 if value == button.value:
                     button = key
                     break
@@ -513,7 +513,7 @@ class TaskDialog(object):
             for i, button in enumerate(self._buttons):
                 text, elevated, default = self.__parse_button(button)
 
-                if (text.lower() in self.stock_buttons.keys()
+                if (text.lower() in list(self.stock_buttons.keys())
                     and self._conv_stock):
                     # This is a stock button.
                     conf.dwCommonButtons = (conf.dwCommonButtons
@@ -614,7 +614,7 @@ class TaskDialog(object):
                 button = self.__custom_buttons[wparam - BUTTONID_OFFSET][0]
                 args.append(button)
             else:
-                for key, value in self.stock_button_ids.items():
+                for key, value in list(self.stock_button_ids.items()):
                     if value == wparam:
                         button = key
                         break

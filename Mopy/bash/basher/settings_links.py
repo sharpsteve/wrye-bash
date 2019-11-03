@@ -50,18 +50,18 @@ def _bassLang(): return bass.language if bass.language else \
 #------------------------------------------------------------------------------
 class Settings_BackupSettings(ItemLink):
     """Saves Bash's settings and user data.."""
-    _text =_(u'Backup Settings...')
-    _help = _(u"Backup all of Wrye Bash's settings/data to an archive file.")
+    _text =_('Backup Settings...')
+    _help = _("Backup all of Wrye Bash's settings/data to an archive file.")
 
     @balt.conversation
     def Execute(self):
-        msg = _(u'Do you want to backup your Bash settings now?')
-        if not balt.askYes(Link.Frame, msg,_(u'Backup Bash Settings?')): return
+        msg = _('Do you want to backup your Bash settings now?')
+        if not balt.askYes(Link.Frame, msg,_('Backup Bash Settings?')): return
         with balt.BusyCursor(): BashFrame.SaveSettings(Link.Frame)
         base_dir = bass.settings['bash.backupPath'] or bass.dirs['modsBash']
         settings_file = balt.askSave(Link.Frame,
-                                     title=_(u'Backup Bash Settings'),
-                                     defaultDir=base_dir, wildcard=u'*.7z',
+                                     title=_('Backup Bash Settings'),
+                                     defaultDir=base_dir, wildcard='*.7z',
                                      defaultFile=barb.BackupSettings.
                                      backup_filename(bush.game.fsName))
         if not settings_file: return
@@ -70,27 +70,27 @@ class Settings_BackupSettings(ItemLink):
         try:
             with balt.BusyCursor(): backup.backup_settings(balt)
         except exception.StateError:
-            deprint(u'Backup settings failed', traceback=True)
+            deprint('Backup settings failed', traceback=True)
             backup.warn_message(balt)
 
 #------------------------------------------------------------------------------
 class Settings_RestoreSettings(ItemLink):
     """Restore Bash's settings and user data from backup."""
-    _text = _(u'Restore Settings...')
-    _help = _(u"Restore all of Wrye Bash's settings/data from a backup archive "
-             u"file.")
+    _text = _('Restore Settings...')
+    _help = _("Restore all of Wrye Bash's settings/data from a backup archive "
+             "file.")
 
     @balt.conversation
     def Execute(self):
-        if not balt.askYes(Link.Frame, u'\n\n'.join([
-            _(u'Do you want to restore your Bash settings from a backup?'),
-            _(u'This will force a restart of Wrye Bash once your settings are '
-              u'restored.')]), _(u'Restore Bash Settings?')):
+        if not balt.askYes(Link.Frame, '\n\n'.join([
+            _('Do you want to restore your Bash settings from a backup?'),
+            _('This will force a restart of Wrye Bash once your settings are '
+              'restored.')]), _('Restore Bash Settings?')):
             return
         # former may be None
         base_dir = bass.settings['bash.backupPath'] or bass.dirs['modsBash']
-        settings_file = balt.askOpen(Link.Frame, _(u'Restore Bash Settings'),
-                                     base_dir, u'', u'*.7z')
+        settings_file = balt.askOpen(Link.Frame, _('Restore Bash Settings'),
+                                     base_dir, '', '*.7z')
         if not settings_file: return
         with balt.BusyCursor():
             restore_ = barb.RestoreSettings(settings_file)
@@ -110,17 +110,17 @@ class Settings_RestoreSettings(ItemLink):
                 return
             restarting = True
             balt.showInfo(balt.Link.Frame, '\n'.join([
-                _(u'Your Bash settings have been successfully extracted.'),
-                _(u'Backup Path: ') + settings_file.s, u'', _(u'Before the '
-                  u'settings can take effect, Wrye Bash must restart.'), _(
-                u'Click OK to restart now.')]), _(u'Bash Settings Extracted'))
+                _('Your Bash settings have been successfully extracted.'),
+                _('Backup Path: ') + settings_file.s, '', _('Before the '
+                  'settings can take effect, Wrye Bash must restart.'), _(
+                'Click OK to restart now.')]), _('Bash Settings Extracted'))
             try: # we currently disallow backup and restore on the same boot
                 bass.sys_argv.remove('--backup')
             except ValueError:
                 pass
             Link.Frame.Restart(['--restore'], ['--filename', backup_dir.s])
         except BoltError as e:
-            deprint(u'Restore settings failed:', traceback=True)
+            deprint('Restore settings failed:', traceback=True)
             restore_.warn_message(balt, e.message)
         finally:
             if not restarting and backup_dir is not None:
@@ -129,8 +129,8 @@ class Settings_RestoreSettings(ItemLink):
 #------------------------------------------------------------------------------
 class Settings_SaveSettings(ItemLink):
     """Saves Bash's settings and user data."""
-    _text = _(u'Save Settings')
-    _help = _(u"Save all of Wrye Bash's settings/data now.")
+    _text = _('Save Settings')
+    _help = _("Save all of Wrye Bash's settings/data now.")
 
     def Execute(self):
         BashFrame.SaveSettings(Link.Frame)
@@ -138,10 +138,10 @@ class Settings_SaveSettings(ItemLink):
 #------------------------------------------------------------------------------
 class Settings_ExportDllInfo(AppendableLink, ItemLink):
     """Exports list of good and bad dll's."""
-    _text = _(u"Export list of allowed/disallowed %s plugin DLLs") % \
+    _text = _("Export list of allowed/disallowed %s plugin DLLs") % \
         bush.game.se.se_abbrev
-    _help = _(u"Export list of allowed/disallowed plugin DLLs to a txt file"
-              u" (for BAIN).")
+    _help = _("Export list of allowed/disallowed plugin DLLs to a txt file"
+              " (for BAIN).")
 
     def _append(self, window): return bool(bush.game.se.se_abbrev or
                                            bush.game.sd.sd_abbrev)
@@ -150,34 +150,34 @@ class Settings_ExportDllInfo(AppendableLink, ItemLink):
         textDir = bass.dirs['patches']
         textDir.makedirs()
         #--File dialog
-        title = _(u'Export list of allowed/disallowed plugin DLLs to:')
-        file_ = bush.game.se.se_abbrev + u' ' + _(u'DLL permissions') + u'.txt'
+        title = _('Export list of allowed/disallowed plugin DLLs to:')
+        file_ = bush.game.se.se_abbrev + ' ' + _('DLL permissions') + '.txt'
         textPath = self._askSave(title=title, defaultDir=textDir,
-                                 defaultFile=file_, wildcard=u'*.txt')
+                                 defaultFile=file_, wildcard='*.txt')
         if not textPath: return
         with textPath.open('w',encoding='utf-8-sig') as out:
-            out.write(u'goodDlls '+_(u'(those dlls that you have chosen to allow to be installed)')+u'\r\n')
+            out.write('goodDlls '+_('(those dlls that you have chosen to allow to be installed)')+'\r\n')
             if bass.settings['bash.installers.goodDlls']:
                 for dll in bass.settings['bash.installers.goodDlls']:
-                    out.write(u'dll:'+dll+u':\r\n')
+                    out.write('dll:'+dll+':\r\n')
                     for index, version in enumerate(bass.settings['bash.installers.goodDlls'][dll]):
-                        out.write(u'version %02d: %s\r\n' % (index, version))
-            else: out.write(u'None\r\n')
-            out.write(u'badDlls '+_(u'(those dlls that you have chosen to NOT allow to be installed)')+u'\r\n')
+                        out.write('version %02d: %s\r\n' % (index, version))
+            else: out.write('None\r\n')
+            out.write('badDlls '+_('(those dlls that you have chosen to NOT allow to be installed)')+'\r\n')
             if bass.settings['bash.installers.badDlls']:
                 for dll in bass.settings['bash.installers.badDlls']:
-                    out.write(u'dll:'+dll+u':\r\n')
+                    out.write('dll:'+dll+':\r\n')
                     for index, version in enumerate(bass.settings['bash.installers.badDlls'][dll]):
-                        out.write(u'version %02d: %s\r\n' % (index, version))
-            else: out.write(u'None\r\n')
+                        out.write('version %02d: %s\r\n' % (index, version))
+            else: out.write('None\r\n')
 
 #------------------------------------------------------------------------------
 class Settings_ImportDllInfo(AppendableLink, ItemLink):
     """Imports list of good and bad dll's."""
-    _text = _(u"Import list of allowed/disallowed %s plugin DLLs") % \
+    _text = _("Import list of allowed/disallowed %s plugin DLLs") % \
         bush.game.se.se_abbrev
-    _help = _(u"Import list of allowed/disallowed plugin DLLs from a txt file"
-        u" (for BAIN).")
+    _help = _("Import list of allowed/disallowed plugin DLLs from a txt file"
+        " (for BAIN).")
 
     def _append(self, window): return bool(bush.game.se.se_abbrev or
                                            bush.game.sd.sd_abbrev)
@@ -186,56 +186,56 @@ class Settings_ImportDllInfo(AppendableLink, ItemLink):
         textDir = bass.dirs['patches']
         textDir.makedirs()
         #--File dialog
-        defFile = bush.game.se.se_abbrev + u' ' + _(
-            u'dll permissions') + u'.txt'
-        title = _(u'Import list of allowed/disallowed plugin DLLs from:')
+        defFile = bush.game.se.se_abbrev + ' ' + _(
+            'dll permissions') + '.txt'
+        title = _('Import list of allowed/disallowed plugin DLLs from:')
         textPath = self._askOpen(title=title, defaultDir=textDir,
-                                 defaultFile=defFile, wildcard=u'*.txt',
+                                 defaultFile=defFile, wildcard='*.txt',
                                  mustExist=True)
         if not textPath: return
-        message = (_(u'Merge permissions from file with current dll permissions?')
-                   + u'\n' +
-                   _(u"('No' Replaces current permissions instead.)")
+        message = (_('Merge permissions from file with current dll permissions?')
+                   + '\n' +
+                   _("('No' Replaces current permissions instead.)")
                    )
         replace = not balt.askYes(Link.Frame, message,
-                                  _(u'Merge permissions?'))
+                                  _('Merge permissions?'))
         try:
             with textPath.open('r',encoding='utf-8-sig') as ins:
                 Dlls = {'goodDlls':{},'badDlls':{}}
                 for line in ins:
                     line = line.strip()
-                    if line.startswith(u'goodDlls'):
+                    if line.startswith('goodDlls'):
                         current = Dlls['goodDlls']
-                    if line.startswith(u'badDlls'):
+                    if line.startswith('badDlls'):
                         current = Dlls['badDlls']
-                    elif line.startswith(u'dll:'):
-                        dll = line.split(u':',1)[1].strip()
+                    elif line.startswith('dll:'):
+                        dll = line.split(':',1)[1].strip()
                         current.setdefault(dll,[])
-                    elif line.startswith(u'version'):
-                        ver = line.split(u':',1)[1]
+                    elif line.startswith('version'):
+                        ver = line.split(':',1)[1]
                         ver = eval(ver)
                         current[dll].append(ver)
-                        print dll,':',ver
+                        print(dll,':',ver)
             if not replace:
                 bass.settings['bash.installers.goodDlls'].update(Dlls['goodDlls'])
                 bass.settings['bash.installers.badDlls'].update(Dlls['badDlls'])
             else:
                 bass.settings['bash.installers.goodDlls'], bass.settings['bash.installers.badDlls'] = Dlls['goodDlls'], Dlls['badDlls']
         except UnicodeError:
-            self._showError(_(u'Wrye Bash could not load %s, because it is not'
-                              u' saved in UTF-8 format.  Please resave it in '
-                              u'UTF-8 format and try again.') % textPath.s)
+            self._showError(_('Wrye Bash could not load %s, because it is not'
+                              ' saved in UTF-8 format.  Please resave it in '
+                              'UTF-8 format and try again.') % textPath.s)
         except Exception as e:
-            deprint(u'Error reading', textPath.s, traceback=True)
-            self._showError(_(u'Wrye Bash could not load %s, because there was'
-                              u' an error in the format of the file.')
+            deprint('Error reading', textPath.s, traceback=True)
+            self._showError(_('Wrye Bash could not load %s, because there was'
+                              ' an error in the format of the file.')
                             % textPath.s)
 
 #------------------------------------------------------------------------------
 class Settings_Colors(ItemLink):
     """Shows the color configuration dialog."""
-    _text = _(u'Colors...')
-    _help = _(u"Configure the custom colors used in the UI.")
+    _text = _('Colors...')
+    _help = _("Configure the custom colors used in the UI.")
 
     def Execute(self): ColorDialog.Display()
 
@@ -244,9 +244,9 @@ class Settings_IconSize(RadioLink):
     def __init__(self, sb_icon_size):
         super(Settings_IconSize, self).__init__()
         self.sb_icon_size = sb_icon_size
-        self._text = unicode(sb_icon_size)
-        self._help = _(u"Sets the status bar icons to %(sb_icon_size)s pixels") % (
-            {'sb_icon_size': unicode(sb_icon_size)})
+        self._text = str(sb_icon_size)
+        self._help = _("Sets the status bar icons to %(sb_icon_size)s pixels") % (
+            {'sb_icon_size': str(sb_icon_size)})
 
     def _check(self):
         return self.sb_icon_size == bass.settings['bash.statusbar.iconSize']
@@ -258,8 +258,8 @@ class Settings_IconSize(RadioLink):
 #------------------------------------------------------------------------------
 class Settings_StatusBar_ShowVersions(CheckLink):
     """Show/Hide version numbers for buttons on the statusbar."""
-    _text = _(u'Show App Version')
-    _help = _(u"Show/hide version numbers for buttons on the status bar.")
+    _text = _('Show App Version')
+    _help = _("Show/hide version numbers for buttons on the status bar.")
 
     def _check(self): return bass.settings['bash.statusbar.showversion']
 
@@ -271,7 +271,7 @@ class Settings_StatusBar_ShowVersions(CheckLink):
                     button.gButton.SetToolTip(tooltip(button.sb_button_tip))
         if BashStatusBar.obseButton.button_state:
             for button in App_Button.obseButtons:
-                button.gButton.SetToolTip(tooltip(getattr(button,'obseTip',u'')))
+                button.gButton.SetToolTip(tooltip(getattr(button,'obseTip','')))
 
 #------------------------------------------------------------------------------
 class Settings_Languages(TransLink):
@@ -279,10 +279,10 @@ class Settings_Languages(TransLink):
     def _decide(self, window, selection):
         languages = []
         for f in bass.dirs['l10n'].list():
-            if f.cext == u'.txt' and f.csbody[-3:] != u'new':
+            if f.cext == '.txt' and f.csbody[-3:] != 'new':
                 languages.append(f.body)
         if languages:
-            subMenu = MenuLink(_(u'Language'))
+            subMenu = MenuLink(_('Language'))
             for lang in languages:
                 subMenu.links.append(_Settings_Language(lang.s))
             if GPath('english') not in languages:
@@ -290,9 +290,9 @@ class Settings_Languages(TransLink):
             return subMenu
         else:
             class _NoLang(EnabledLink):
-                _text = _(u'Language')
-                _help = _(u"Wrye Bash was unable to detect any translation"
-                         u" files.")
+                _text = _('Language')
+                _help = _("Wrye Bash was unable to detect any translation"
+                         " files.")
                 def _enable(self): return False
             return _NoLang()
 
@@ -300,13 +300,13 @@ class Settings_Languages(TransLink):
 class _Settings_Language(EnabledLink, RadioLink):
     """Specific language for Wrye Bash."""
     languageMap = {
-        u'chinese (simplified)': _(u'Chinese (Simplified)') + u' (简体中文)',
-        u'chinese (traditional)': _(u'Chinese (Traditional)') + u' (繁体中文)',
-        u'de': _(u'German') + u' (Deutsch)',
-        u'pt_opt': _(u'Portuguese') + u' (português)',
-        u'italian': _(u'Italian') + u' (italiano)',
-        u'russian': _(u'Russian') + u' (ру́сский язы́к)',
-        u'english': _(u'English') + u' (English)',
+        'chinese (simplified)': _('Chinese (Simplified)') + ' (简体中文)',
+        'chinese (traditional)': _('Chinese (Traditional)') + ' (繁体中文)',
+        'de': _('German') + ' (Deutsch)',
+        'pt_opt': _('Portuguese') + ' (português)',
+        'italian': _('Italian') + ' (italiano)',
+        'russian': _('Russian') + ' (ру́сский язы́к)',
+        'english': _('English') + ' (English)',
         }
 
     def __init__(self, lang):
@@ -317,13 +317,13 @@ class _Settings_Language(EnabledLink, RadioLink):
 
     def _initData(self, window, selection):
         if self._lang == _bassLang():
-            self._help = _(u"Currently using %(languagename)s as the active "
-                          u"language.") % ({'languagename': self._text})
+            self._help = _("Currently using %(languagename)s as the active "
+                          "language.") % ({'languagename': self._text})
             self.check = True
         else:
             self._help = _(
-                u"Restart Wrye Bash and use %(languagename)s as the active "
-                u"language.") % ({'languagename': self._text})
+                "Restart Wrye Bash and use %(languagename)s as the active "
+                "language.") % ({'languagename': self._text})
             self.check = False
 
     def _check(self): return self.check
@@ -332,25 +332,25 @@ class _Settings_Language(EnabledLink, RadioLink):
 
     def Execute(self):
         if balt.askYes(Link.Frame,
-                _(u'Wrye Bash needs to restart to change languages.  Do you '
-                  u'want to restart?'), _(u'Restart Wrye Bash')):
+                _('Wrye Bash needs to restart to change languages.  Do you '
+                  'want to restart?'), _('Restart Wrye Bash')):
             Link.Frame.Restart(['--Language', self._lang])
 
 #------------------------------------------------------------------------------
 class Settings_PluginEncodings(MenuLink):
     _plugin_encodings = {
-        'gbk': _(u'Chinese (Simplified)'),
-        'big5': _(u'Chinese (Traditional)'),
-        'cp1251': _(u'Russian'),
-        'cp932': _(u'Japanese (Shift_JIS)'),
-        'utf-8': _(u'UTF-8'),
-        'cp1252': _(u'Western European (English, French, German, etc)'),
+        'gbk': _('Chinese (Simplified)'),
+        'big5': _('Chinese (Traditional)'),
+        'cp1251': _('Russian'),
+        'cp932': _('Japanese (Shift_JIS)'),
+        'utf-8': _('UTF-8'),
+        'cp1252': _('Western European (English, French, German, etc)'),
         }
     def __init__(self):
-        super(Settings_PluginEncodings, self).__init__(_(u'Plugin Encoding'))
-        self.links.append(Settings_PluginEncoding(_(u'Automatic'),None))
+        super(Settings_PluginEncodings, self).__init__(_('Plugin Encoding'))
+        self.links.append(Settings_PluginEncoding(_('Automatic'),None))
         # self.links.append(SeparatorLink())
-        enc_name = sorted(self._plugin_encodings.items(), key=lambda x: x[1])
+        enc_name = sorted(list(self._plugin_encodings.items()), key=lambda x: x[1])
         for encoding,name in enc_name:
             self.links.append(Settings_PluginEncoding(name,encoding))
 
@@ -360,7 +360,7 @@ class Settings_PluginEncoding(RadioLink):
         super(Settings_PluginEncoding, self).__init__()
         self._text = name
         self.encoding = encoding
-        self._help = _(u"Select %(encodingname)s encoding for Wrye Bash to use."
+        self._help = _("Select %(encodingname)s encoding for Wrye Bash to use."
             ) % ({'encodingname': self._text})
 
     def _check(self): return self.encoding == bass.settings[
@@ -374,7 +374,7 @@ class Settings_PluginEncoding(RadioLink):
 class Settings_Games(MenuLink):
 
     def __init__(self):
-        super(Settings_Games, self).__init__(_(u'Game'))
+        super(Settings_Games, self).__init__(_('Game'))
         for fsName in bush.foundGames:
             self.links.append(_Settings_Game(fsName))
 
@@ -382,7 +382,7 @@ class _Settings_Game(RadioLink):
     def __init__(self,game):
         super(_Settings_Game, self).__init__()
         self._text = bush.get_display_name(game)
-        self._help = _(u"Restart Wrye Bash to manage %(game)s.") % (
+        self._help = _("Restart Wrye Bash to manage %(game)s.") % (
             {'game': self._text})
 
     def _check(self): return self._text == bush.game.displayName
@@ -390,12 +390,12 @@ class _Settings_Game(RadioLink):
     def Execute(self):
         if self._check(): return
         if not balt.askContinue(Link.Frame,
-                                _(u'Note: Switching games this way will '
-                                  u'simply relaunch this Wrye Bash '
-                                  u'installation with the -o command line '
-                                  u'switch.\n\nThat means manually added '
-                                  u'application launchers in the status bar '
-                                  u'will not change after switching.'),
+                                _('Note: Switching games this way will '
+                                  'simply relaunch this Wrye Bash '
+                                  'installation with the -o command line '
+                                  'switch.\n\nThat means manually added '
+                                  'application launchers in the status bar '
+                                  'will not change after switching.'),
                                 'bash.switch_games_warning.shown'):
             return
         Link.Frame.Restart(['--oblivionPath', bush.game_path(self._text).s])
@@ -411,14 +411,14 @@ class Settings_UnHideButtons(TransLink):
             if link.uid in hide:
                 hidden.append(link)
         if hidden:
-            subMenu = MenuLink(_(u'Unhide Buttons'))
+            subMenu = MenuLink(_('Unhide Buttons'))
             for link in hidden:
                 subMenu.links.append(Settings_UnHideButton(link))
             return subMenu
         else:
             class _NoButtons(EnabledLink):
-                _text = _(u'Unhide Buttons')
-                _help = _(u"No hidden buttons available to unhide.")
+                _text = _('Unhide Buttons')
+                _help = _("No hidden buttons available to unhide.")
                 def _enable(self): return False
             return _NoButtons()
 
@@ -441,15 +441,15 @@ class Settings_UnHideButton(ItemLink):
             # No good, use its uid as a last resort
             tip_ = self.link.uid
         self._text = tip_
-        self._help = _(u"Unhide the '%s' status bar button.") % tip_
+        self._help = _("Unhide the '%s' status bar button.") % tip_
 
     def Execute(self): Link.Frame.statusBar.UnhideButton(self.link)
 
 #------------------------------------------------------------------------------
 class Settings_UseAltName(BoolLink):
-    _text, key, _help = _(u'Use Alternate Wrye Bash Name'), 'bash.useAltName',\
-        _(u'Use an alternate display name for Wrye Bash based on the game it'
-          u' is managing.')
+    _text, key, _help = _('Use Alternate Wrye Bash Name'), 'bash.useAltName',\
+        _('Use an alternate display name for Wrye Bash based on the game it'
+          ' is managing.')
 
     def Execute(self):
         super(Settings_UseAltName, self).Execute()
@@ -457,49 +457,49 @@ class Settings_UseAltName(BoolLink):
 
 #------------------------------------------------------------------------------
 class Settings_UAC(AppendableLink, ItemLink):
-    _text = _(u'Administrator Mode')
-    _help = _(u'Restart Wrye Bash with administrator privileges.')
+    _text = _('Administrator Mode')
+    _help = _('Restart Wrye Bash with administrator privileges.')
 
     def _append(self, window): return env.isUAC
 
     def Execute(self):
         if balt.askYes(Link.Frame,
-                _(u'Restart Wrye Bash with administrator privileges?'),
-                _(u'Administrator Mode'), ):
+                _('Restart Wrye Bash with administrator privileges?'),
+                _('Administrator Mode'), ):
             Link.Frame.Restart(['--uac'])
 
 class Settings_Deprint(CheckLink):
     """Turn on deprint/delist."""
-    _text = _(u'Debug Mode')
-    _help = _(u"Turns on extra debug prints to help debug an error or just for "
-             u"advanced testing.")
+    _text = _('Debug Mode')
+    _help = _("Turns on extra debug prints to help debug an error or just for "
+             "advanced testing.")
 
     def _check(self): return bolt.deprintOn
 
     def Execute(self):
-        deprint(_(u'Debug Printing: Off'))
+        deprint(_('Debug Printing: Off'))
         bolt.deprintOn = not bolt.deprintOn
-        deprint(_(u'Debug Printing: On'))
+        deprint(_('Debug Printing: On'))
 
 class Settings_DumpTranslator(AppendableLink, ItemLink):
     """Dumps new translation key file using existing key, value pairs."""
-    _text = _(u'Dump Translator')
-    _help = _(u"Generate a new version of the translator file for your locale.")
+    _text = _('Dump Translator')
+    _help = _("Generate a new version of the translator file for your locale.")
 
     def _append(self, window):
         """Can't dump the strings if the files don't exist."""
         return not hasattr(sys,'frozen')
 
     def Execute(self):
-        message = _(u'Generate Bash program translator file?') + u'\n\n' + _(
-            u'This function is for translating Bash itself (NOT mods) into '
-            u'non-English languages.  For more info, '
-            u'see Internationalization section of Bash readme.')
+        message = _('Generate Bash program translator file?') + '\n\n' + _(
+            'This function is for translating Bash itself (NOT mods) into '
+            'non-English languages.  For more info, '
+            'see Internationalization section of Bash readme.')
         if not self._askContinue(message, 'bash.dumpTranslator.continue',
-                                _(u'Dump Translator')): return
+                                _('Dump Translator')): return
         outPath = bass.dirs['l10n']
         with balt.BusyCursor():
             outFile = bolt.dumpTranslator(outPath.s, _bassLang())
         self._showOk(_(
-            u'Translation keys written to ') + u'Mopy\\bash\\l10n\\' + outFile,
-                     _(u'Dump Translator') + u': ' + outPath.stail)
+            'Translation keys written to ') + 'Mopy\\bash\\l10n\\' + outFile,
+                     _('Dump Translator') + ': ' + outPath.stail)

@@ -41,13 +41,14 @@ from ctypes import *
 import math
 import os
 from os.path import exists, join
+from functools import reduce
 try:
     #See if cint is being used by Wrye Bash
-    from bolt import CBash as CBashEnabled
-    from bolt import GPath, deprint, Path
-    from bolt import encode as _enc
-    from bolt import decode as _uni
-    import bolt
+    from .bolt import CBash as CBashEnabled
+    from .bolt import GPath, deprint, Path
+    from .bolt import encode as _enc
+    from .bolt import decode as _uni
+    from . import bolt
     def _encode(text,*args,**kwdargs):
         if len(args) > 1:
             args = list(args)
@@ -71,7 +72,7 @@ except:
     def GPath(obj):
         return obj
     def deprint(obj):
-        print obj
+        print(obj)
     def _(obj):
         return obj
 
@@ -92,16 +93,16 @@ except:
         )
 
     def _unicode(text,encoding=None,avoidEncodings=()):
-        if isinstance(text,unicode) or text is None: return text
+        if isinstance(text,str) or text is None: return text
         # Try the user specified encoding first
         if encoding:
-            try: return unicode(text,encoding)
+            try: return str(text,encoding)
             except UnicodeDecodeError: pass
         # If that fails, fall back to the old method, trial and error
         for encoding in encodingOrder:
-            try: return unicode(text,encoding)
+            try: return str(text,encoding)
             except UnicodeDecodeError: pass
-        raise UnicodeDecodeError(u'Text could not be decoded using any method')
+        raise UnicodeDecodeError('Text could not be decoded using any method')
     _uni = _unicode
 
     def _encode(text,encodings=encodingOrder,firstEncoding=None,returnEncoding=False):
@@ -123,7 +124,7 @@ except:
                 else: return text.encode(encoding)
             except UnicodeEncodeError:
                 pass
-        raise UnicodeEncodeError(u'Text could not be encoded using any of the following encodings: %s' % encodings)
+        raise UnicodeEncodeError('Text could not be encoded using any of the following encodings: %s' % encodings)
     _enc = _encode
 
 
@@ -153,13 +154,13 @@ _CBash = None
 # path to compiled dir hardcoded since importing bosh would be circular
 # TODO: refactor to avoid circular deps
 if CBashEnabled == 0: #regular depends on the filepath existing.
-    paths = [join(u'bash', u'compiled', u'CBash.dll'),join(u'compiled', u'CBash.dll')]
+    paths = [join('bash', 'compiled', 'CBash.dll'),join('compiled', 'CBash.dll')]
 elif CBashEnabled == 1: #force python mode
     paths = []
 elif CBashEnabled == 2: #attempt to force CBash mode
-    paths = [join(u'bash',u'compiled',filename) for filename in [u'CBash.dll',u'rename_CBash.dll',u'_CBash.dll']]
+    paths = [join('bash','compiled',filename) for filename in ['CBash.dll','rename_CBash.dll','_CBash.dll']]
 else: #attempt to force path to CBash dll
-    paths = [join(path,u'CBash.dll') for path in CBashEnabled]
+    paths = [join(path,'CBash.dll') for path in CBashEnabled]
 
 try:
     for path in paths:
@@ -167,27 +168,27 @@ try:
             # CDLL doesn't play with unicode path strings nicely on windows :(
             # Use this workaround
             handle = None
-            if isinstance(path,unicode) and os.name in ('nt','ce'):
+            if isinstance(path,str) and os.name in ('nt','ce'):
                 LoadLibrary = windll.kernel32.LoadLibraryW
                 handle = LoadLibrary(path)
-            from env import get_file_version
+            from .env import get_file_version
             if get_file_version(path) < (0, 7):
-                raise ImportError(u'Bundled CBash version is too old for this '
-                                  u'Wrye Bash version. Only 0.7.0+ is '
-                                  u'supported.')
+                raise ImportError('Bundled CBash version is too old for this '
+                                  'Wrye Bash version. Only 0.7.0+ is '
+                                  'supported.')
             _CBash = CDLL(path,handle=handle)
             break
     del paths
 except (AttributeError,ImportError,OSError) as error:
     _CBash = None
-    deprint(u'Failed to import CBash.', traceback=True)
+    deprint('Failed to import CBash.', traceback=True)
 except:
     _CBash = None
     raise
 
 if _CBash:
     def LoggingCB(logString):
-        print logString,
+        print(logString, end=' ')
         return 0
 
     def RaiseCB(raisedString):
@@ -207,7 +208,7 @@ if _CBash:
         #CBash. Dunno.
 
         #This particular callback may disappear, or be morphed into something else
-        print "CBash encountered an error", raisedString, "Check the log."
+        print("CBash encountered an error", raisedString, "Check the log.")
 ##        raise CBashError("Check the log.")
         return
 
@@ -362,7 +363,7 @@ class CBashApi (object):
     VersionRevision = _CGetVersionRevision() if Enabled else 0
     VersionInfo = (VersionMajor, VersionMinor, VersionRevision)
 
-    VersionText = u'v%u.%u.%u' % VersionInfo if Enabled else ''
+    VersionText = 'v%u.%u.%u' % VersionInfo if Enabled else ''
 
 #Helper functions
 class API_FIELDS(object):
@@ -432,14 +433,14 @@ class ICASEMixin:
     def count(self, other, *args):
         try:
             if isinstance(self,str): func = str.count
-            else: func = unicode.count
+            else: func = str.count
             return func(self.lower(), other.lower(), *args)
         except AttributeError: return 0
 
     def endswith(self, other, *args):
         try:
             if isinstance(self,str): func = str.endswith
-            else: func = unicode.endswith
+            else: func = str.endswith
             if isinstance(other, tuple):
                 for value in other:
                     if func(self.lower(), value.lower(), *args):
@@ -451,35 +452,35 @@ class ICASEMixin:
     def find(self, other, *args):
         try:
             if isinstance(self,str): func = str.find
-            else: func = unicode.find
+            else: func = str.find
             return func(self.lower(), other.lower(), *args)
         except AttributeError: return -1
 
     def index(self, other, *args):
         try:
             if isinstance(self,str): func = str.index
-            else: func = unicode.index
+            else: func = str.index
             return func(self.lower(), other.lower(), *args)
         except AttributeError: return ValueError
 
     def rfind(self, other, *args):
         try:
             if isinstance(self,str): func = str.rfind
-            else: func = unicode.rfind
+            else: func = str.rfind
             return func(self.lower(), other.lower(), *args)
         except AttributeError: return -1
 
     def rindex(self, other, *args):
         try:
             if isinstance(self,str): func = str.rindex
-            else: func = unicode.rindex
+            else: func = str.rindex
             return func(self.lower(), other.lower(), *args)
         except AttributeError: return ValueError
 
     def startswith(self, other, *args):
         try:
             if isinstance(self,str): func = str.startswith
-            else: func = unicode.startswith
+            else: func = str.startswith
             if isinstance(other, tuple):
                 for value in other:
                     if func(self.lower(), value.lower(), *args):
@@ -492,7 +493,7 @@ class ISTRING(ICASEMixin,str):
     """Case insensitive strings class. Performs like str except comparisons are case insensitive."""
     pass
 
-class IUNICODE(ICASEMixin,unicode):
+class IUNICODE(ICASEMixin,str):
     """Case insensitive unicode class.  Performs like unicode except comparisons
        are case insensitive."""
     pass
@@ -521,10 +522,10 @@ class FormID(object):
             return hash((self.master, self.objectID))
 
         def __getitem__(self, x):
-            return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
+            return self.master if x == 0 else int(self.objectID & 0x00FFFFFF)
 
         def __repr__(self):
-            return u"UnvalidatedFormID('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFFL))
+            return "UnvalidatedFormID('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFF))
 
         def Validate(self, target):
             """Unvalidated FormIDs have to be tested for each destination collection
@@ -559,7 +560,7 @@ class FormID(object):
             return hash((None, self.objectID))
 
         def __getitem__(self, x):
-            return None if x == 0 else int(self.objectID & 0x00FFFFFFL)
+            return None if x == 0 else int(self.objectID & 0x00FFFFFF)
 
         def __repr__(self):
             return "InvalidFormID(None, 0x%06X)" % (self.objectID,)
@@ -589,10 +590,10 @@ class FormID(object):
             return hash((self.master, self.objectID))
 
         def __getitem__(self, x):
-            return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
+            return self.master if x == 0 else int(self.objectID & 0x00FFFFFF)
 
         def __repr__(self):
-            return u"ValidFormID('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFFL))
+            return "ValidFormID('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFF))
 
         def Validate(self, target):
             """This FormID has already been validated for a specific collection.
@@ -648,7 +649,7 @@ class FormID(object):
             return hash((self.shortID, None))
 
         def __getitem__(self, x):
-            return self.shortID >> 24 if x == 0 else int(self.shortID & 0x00FFFFFFL)
+            return self.shortID >> 24 if x == 0 else int(self.shortID & 0x00FFFFFF)
 
         def __repr__(self):
             return "RawFormID(0x%08X)" % (self.shortID,)
@@ -668,7 +669,7 @@ class FormID(object):
            FormID       = (FormID()        , None)
            Raw FormID   = (int(FormID)     , None)
            Empty FormID = (None            , None)"""
-        self.formID = FormID.EmptyFormID() if master is None else master.formID if isinstance(master, FormID) else FormID.RawFormID(master) if objectID is None else FormID.UnvalidatedFormID(GPath(master), objectID) if isinstance(master, (basestring, Path)) else None
+        self.formID = FormID.EmptyFormID() if master is None else master.formID if isinstance(master, FormID) else FormID.RawFormID(master) if objectID is None else FormID.UnvalidatedFormID(GPath(master), objectID) if isinstance(master, (str, Path)) else None
         if self.formID is None:
             masterstr = _CGetLongIDName(master, objectID, 0)
             self.formID = FormID.ValidFormID(GPath(masterstr), objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else FormID.InvalidFormID(objectID)
@@ -685,14 +686,14 @@ class FormID(object):
         try: return other[1] != self.formID[1] or other[0] != self.formID[0]
         except TypeError: return False
 
-    def __nonzero__(self):
+    def __bool__(self):
         return not isinstance(self.formID, (FormID.EmptyFormID, FormID.InvalidFormID))
 
     def __getitem__(self, x):
         return self.formID[0] if x == 0 else self.formID[1]
 
     def __setitem__(self, x, nValue):
-        if x == 0: self.formID = FormID.EmptyFormID() if nValue is None else FormID.UnvalidatedFormID(nValue, self.formID[1]) if isinstance(nValue, basestring) else FormID.RawFormID(nValue)
+        if x == 0: self.formID = FormID.EmptyFormID() if nValue is None else FormID.UnvalidatedFormID(nValue, self.formID[1]) if isinstance(nValue, str) else FormID.RawFormID(nValue)
         else: self.formID = FormID.UnvalidatedFormID(self.formID[0], nValue) if nValue is not None else FormID.EmptyFormID() if self.formID[0] is None else FormID.RawFormID(self.formID[0])
 
     def __len__(self):
@@ -713,13 +714,13 @@ class FormID(object):
     def FilterValidDict(formIDs, target, KeysAreFormIDs, ValuesAreFormIDs, AsShort=False):
         if KeysAreFormIDs:
             if ValuesAreFormIDs:
-                if AsShort: return dict([(key.GetShortFormID(target), value.GetShortFormID(target)) for key, value in formIDs.iteritems() if key.ValidateFormID(target) and value.ValidateFormID(target)])
-                return dict([(key, value) for key, value in formIDs.iteritems() if key.ValidateFormID(target) and value.ValidateFormID(target)])
-            if AsShort: return dict([(key.GetShortFormID(target), value) for key, value in formIDs.iteritems() if key.ValidateFormID(target)])
-            return dict([(key, value) for key, value in formIDs.iteritems() if key.ValidateFormID(target)])
+                if AsShort: return dict([(key.GetShortFormID(target), value.GetShortFormID(target)) for key, value in formIDs.items() if key.ValidateFormID(target) and value.ValidateFormID(target)])
+                return dict([(key, value) for key, value in formIDs.items() if key.ValidateFormID(target) and value.ValidateFormID(target)])
+            if AsShort: return dict([(key.GetShortFormID(target), value) for key, value in formIDs.items() if key.ValidateFormID(target)])
+            return dict([(key, value) for key, value in formIDs.items() if key.ValidateFormID(target)])
         if ValuesAreFormIDs:
-            if AsShort: return dict([(key, value.GetShortFormID(target)) for key, value in formIDs.iteritems() if value.ValidateFormID(target)])
-            return dict([(key, value) for key, value in formIDs.iteritems() if value.ValidateFormID(target)])
+            if AsShort: return dict([(key, value.GetShortFormID(target)) for key, value in formIDs.items() if value.ValidateFormID(target)])
+            return dict([(key, value) for key, value in formIDs.items() if value.ValidateFormID(target)])
         return formIDs
 
     def ValidateFormID(self, target):
@@ -756,10 +757,10 @@ class ActorValue(object):
             return hash((self.master, self.objectID))
 
         def __getitem__(self, x):
-            return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
+            return self.master if x == 0 else int(self.objectID & 0x00FFFFFF)
 
         def __repr__(self):
-            return u"UnvalidatedActorValue('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFFL))
+            return "UnvalidatedActorValue('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFF))
 
         def Validate(self, target):
             """Unvalidated ActorValues have to be tested for each destination collection.
@@ -795,7 +796,7 @@ class ActorValue(object):
             return hash((None, self.objectID))
 
         def __getitem__(self, x):
-            return None if x == 0 else int(self.objectID & 0x00FFFFFFL)
+            return None if x == 0 else int(self.objectID & 0x00FFFFFF)
 
         def __repr__(self):
             return "InvalidActorValue(None, 0x%06X)" % (self.objectID,)
@@ -824,10 +825,10 @@ class ActorValue(object):
             return hash((self.master, self.objectID))
 
         def __getitem__(self, x):
-            return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
+            return self.master if x == 0 else int(self.objectID & 0x00FFFFFF)
 
         def __repr__(self):
-            return u"ValidActorValue('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFFL))
+            return "ValidActorValue('%s', 0x%06X)" % (self.master, int(self.objectID & 0x00FFFFFF))
 
         def Validate(self, target):
             """This ActorValue has already been validated for a specific record.
@@ -884,7 +885,7 @@ class ActorValue(object):
             return hash((self.shortID, None))
 
         def __getitem__(self, x):
-            return self.shortID >> 24 if x == 0 else int(self.shortID & 0x00FFFFFFL)
+            return self.shortID >> 24 if x == 0 else int(self.shortID & 0x00FFFFFF)
 
         def __repr__(self):
             return "RawActorValue(0x%08X)" % (self.shortID,)
@@ -905,7 +906,7 @@ class ActorValue(object):
            ActorValue        = (ActorValue()    , None)
            Raw ActorValue    = (int(ActorValue) , None)
            Empty ActorValue  = (None            , None))"""
-        self.actorValue = ActorValue.EmptyActorValue() if master is None else master.actorValue if isinstance(master, ActorValue) else ActorValue.RawActorValue(master) if objectID is None else ActorValue.UnvalidatedActorValue(GPath(master), objectID) if isinstance(master, (basestring, Path)) else ActorValue.RawActorValue(objectID) if objectID < 0x800 else None
+        self.actorValue = ActorValue.EmptyActorValue() if master is None else master.actorValue if isinstance(master, ActorValue) else ActorValue.RawActorValue(master) if objectID is None else ActorValue.UnvalidatedActorValue(GPath(master), objectID) if isinstance(master, (str, Path)) else ActorValue.RawActorValue(objectID) if objectID < 0x800 else None
         if self.actorValue is None:
             masterstr = _CGetLongIDName(master, objectID, 0)
             self.actorValue = ActorValue.ValidActorValue(GPath(masterstr), objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else ActorValue.InvalidActorValue(objectID)
@@ -922,14 +923,14 @@ class ActorValue(object):
         try: return other[1] != self.actorValue[1] or other[0] != self.actorValue[0]
         except TypeError: return False
 
-    def __nonzero__(self):
+    def __bool__(self):
         return not isinstance(self.actorValue, (ActorValue.EmptyActorValue, ActorValue.InvalidActorValue))
 
     def __getitem__(self, x):
         return self.actorValue[0] if x == 0 else self.actorValue[1]
 
     def __setitem__(self, x, nValue):
-        if x == 0: self.actorValue = ActorValue.EmptyActorValue() if nValue is None else ActorValue.UnvalidatedActorValue(nValue, self.actorValue[1]) if isinstance(nValue, basestring) else ActorValue.RawActorValue(nValue)
+        if x == 0: self.actorValue = ActorValue.EmptyActorValue() if nValue is None else ActorValue.UnvalidatedActorValue(nValue, self.actorValue[1]) if isinstance(nValue, str) else ActorValue.RawActorValue(nValue)
         else:
             if nValue is None: self.actorValue = ActorValue.EmptyActorValue() if self.actorValue[0] is None else ActorValue.RawActorValue(self.actorValue[0])
             else: self.actorValue = ActorValue.RawActorValue(nValue) if nValue < 0x800 else ActorValue.UnvalidatedActorValue(self.actorValue[0], nValue)
@@ -952,13 +953,13 @@ class ActorValue(object):
     def FilterValidDict(ActorValues, target, KeysAreActorValues, ValuesAreActorValues, AsShort=False):
         if KeysAreActorValues:
             if ValuesAreActorValues:
-                if AsShort: return dict([(key.GetShortActorValue(target), value.GetShortFormID(target)) for key, value in ActorValues.iteritems() if key.ValidateActorValue(target) and value.ValidateActorValue(target)])
-                return dict([(key, value) for key, value in ActorValues.iteritems() if key.ValidateActorValue(target) and value.ValidateActorValue(target)])
-            if AsShort: return dict([(key.GetShortActorValue(target), value) for key, value in ActorValues.iteritems() if key.ValidateActorValue(target)])
-            return dict([(key, value) for key, value in ActorValues.iteritems() if key.ValidateActorValue(target)])
+                if AsShort: return dict([(key.GetShortActorValue(target), value.GetShortFormID(target)) for key, value in ActorValues.items() if key.ValidateActorValue(target) and value.ValidateActorValue(target)])
+                return dict([(key, value) for key, value in ActorValues.items() if key.ValidateActorValue(target) and value.ValidateActorValue(target)])
+            if AsShort: return dict([(key.GetShortActorValue(target), value) for key, value in ActorValues.items() if key.ValidateActorValue(target)])
+            return dict([(key, value) for key, value in ActorValues.items() if key.ValidateActorValue(target)])
         if ValuesAreActorValues:
-            if AsShort: return dict([(key, value.GetShortActorValue(target)) for key, value in ActorValues.iteritems() if value.ValidateActorValue(target)])
-            return dict([(key, value) for key, value in ActorValues.iteritems() if value.ValidateActorValue(target)])
+            if AsShort: return dict([(key, value.GetShortActorValue(target)) for key, value in ActorValues.items() if value.ValidateActorValue(target)])
+            return dict([(key, value) for key, value in ActorValues.items() if value.ValidateActorValue(target)])
         return ActorValues
 
     def ValidateActorValue(self, target):
@@ -996,10 +997,10 @@ class MGEFCode(object):
             return hash((self.master, self.objectID))
 
         def __getitem__(self, x):
-            return self.master if x == 0 else int(self.objectID & 0xFFFFFF00L)
+            return self.master if x == 0 else int(self.objectID & 0xFFFFFF00)
 
         def __repr__(self):
-            return u"UnvalidatedMGEFCode('%s', 0x%06X)" % (self.master, int(self.objectID & 0xFFFFFF00L))
+            return "UnvalidatedMGEFCode('%s', 0x%06X)" % (self.master, int(self.objectID & 0xFFFFFF00))
 
         def Validate(self, target):
             """Unvalidated MGEFCodes have to be tested for each destination collection.
@@ -1035,7 +1036,7 @@ class MGEFCode(object):
             return hash((None, self.objectID))
 
         def __getitem__(self, x):
-            return None if x == 0 else int(self.objectID & 0xFFFFFF00L)
+            return None if x == 0 else int(self.objectID & 0xFFFFFF00)
 
         def __repr__(self):
             return "InvalidMGEFCode(None, 0x%06X)" % (self.objectID,)
@@ -1064,10 +1065,10 @@ class MGEFCode(object):
             return hash((self.master, self.objectID))
 
         def __getitem__(self, x):
-            return self.master if x == 0 else int(self.objectID & 0xFFFFFF00L)
+            return self.master if x == 0 else int(self.objectID & 0xFFFFFF00)
 
         def __repr__(self):
-            return u"ValidMGEFCode('%s', 0x%06X)" % (self.master, int(self.objectID & 0xFFFFFF00L))
+            return "ValidMGEFCode('%s', 0x%06X)" % (self.master, int(self.objectID & 0xFFFFFF00))
 
         def Validate(self, target):
             """This MGEFCode has already been validated for a specific record.
@@ -1123,17 +1124,17 @@ class MGEFCode(object):
 
         def __init__(self, shortID):
             self.shortID = (str(shortID) if isinstance(shortID,ISTRING)
-                            else _encode(shortID) if isinstance(shortID,unicode)
+                            else _encode(shortID) if isinstance(shortID,str)
                             else shortID)
 
         def __hash__(self):
             return hash((self.shortID, None))
 
         def __getitem__(self, x):
-            return self.shortID if isinstance(self.shortID, basestring) else self.shortID >> 24 if x == 0 else int(self.shortID & 0xFFFFFF00L)
+            return self.shortID if isinstance(self.shortID, str) else self.shortID >> 24 if x == 0 else int(self.shortID & 0xFFFFFF00)
 
         def __repr__(self):
-            return "RawMGEFCode(%s)" % (self.shortID,) if isinstance(self.shortID, basestring) else "RawMGEFCode(0x%08X)" % (self.shortID,)
+            return "RawMGEFCode(%s)" % (self.shortID,) if isinstance(self.shortID, str) else "RawMGEFCode(0x%08X)" % (self.shortID,)
 
         def Validate(self, target):
             """No validation is possible. It is impossible to tell what collection the value came from."""
@@ -1142,7 +1143,7 @@ class MGEFCode(object):
         def GetShortMGEFCode(self, target):
             """The raw MGEFCode isn't resolved, so it's always valid. That's why it subclasses ValidMGEFCode.
                If it is using a 4 character sequence, it needs to be cast as a 32 bit integer."""
-            return cast(self.shortID, POINTER(c_ulong)).contents.value if isinstance(self.shortID, basestring) else self.shortID
+            return cast(self.shortID, POINTER(c_ulong)).contents.value if isinstance(self.shortID, str) else self.shortID
 
 
     def __init__(self, master, objectID=None):
@@ -1154,7 +1155,7 @@ class MGEFCode(object):
            Raw MGEFCode       = (int(MGEFCode)   , None)
            Raw MGEFCode       = (string(MGEFCode), None)
            Empty MGEFCode     = (None            , None))"""
-        self.mgefCode = MGEFCode.EmptyMGEFCode() if master is None else master.mgefCode if isinstance(master, MGEFCode) else MGEFCode.RawMGEFCode(master) if objectID is None else MGEFCode.RawMGEFCode(objectID) if isinstance(objectID, basestring) else MGEFCode.UnvalidatedMGEFCode(GPath(master), objectID) if isinstance(master, (basestring, Path)) else MGEFCode.RawMGEFCode(objectID) if objectID < 0x80000000 else None
+        self.mgefCode = MGEFCode.EmptyMGEFCode() if master is None else master.mgefCode if isinstance(master, MGEFCode) else MGEFCode.RawMGEFCode(master) if objectID is None else MGEFCode.RawMGEFCode(objectID) if isinstance(objectID, str) else MGEFCode.UnvalidatedMGEFCode(GPath(master), objectID) if isinstance(master, (str, Path)) else MGEFCode.RawMGEFCode(objectID) if objectID < 0x80000000 else None
         if self.mgefCode is None:
             masterstr = _CGetLongIDName(master, objectID, 1)
             self.mgefCode = MGEFCode.ValidMGEFCode(GPath(masterstr), objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else MGEFCode.InvalidMGEFCode(objectID)
@@ -1170,14 +1171,14 @@ class MGEFCode(object):
     def __ne__(self, other):
         return other[1] != self.mgefCode[1] or other[0] != self.mgefCode[0]
 
-    def __nonzero__(self):
+    def __bool__(self):
         return not isinstance(self.mgefCode, (MGEFCode.EmptyMGEFCode, MGEFCode.InvalidMGEFCode))
 
     def __getitem__(self, x):
         return self.mgefCode[0] if x == 0 else self.mgefCode[1]
 
     def __setitem__(self, x, nValue):
-        if x == 0: self.mgefCode = MGEFCode.EmptyMGEFCode() if nValue is None else MGEFCode.UnvalidatedMGEFCode(nValue, self.mgefCode[1]) if isinstance(nValue, basestring) else MGEFCode.RawMGEFCode(nValue)
+        if x == 0: self.mgefCode = MGEFCode.EmptyMGEFCode() if nValue is None else MGEFCode.UnvalidatedMGEFCode(nValue, self.mgefCode[1]) if isinstance(nValue, str) else MGEFCode.RawMGEFCode(nValue)
         else:
             if nValue is None: self.mgefCode = MGEFCode.EmptyMGEFCode() if self.mgefCode[0] is None else MGEFCode.RawMGEFCode(self.mgefCode[0])
             else: self.mgefCode = MGEFCode.RawMGEFCode(nValue) if nValue < 0x80000000 else MGEFCode.UnvalidatedMGEFCode(self.mgefCode[0], nValue)
@@ -1200,13 +1201,13 @@ class MGEFCode(object):
     def FilterValidDict(mgefCodes, target, KeysAreMGEFCodes, ValuesAreMGEFCodes, AsShort=False):
         if KeysAreMGEFCodes:
             if ValuesAreMGEFCodes:
-                if AsShort: return dict([(key.GetShortMGEFCode(target), value.GetShortFormID(target)) for key, value in mgefCodes.iteritems() if key.ValidateMGEFCode(target) and value.ValidateMGEFCode(target)])
-                return dict([(key, value) for key, value in mgefCodes.iteritems() if key.ValidateMGEFCode(target) and value.ValidateMGEFCode(target)])
-            if AsShort: return dict([(key.GetShortMGEFCode(target), value) for key, value in mgefCodes.iteritems() if key.ValidateMGEFCode(target)])
-            return dict([(key, value) for key, value in mgefCodes.iteritems() if key.ValidateMGEFCode(target)])
+                if AsShort: return dict([(key.GetShortMGEFCode(target), value.GetShortFormID(target)) for key, value in mgefCodes.items() if key.ValidateMGEFCode(target) and value.ValidateMGEFCode(target)])
+                return dict([(key, value) for key, value in mgefCodes.items() if key.ValidateMGEFCode(target) and value.ValidateMGEFCode(target)])
+            if AsShort: return dict([(key.GetShortMGEFCode(target), value) for key, value in mgefCodes.items() if key.ValidateMGEFCode(target)])
+            return dict([(key, value) for key, value in mgefCodes.items() if key.ValidateMGEFCode(target)])
         if ValuesAreMGEFCodes:
-            if AsShort: return dict([(key, value.GetShortMGEFCode(target)) for key, value in mgefCodes.iteritems() if value.ValidateMGEFCode(target)])
-            return dict([(key, value) for key, value in mgefCodes.iteritems() if value.ValidateMGEFCode(target)])
+            if AsShort: return dict([(key, value.GetShortMGEFCode(target)) for key, value in mgefCodes.items() if value.ValidateMGEFCode(target)])
+            return dict([(key, value) for key, value in mgefCodes.items() if value.ValidateMGEFCode(target)])
         return mgefCodes
 
     def ValidateMGEFCode(self, target):
@@ -1235,7 +1236,7 @@ def ValidateDict(Elements, target):
     """Convenience function to ensure that a dict is valid for the destination.
        Supports nested dictionaries, and tuple/list values.
        Returns true if all of the FormIDs/ActorValues/MGEFCodes in the dict are valid."""
-    for key, value in Elements.iteritems():
+    for key, value in Elements.items():
         if isinstance(key, FormID) and not key.ValidateFormID(target): return False
         elif isinstance(key, ActorValue) and not key.ValidateActorValue(target): return False
         elif isinstance(key, MGEFCode) and not key.ValidateMGEFCode(target): return False
@@ -1276,7 +1277,7 @@ def dump_record(record, expand=False):
             for x in range(32):
                 z = 1 << x
                 if y & z == z:
-                    print hex(z)
+                    print(hex(z))
         global _dump_RecIndent
         global _dump_LastIndent
         if hasattr(record, 'copyattrs'):
@@ -1291,20 +1292,20 @@ def dump_record(record, expand=False):
                         attr = attr[:-5]
                         wasList = True
                 rec = getattr(record, attr)
-                if _dump_RecIndent: print " " * (_dump_RecIndent - 1),
+                if _dump_RecIndent: print(" " * (_dump_RecIndent - 1), end=' ')
                 if wasList:
-                    print attr
+                    print(attr)
                 else:
-                    print attr + " " * (msize - len(attr)), ":",
+                    print(attr + " " * (msize - len(attr)), ":", end=' ')
                 if rec is None:
-                    print rec
+                    print(rec)
                 elif 'flag' in attr.lower() or 'service' in attr.lower():
-                    print hex(rec)
+                    print(hex(rec))
                     if _dump_ExpandLists == True:
                         for x in range(32):
                             z = pow(2, x)
                             if rec & z == z:
-                                print " " * _dump_RecIndent, " Active" + " " * (msize - len("  Active")), "  :", hex(z)
+                                print(" " * _dump_RecIndent, " Active" + " " * (msize - len("  Active")), "  :", hex(z))
 
                 elif isinstance(rec, list):
                     if len(rec) > 0:
@@ -1314,15 +1315,15 @@ def dump_record(record, expand=False):
                                 IsFidList = False
                                 break
                         if IsFidList:
-                            print rec
+                            print(rec)
                         elif not wasList:
-                            print rec
+                            print(rec)
                     elif not wasList:
-                        print rec
-                elif isinstance(rec, basestring):
-                    print `rec`
+                        print(rec)
+                elif isinstance(rec, str):
+                    print(repr(rec))
                 elif not wasList:
-                    print rec
+                    print(rec)
                 _dump_RecIndent += 2
                 printRecord(rec)
                 _dump_RecIndent -= 2
@@ -1333,12 +1334,12 @@ def dump_record(record, expand=False):
                     for rec in record:
                         printRecord(rec)
                         if _dump_LastIndent == _dump_RecIndent:
-                            print
+                            print()
     global _dump_ExpandLists
     _dump_ExpandLists = expand
     try:
         msize = max([len(attr) for attr in record.copyattrs])
-        print "  fid" + " " * (msize - len("fid")), ":", record.fid
+        print("  fid" + " " * (msize - len("fid")), ":", record.fid)
     except AttributeError:
         pass
     printRecord(record)
@@ -1587,7 +1588,7 @@ class CBashLIST(object):
             if not isinstance(nElements[0], tuple): nElements = ExtractCopyList(nElements)
             ##Resizes the list
             _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0, c_long(length))
-            SetCopyList([self._Type(instance._RecordID, self._FieldID, x) for x in xrange(_CGetFieldAttribute(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 1))], nElements)
+            SetCopyList([self._Type(instance._RecordID, self._FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 1))], nElements)
 
 class CBashUNKNOWN_OR_GENERIC(object):
     __slots__ = ['_FieldID','_Type','_ResType']
@@ -1635,7 +1636,7 @@ class CBashISTRINGARRAY(object):
         if(numRecords > 0):
             cRecords = (POINTER(c_char_p) * numRecords)()
             _CGetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
-            return [IUNICODE(_unicode(string_at(cRecords[x]))) for x in xrange(numRecords)]
+            return [IUNICODE(_unicode(string_at(cRecords[x]))) for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -1658,7 +1659,7 @@ class CBashIUNICODEARRAY(object):
         if (numRecords > 0):
             cRecords = (POINTER(c_char_p) * numRecords)()
             _CGetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
-            return [IUNICODE(_uni(string_at(cRecords[x]))) for x in xrange(numRecords)]
+            return [IUNICODE(_uni(string_at(cRecords[x]))) for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -1722,7 +1723,7 @@ class CBashFORMIDARRAY(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ulong * numRecords)()
             _CGetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
-            return [FormID(instance._RecordID, cRecords.contents[x]) for x in xrange(numRecords)]
+            return [FormID(instance._RecordID, cRecords.contents[x]) for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -1822,7 +1823,7 @@ class CBashUINT8ARRAY(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
             _CGetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
-            return [cRecords.contents[x] for x in xrange(numRecords)]
+            return [cRecords.contents[x] for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -1842,7 +1843,7 @@ class CBashUINT32ARRAY(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ulong * numRecords)()
             _CGetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
-            return [cRecords.contents[x] for x in xrange(numRecords)]
+            return [cRecords.contents[x] for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -1999,7 +2000,7 @@ class CBashLIST_LIST(object):
         self._ListFieldID, self._Type, self._AsList = ListFieldID, Type, AsList
 
     def __get__(self, instance, owner):
-        return ExtractCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in xrange(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))]) if self._AsList else [self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))]
+        return ExtractCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))]) if self._AsList else [self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))]
 
     def __set__(self, instance, nElements):
         if nElements is None or not len(nElements): _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
@@ -2008,7 +2009,7 @@ class CBashLIST_LIST(object):
             if not isinstance(nElements[0], tuple): nElements = ExtractCopyList(nElements)
             ##Resizes the list
             _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 0, c_long(length))
-            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in xrange(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))], nElements)
+            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))], nElements)
 
 class CBashGeneric_LIST(object):
     __slots__ = ['_ListFieldID','_Type','_ResType']
@@ -2064,7 +2065,7 @@ class CBashFORMIDARRAY_LIST(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ulong * numRecords)()
             _CGetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords))
-            return [FormID(instance._RecordID, cRecords.contents[x]) for x in xrange(numRecords)]
+            return [FormID(instance._RecordID, cRecords.contents[x]) for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -2135,7 +2136,7 @@ class CBashUINT8ARRAY_LIST(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
             _CGetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords))
-            return [cRecords.contents[x] for x in xrange(numRecords)]
+            return [cRecords.contents[x] for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -2155,7 +2156,7 @@ class CBashUINT32ARRAY_LIST(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ulong * numRecords)()
             _CGetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords))
-            return [cRecords.contents[x] for x in xrange(numRecords)]
+            return [cRecords.contents[x] for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -2241,7 +2242,7 @@ class CBashLIST_LISTX2(object):
         self._ListX2FieldID, self._Type, self._AsList = ListX2FieldID, Type, AsList
 
     def __get__(self, instance, owner):
-        return ExtractCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in xrange(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))]) if self._AsList else [self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))]
+        return ExtractCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))]) if self._AsList else [self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))]
 
     def __set__(self, instance, nElements):
         if nElements is None or not len(nElements): _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
@@ -2250,7 +2251,7 @@ class CBashLIST_LISTX2(object):
             if not isinstance(nElements[0], tuple): nElements = ExtractCopyList(nElements)
             ##Resizes the list
             _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0, c_long(length))
-            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in xrange(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))], nElements)
+            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))], nElements)
 
 class CBashGeneric_LISTX2(object):
     __slots__ = ['_ListX2FieldID','_Type','_ResType']
@@ -2306,7 +2307,7 @@ class CBashUINT8ARRAY_LISTX2(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
             _CGetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(cRecords))
-            return [cRecords.contents[x] for x in xrange(numRecords)]
+            return [cRecords.contents[x] for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -2448,7 +2449,7 @@ class CBashUINT8ARRAY_LISTX3(object):
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
             _CGetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(cRecords))
-            return [cRecords.contents[x] for x in xrange(numRecords)]
+            return [cRecords.contents[x] for x in range(numRecords)]
         return []
 
     def __set__(self, instance, nValue):
@@ -2989,8 +2990,8 @@ class FnvBaseRecord(object):
         Old_NewFormIDs = FormID.FilterValidDict(Old_NewFormIDs, self, True, True, AsShort=True)
         length = len(Old_NewFormIDs)
         if not length: return []
-        OldFormIDs = (c_ulong * length)(*Old_NewFormIDs.keys())
-        NewFormIDs = (c_ulong * length)(*Old_NewFormIDs.values())
+        OldFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.keys()))
+        NewFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.values()))
         Changes = (c_ulong * length)()
         _CUpdateReferences(0, self._RecordID, OldFormIDs, NewFormIDs, byref(Changes), length)
         return [x for x in Changes]
@@ -3030,7 +3031,7 @@ class FnvBaseRecord(object):
         parentRecords = self.History()
         if parentRecords:
             for attr in attrs:
-                if isinstance(attr,basestring):
+                if isinstance(attr,str):
                     # Single attr
                     conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
                 elif isinstance(attr,(list,tuple,set)):
@@ -3046,17 +3047,17 @@ class FnvBaseRecord(object):
                         if conflict: conflicting.update(subconflicting)
         else: #is the first instance of the record
             for attr in attrs:
-                if isinstance(attr, basestring):
+                if isinstance(attr, str):
                     conflicting.update([(attr,reduce(getattr, attr.split('.'), self))])
                 elif isinstance(attr,(list,tuple,set)):
                     conflicting.update([(subattr,reduce(getattr, subattr.split('.'), self)) for subattr in attr])
 
-        skipped_conflicting = [(attr, value) for attr, value in conflicting.iteritems() if isinstance(value, FormID) and not value.ValidateFormID(self)]
+        skipped_conflicting = [(attr, value) for attr, value in conflicting.items() if isinstance(value, FormID) and not value.ValidateFormID(self)]
         for attr, value in skipped_conflicting:
             try:
-                deprint(_(u"%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GetParentMod().GName, value))
+                deprint(_("%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GetParentMod().GName, value))
             except: #a record type that doesn't have a full chunk:
-                deprint(_(u"%s attribute of %s record importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.GetParentMod().GName, value))
+                deprint(_("%s attribute of %s record importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.GetParentMod().GName, value))
             del conflicting[attr]
 
         return conflicting
@@ -10583,8 +10584,8 @@ class ObBaseRecord(object):
         Old_NewFormIDs = FormID.FilterValidDict(Old_NewFormIDs, self, True, True, AsShort=True)
         length = len(Old_NewFormIDs)
         if not length: return []
-        OldFormIDs = (c_ulong * length)(*Old_NewFormIDs.keys())
-        NewFormIDs = (c_ulong * length)(*Old_NewFormIDs.values())
+        OldFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.keys()))
+        NewFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.values()))
         Changes = (c_ulong * length)()
         _CUpdateReferences(0, self._RecordID, OldFormIDs, NewFormIDs, byref(Changes), length)
         return [x for x in Changes]
@@ -10624,7 +10625,7 @@ class ObBaseRecord(object):
         parentRecords = self.History()
         if parentRecords:
             for attr in attrs:
-                if isinstance(attr,basestring):
+                if isinstance(attr,str):
                     # Single attr
                     conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
                 elif isinstance(attr,(list,tuple,set)):
@@ -10641,17 +10642,17 @@ class ObBaseRecord(object):
                             conflicting.update(subconflicting)
         else: #is the first instance of the record
             for attr in attrs:
-                if isinstance(attr, basestring):
+                if isinstance(attr, str):
                     conflicting.update([(attr,reduce(getattr, attr.split('.'), self))])
                 elif isinstance(attr,(list,tuple,set)):
                     conflicting.update([(subattr,reduce(getattr, subattr.split('.'), self)) for subattr in attr])
 
-        skipped_conflicting = [(attr, value) for attr, value in conflicting.iteritems() if isinstance(value, FormID) and not value.ValidateFormID(self)]
+        skipped_conflicting = [(attr, value) for attr, value in conflicting.items() if isinstance(value, FormID) and not value.ValidateFormID(self)]
         for attr, value in skipped_conflicting:
             try:
-                deprint(_(u"%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GetParentMod().GName, value))
+                deprint(_("%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GetParentMod().GName, value))
             except: #a record type that doesn't have a full chunk:
-                deprint(_(u"%s attribute of %s record importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.GetParentMod().GName, value))
+                deprint(_("%s attribute of %s record importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.GetParentMod().GName, value))
             del conflicting[attr]
 
         return conflicting
@@ -11155,7 +11156,7 @@ class ObLANDRecord(ObBaseRecord):
     data_p = CBashUINT8ARRAY(5)
 
     def get_normals(self):
-        return [[self.Normal(self._RecordID, 6, x, 0, y) for y in xrange(0,33)] for x in xrange(0,33)]
+        return [[self.Normal(self._RecordID, 6, x, 0, y) for y in range(0,33)] for x in range(0,33)]
     def set_normals(self, nElements):
         if nElements is None or len(nElements) != 33: return
         for oElement, nElement in zip(self.normals, nElements if isinstance(nElements[0], tuple) else [ExtractCopyList(nElements[x]) for x in range(0,33)]):
@@ -14180,11 +14181,11 @@ class ObModFile(object):
 
     @property
     def FileName(self):
-        return _uni(_CGetFileNameByID(self._ModID)) or u'Missing'
+        return _uni(_CGetFileNameByID(self._ModID)) or 'Missing'
 
     @property
     def ModName(self):
-        return _uni(_CGetModNameByID(self._ModID)) or u'Missing'
+        return _uni(_CGetModNameByID(self._ModID)) or 'Missing'
 
     @property
     def GName(self):
@@ -14195,13 +14196,13 @@ class ObModFile(object):
 
     def HasRecord(self, RecordIdentifier):
         if not RecordIdentifier: return False
-        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, str) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return False
         return bool(_CGetRecordID(self._ModID, formID, editorID))
 
     def LookupRecord(self, RecordIdentifier):
         if not RecordIdentifier: return None
-        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, str) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return None
         RecordID = _CGetRecordID(self._ModID, formID, editorID)
         if RecordID:
@@ -14238,8 +14239,8 @@ class ObModFile(object):
         Old_NewFormIDs = FormID.FilterValidDict(Old_NewFormIDs, self, True, True, AsShort=True)
         length = len(Old_NewFormIDs)
         if not length: return []
-        OldFormIDs = (c_ulong * length)(*Old_NewFormIDs.keys())
-        NewFormIDs = (c_ulong * length)(*Old_NewFormIDs.values())
+        OldFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.keys()))
+        NewFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.values()))
         Changes = (c_ulong * length)()
         _CUpdateReferences(self._ModID, 0, OldFormIDs, NewFormIDs, byref(Changes), length)
         return [x for x in Changes]
@@ -14611,11 +14612,11 @@ class FnvModFile(object):
 
     @property
     def FileName(self):
-        return _uni(_CGetFileNameByID(self._ModID)) or u'Missing'
+        return _uni(_CGetFileNameByID(self._ModID)) or 'Missing'
 
     @property
     def ModName(self):
-        return _uni(_CGetModNameByID(self._ModID)) or u'Missing'
+        return _uni(_CGetModNameByID(self._ModID)) or 'Missing'
 
     @property
     def GName(self):
@@ -14626,13 +14627,13 @@ class FnvModFile(object):
 
     def HasRecord(self, RecordIdentifier):
         if not RecordIdentifier: return False
-        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, str) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return False
         return bool(_CGetRecordID(self._ModID, formID, editorID))
 
     def LookupRecord(self, RecordIdentifier):
         if not RecordIdentifier: return None
-        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, _encode(RecordIdentifier)) if isinstance(RecordIdentifier, str) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return None
         RecordID = _CGetRecordID(self._ModID, formID, editorID)
         if RecordID:
@@ -14669,8 +14670,8 @@ class FnvModFile(object):
         Old_NewFormIDs = FormID.FilterValidDict(Old_NewFormIDs, self, True, True, AsShort=True)
         length = len(Old_NewFormIDs)
         if not length: return []
-        OldFormIDs = (c_ulong * length)(*Old_NewFormIDs.keys())
-        NewFormIDs = (c_ulong * length)(*Old_NewFormIDs.values())
+        OldFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.keys()))
+        NewFormIDs = (c_ulong * length)(*list(Old_NewFormIDs.values()))
         Changes = (c_ulong * length)()
         _CUpdateReferences(self._ModID, 0, OldFormIDs, NewFormIDs, byref(Changes), length)
         return [x for x in Changes]
@@ -15449,7 +15450,7 @@ class ObCollection(object):
 
     def LookupModFile(self, ModName):
         ModID = _CGetModIDByName(self._CollectionID, _encode(ModName))
-        if ModID == 0: raise KeyError(_("ModName(%s) not found in collection (%08X)") % (ModName, self._CollectionID) + self.Debug_DumpModFiles() + u'\n')
+        if ModID == 0: raise KeyError(_("ModName(%s) not found in collection (%08X)") % (ModName, self._CollectionID) + self.Debug_DumpModFiles() + '\n')
         return self._ModType(ModID)
 
     def LookupModFileLoadOrder(self, ModName):
@@ -15462,13 +15463,13 @@ class ObCollection(object):
         return _CGetRecordUpdatedReferences(self._CollectionID, 0)
 
     def Debug_DumpModFiles(self):
-        col = [_(u"Collection (%08X) contains the following modfiles:") % (self._CollectionID,)]
+        col = [_("Collection (%08X) contains the following modfiles:") % (self._CollectionID,)]
         lo_mods = [(_CGetModLoadOrderByID(mod._ModID), mod.ModName,
                     mod.FileName) for mod in self.AllMods]
-        files = [_(u"Load Order (%s), Name(%s)") % (
-            u'--' if lo == -1 else (u'%02X' % lo), mname) if mname == fname else
-                 _(u"Load Order (%s), ModName(%s) FileName(%s)") % (
-            u'--' if lo == -1 else (u'%02X' % lo), mname, fname)
+        files = [_("Load Order (%s), Name(%s)") % (
+            '--' if lo == -1 else ('%02X' % lo), mname) if mname == fname else
+                 _("Load Order (%s), ModName(%s) FileName(%s)") % (
+            '--' if lo == -1 else ('%02X' % lo), mname, fname)
                  for lo, mname, fname in lo_mods]
         col.extend(files)
-        return u'\n'.join(col).encode('utf-8')
+        return '\n'.join(col).encode('utf-8')

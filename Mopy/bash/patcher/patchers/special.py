@@ -32,20 +32,21 @@ from ... import bosh, load_order  # for modInfos
 from ... import bush
 from ...bolt import GPath, SubProgress
 from ...cint import FormID
+from functools import reduce
 
 # Patchers: 40 ----------------------------------------------------------------
 class _AListsMerger(SpecialPatcher, AListPatcher):
     """Merged leveled lists mod file."""
     scanOrder = 45
     editOrder = 45
-    name = _(u'Leveled Lists')
+    name = _('Leveled Lists')
     text = (_(
-        u"Merges changes to leveled lists from ACTIVE/MERGED MODS ONLY.") +
-            u'\n\n' + _(
-        u'Advanced users may override Relev/Delev tags for any mod (active '
-        u'or inactive) using the list below.'))
-    tip = _(u"Merges changes to leveled lists from all active mods.")
-    autoKey = {u'Delev', u'Relev'}
+        "Merges changes to leveled lists from ACTIVE/MERGED MODS ONLY.") +
+            '\n\n' + _(
+        'Advanced users may override Relev/Delev tags for any mod (active '
+        'or inactive) using the list below.'))
+    tip = _("Merges changes to leveled lists from all active mods.")
+    autoKey = {'Delev', 'Relev'}
     iiMode = True
 
 class ListsMerger(_AListsMerger, ListPatcher):
@@ -62,14 +63,14 @@ class ListsMerger(_AListsMerger, ListPatcher):
         self.levelers = None #--Will initialize later
         self.empties = set()
         OverhaulCompat = False
-        OOOMods = {GPath(u"Oscuro's_Oblivion_Overhaul.esm"),
-                   GPath(u"Oscuro's_Oblivion_Overhaul.esp")}
-        FransMods = {GPath(u"Francesco's Leveled Creatures-Items Mod.esm"),
-                     GPath(u"Francesco.esp")}
-        WCMods = {GPath(u"Oblivion Warcry.esp"),
-                  GPath(u"Oblivion Warcry EV.esp")}
-        TIEMods = {GPath(u"TIE.esp")}
-        if GPath(u"Unofficial Oblivion Patch.esp") in self.srcs:
+        OOOMods = {GPath("Oscuro's_Oblivion_Overhaul.esm"),
+                   GPath("Oscuro's_Oblivion_Overhaul.esp")}
+        FransMods = {GPath("Francesco's Leveled Creatures-Items Mod.esm"),
+                     GPath("Francesco.esp")}
+        WCMods = {GPath("Oblivion Warcry.esp"),
+                  GPath("Oblivion Warcry EV.esp")}
+        TIEMods = {GPath("TIE.esp")}
+        if GPath("Unofficial Oblivion Patch.esp") in self.srcs:
             if (OOOMods|WCMods) & self.srcs:
                 OverhaulCompat = True
             elif FransMods & self.srcs:
@@ -79,7 +80,7 @@ class ListsMerger(_AListsMerger, ListPatcher):
                     OverhaulCompat = True
         if OverhaulCompat:
             self.OverhaulUOPSkips = set([
-                (GPath(u'Oblivion.esm'),x) for x in [
+                (GPath('Oblivion.esm'),x) for x in [
                     0x03AB5D,   # VendorWeaponBlunt
                     0x03C7F1,   # LL0LootWeapon0Magic4Dwarven100
                     0x03C7F2,   # LL0LootWeapon0Magic7Ebony100
@@ -140,8 +141,8 @@ class ListsMerger(_AListsMerger, ListPatcher):
             self.mastersScanned.add(modName)
         #--Relev/Delev setup
         configChoice = self.configChoices.get(modName,tuple())
-        isRelev = (u'Relev' in configChoice)
-        isDelev = (u'Delev' in configChoice)
+        isRelev = ('Relev' in configChoice)
+        isDelev = ('Delev' in configChoice)
         #--Scan
         for list_type in self.listTypes:
             levLists = self.type_list[list_type]
@@ -149,7 +150,7 @@ class ListsMerger(_AListsMerger, ListPatcher):
             for newLevList in newLevLists.getActiveRecords():
                 listId = newLevList.fid
                 if listId in self.OverhaulUOPSkips and modName == \
-                        u'Unofficial Oblivion Patch.esp':
+                        'Unofficial Oblivion Patch.esp':
                     levLists[listId].mergeOverLast = True
                     continue
                 isListOwner = (listId[0] == modName)
@@ -185,33 +186,33 @@ class ListsMerger(_AListsMerger, ListPatcher):
         """Adds merged lists to patchfile."""
         keep = self.patchFile.getKeeper()
         #--Relevs/Delevs List
-        log.setHeader(u'= '+self.__class__.name,True)
-        log.setHeader(u'=== '+_(u'Delevelers/Relevelers'))
+        log.setHeader('= '+self.__class__.name,True)
+        log.setHeader('=== '+_('Delevelers/Relevelers'))
         for leveler in (self.levelers or []):
-            log(u'* '+self.getItemLabel(leveler))
+            log('* '+self.getItemLabel(leveler))
         #--Save to patch file
-        for label, type in ((_(u'Creature'), 'LVLC'), (_(u'Actor'), 'LVLN'),
-                (_(u'Item'), 'LVLI'), (_(u'Spell'), 'LVSP')):
+        for label, type in ((_('Creature'), 'LVLC'), (_('Actor'), 'LVLN'),
+                (_('Item'), 'LVLI'), (_('Spell'), 'LVSP')):
             if type not in self.listTypes: continue
-            log.setHeader(u'=== '+_(u'Merged %s Lists') % label)
+            log.setHeader('=== '+_('Merged %s Lists') % label)
             patchBlock = getattr(self.patchFile,type)
             levLists = self.type_list[type]
-            for record in sorted(levLists.values(),key=attrgetter('eid')):
+            for record in sorted(list(levLists.values()),key=attrgetter('eid')):
                 if not record.mergeOverLast: continue
                 fid = keep(record.fid)
                 patchBlock.setRecord(levLists[fid])
-                log(u'* '+record.eid)
+                log('* '+record.eid)
                 for mod in record.mergeSources:
-                    log(u'  * ' + self.getItemLabel(mod))
+                    log('  * ' + self.getItemLabel(mod))
         #--Discard empty sublists
-        for label, type in ((_(u'Creature'), 'LVLC'), (_(u'Actor'), 'LVLN'),
-                (_(u'Item'), 'LVLI'), (_(u'Spell'), 'LVSP')):
+        for label, type in ((_('Creature'), 'LVLC'), (_('Actor'), 'LVLN'),
+                (_('Item'), 'LVLI'), (_('Spell'), 'LVSP')):
             if type not in self.listTypes: continue
             patchBlock = getattr(self.patchFile,type)
             levLists = self.type_list[type]
             #--Empty lists
             empties = []
-            sub_supers = dict((x,[]) for x in levLists.keys())
+            sub_supers = dict((x,[]) for x in list(levLists.keys()))
             for record in sorted(levLists.values()):
                 listId = record.fid
                 if not record.items:
@@ -237,12 +238,12 @@ class ListsMerger(_AListsMerger, ListPatcher):
                     cleaned.add(record.eid)
                     removed.add(levLists[empty].eid)
                     keep(super)
-            log.setHeader(u'=== '+_(u'Empty %s Sublists') % label)
+            log.setHeader('=== '+_('Empty %s Sublists') % label)
             for eid in sorted(removed,key=string.lower):
-                log(u'* '+eid)
-            log.setHeader(u'=== '+_(u'Empty %s Sublists Removed') % label)
+                log('* '+eid)
+            log.setHeader('=== '+_('Empty %s Sublists Removed') % label)
             for eid in sorted(cleaned,key=string.lower):
-                log(u'* '+eid)
+                log('* '+eid)
 
 class CBash_ListsMerger(_AListsMerger, CBash_ListPatcher):
     allowUnloaded = False
@@ -259,14 +260,14 @@ class CBash_ListsMerger(_AListsMerger, CBash_ListPatcher):
         self.empties = set()
         importMods = set(self.srcs) & patchFile.loadSet
         OverhaulCompat = False
-        OOOMods = {GPath(u"Oscuro's_Oblivion_Overhaul.esm"),
-                   GPath(u"Oscuro's_Oblivion_Overhaul.esp")}
-        FransMods = {GPath(u"Francesco's Leveled Creatures-Items Mod.esm"),
-                     GPath(u"Francesco.esp")}
-        WCMods = {GPath(u"Oblivion Warcry.esp"),
-                  GPath(u"Oblivion Warcry EV.esp")}
-        TIEMods = {GPath(u"TIE.esp")}
-        if GPath(u"Unofficial Oblivion Patch.esp") in importMods:
+        OOOMods = {GPath("Oscuro's_Oblivion_Overhaul.esm"),
+                   GPath("Oscuro's_Oblivion_Overhaul.esp")}
+        FransMods = {GPath("Francesco's Leveled Creatures-Items Mod.esm"),
+                     GPath("Francesco.esp")}
+        WCMods = {GPath("Oblivion Warcry.esp"),
+                  GPath("Oblivion Warcry EV.esp")}
+        TIEMods = {GPath("TIE.esp")}
+        if GPath("Unofficial Oblivion Patch.esp") in importMods:
             if (OOOMods|WCMods) & importMods:
                 OverhaulCompat = True
             elif FransMods & importMods:
@@ -276,7 +277,7 @@ class CBash_ListsMerger(_AListsMerger, CBash_ListPatcher):
                     OverhaulCompat = True
         if OverhaulCompat:
             self.OverhaulUOPSkips = set([
-                FormID(GPath(u'Oblivion.esm'),x) for x in [
+                FormID(GPath('Oblivion.esm'),x) for x in [
                     0x03AB5D,   # VendorWeaponBlunt
                     0x03C7F1,   # LL0LootWeapon0Magic4Dwarven100
                     0x03C7F2,   # LL0LootWeapon0Magic7Ebony100
@@ -334,8 +335,8 @@ class CBash_ListsMerger(_AListsMerger, CBash_ListPatcher):
         else:
             mergedList = self.id_list[recordId]
             configChoice = self.configChoices.get(modFile.GName,tuple())
-            isRelev = u'Relev' in configChoice
-            isDelev = u'Delev' in configChoice
+            isRelev = 'Relev' in configChoice
+            isDelev = 'Delev' in configChoice
             delevs = self.id_delevs.setdefault(recordId, set())
             curItems = set([listId for level, listId, count in curList])
             if isRelev:
@@ -427,7 +428,7 @@ class CBash_ListsMerger(_AListsMerger, CBash_ListPatcher):
         emptiesDiscard = empties.discard
         for type in self.getTypes():
             subProgress(pstate,
-                        _(u'Looking for empty %s sublists...') % type + u'\n')
+                        _('Looking for empty %s sublists...') % type + '\n')
             #Remove any empty sublists
             madeChanges = True
             while madeChanges:
@@ -489,10 +490,10 @@ class CBash_ListsMerger(_AListsMerger, CBash_ListPatcher):
         """Will write to log."""
         #--Log
         mod_count = self.mod_count
-        log.setHeader(u'= ' +self.__class__.name)
-        log(u'* '+_(u'Modified LVL') + u': %d' % (sum(mod_count.values()),))
-        for srcMod in load_order.get_ordered(mod_count.keys()):
-            log(u'  * %s: %d' % (srcMod.s,mod_count[srcMod]))
+        log.setHeader('= ' +self.__class__.name)
+        log('* '+_('Modified LVL') + ': %d' % (sum(mod_count.values()),))
+        for srcMod in load_order.get_ordered(list(mod_count.keys())):
+            log('  * %s: %d' % (srcMod.s,mod_count[srcMod]))
         self.mod_count = collections.defaultdict(int)
 
 #------------------------------------------------------------------------------
@@ -500,12 +501,12 @@ class FidListsMerger(_AListsMerger,ListPatcher):
     """Merged FormID lists mod file."""
     scanOrder = 46
     editOrder = 46
-    name = _(u'FormID Lists')
-    text = (_(u'Merges changes to formid lists from ACTIVE/MERGED MODS ONLY.') +
-            u"\n\n" +
-            _(u'Advanced users may override Deflst tags for any mod (active or inactive) using the list below.'))
-    tip = _(u"Merges changes to formid lists from all active mods.")
-    autoKey = {u'Deflst'}
+    name = _('FormID Lists')
+    text = (_('Merges changes to formid lists from ACTIVE/MERGED MODS ONLY.') +
+            "\n\n" +
+            _('Advanced users may override Deflst tags for any mod (active or inactive) using the list below.'))
+    tip = _("Merges changes to formid lists from all active mods.")
+    autoKey = {'Deflst'}
     iiMode = True
 
     #--Patch Phase ------------------------------------------------------------
@@ -550,7 +551,7 @@ class FidListsMerger(_AListsMerger,ListPatcher):
             self.mastersScanned.add(modName)
         #--Deflst setup
         configChoice = self.configChoices.get(modName,tuple())
-        isDeflst = (u'Deflst' in configChoice)
+        isDeflst = ('Deflst' in configChoice)
         #--Scan
         for list_type in self.listTypes:
             levLists = self.type_list[list_type]
@@ -588,22 +589,22 @@ class FidListsMerger(_AListsMerger,ListPatcher):
         """Adds merged lists to patchfile."""
         keep = self.patchFile.getKeeper()
         #--Deflsts List
-        log.setHeader(u'= '+self.__class__.name,True)
-        log.setHeader(u'=== '+_(u'Deflsters'))
+        log.setHeader('= '+self.__class__.name,True)
+        log.setHeader('=== '+_('Deflsters'))
         for leveler in (self.levelers or []):
-            log(u'* '+self.getItemLabel(leveler))
+            log('* '+self.getItemLabel(leveler))
         #--Save to patch file
-        type = u'FLST'
-        log.setHeader(u'=== '+_(u'Merged %s Lists') % u'FormID')
+        type = 'FLST'
+        log.setHeader('=== '+_('Merged %s Lists') % 'FormID')
         patchBlock = getattr(self.patchFile,type)
         levLists = self.type_list[type]
-        for record in sorted(levLists.values(),key=attrgetter('eid')):
+        for record in sorted(list(levLists.values()),key=attrgetter('eid')):
             if not record.mergeOverLast: continue
             fid = keep(record.fid)
             patchBlock.setRecord(levLists[fid])
-            log(u'* '+record.eid)
+            log('* '+record.eid)
             for mod in record.mergeSources:
-                log(u'  * ' + self.getItemLabel(mod))
+                log('  * ' + self.getItemLabel(mod))
 
 #------------------------------------------------------------------------------
 class _AContentsChecker(SpecialPatcher):
@@ -611,9 +612,9 @@ class _AContentsChecker(SpecialPatcher):
     correct content types."""
     scanOrder = 50
     editOrder = 50
-    name = _(u'Contents Checker')
-    text = _(u"Checks contents of leveled lists, inventories and containers"
-             u" for correct types.")
+    name = _('Contents Checker')
+    text = _("Checks contents of leveled lists, inventories and containers"
+             " for correct types.")
     contType_entryTypes = {
         'LVSP': {'LVSP', 'SPEL'},
         'LVLC': {'LVLC', 'NPC_', 'CREA'},
@@ -625,7 +626,7 @@ class _AContentsChecker(SpecialPatcher):
     contType_entryTypes['NPC_'] = contType_entryTypes['LVLI']
     #--Types
     contTypes = set(contType_entryTypes)
-    entryTypes = reduce(set.union, contType_entryTypes.itervalues())
+    entryTypes = reduce(set.union, iter(contType_entryTypes.values()))
 
 class ContentsChecker(_AContentsChecker,Patcher):
 
@@ -701,12 +702,12 @@ class ContentsChecker(_AContentsChecker,Patcher):
                         keep(record.fid)
                 #--Log it
                 if id_removed:
-                    log(u"\n=== " + rec_type)
+                    log("\n=== " + rec_type)
                     for contId in sorted(id_removed):
-                        log(u'* ' + id_eid[contId])
+                        log('* ' + id_eid[contId])
                         for removedId in sorted(id_removed[contId]):
                             mod,index = removedId
-                            log(u'  . %s: %06X' % (mod.s,index))
+                            log('  . %s: %06X' % (mod.s,index))
 
 class CBash_ContentsChecker(_AContentsChecker,CBash_Patcher):
     srcs = []  # so as not to fail screaming when determining load mods - but
@@ -753,7 +754,7 @@ class CBash_ContentsChecker(_AContentsChecker,CBash_Patcher):
                 else:
                     entryRecords = None
                 if not entryRecords:
-                    badAdd((_(u'NONE'),entryId,None,_(u'NONE')))
+                    badAdd((_('NONE'),entryId,None,_('NONE')))
                 else:
                     entryRecord = entryRecords[0]
                     if entryRecord.recType in validEntries:
@@ -781,13 +782,13 @@ class CBash_ContentsChecker(_AContentsChecker,CBash_Patcher):
         if not self.isActive: return
         #--Log
         mod_type_id_badEntries = self.mod_type_id_badEntries
-        log.setHeader(u'= ' +self.__class__.name)
-        for mod, type_id_badEntries in mod_type_id_badEntries.iteritems():
-            log(u'\n=== %s' % mod.s)
-            for type,id_badEntries in type_id_badEntries.iteritems():
-                log(u'  * '+_(u'Cleaned %s: %d') % (type,len(id_badEntries)))
-                for id, badEntries in id_badEntries.iteritems():
-                    log(u'    * %s : %d' % (id,len(badEntries)))
+        log.setHeader('= ' +self.__class__.name)
+        for mod, type_id_badEntries in mod_type_id_badEntries.items():
+            log('\n=== %s' % mod.s)
+            for type,id_badEntries in type_id_badEntries.items():
+                log('  * '+_('Cleaned %s: %d') % (type,len(id_badEntries)))
+                for id, badEntries in id_badEntries.items():
+                    log('    * %s : %d' % (id,len(badEntries)))
                     for entry in sorted(badEntries, key=itemgetter(0)):
                         longId = entry[1]
                         if entry[2]:
@@ -796,11 +797,11 @@ class CBash_ContentsChecker(_AContentsChecker,CBash_Patcher):
                             try:
                                 modName = longId[0].s
                             except:
-                                log(u'        . ' + _(
-                                    u'Unloaded Object or Undefined Reference'))
+                                log('        . ' + _(
+                                    'Unloaded Object or Undefined Reference'))
                                 continue
-                        log(u'        . ' + _(
-                            u'Editor ID: "%s", Object ID %06X: Defined in '
-                            u'mod "%s" as %s') % (
+                        log('        . ' + _(
+                            'Editor ID: "%s", Object ID %06X: Defined in '
+                            'mod "%s" as %s') % (
                                 entry[0], longId[1], modName, entry[3]))
         self.mod_type_id_badEntries = {}

@@ -24,120 +24,120 @@
 from collections import OrderedDict
 
 default_tweaks = {
-    u'Archery, ArrowTilt 0.0 [Enderal].ini': OrderedDict(
-        [(u'Combat', OrderedDict(
-            [(u'f1PArrowTiltUpAngle', u'0.0'),
-             (u'f3PArrowTiltUpAngle', u'0.0')]))]),
-    u'Archery, ArrowTilt 0.7 [Enderal].ini': OrderedDict(
-        [(u'Combat', OrderedDict(
-            [(u'f1PArrowTiltUpAngle', u'0.7'),
-             (u'f3PArrowTiltUpAngle', u'0.7')]))]),
-    u'Archery, NavMeshMove 12288 [Enderal].ini': OrderedDict(
-        [(u'Actor', OrderedDict(
-            [(u'fVisibleNavmeshMoveDist', u'12288.0000')]))]),
-    u'Archery, NavMeshMove 4096 [Enderal].ini': OrderedDict(
-        [(u'Actor', OrderedDict(
-            [(u'fVisibleNavmeshMoveDist', u'4096.0000')]))]),
-    u'Archery, NavMeshMove 8192 [Enderal].ini': OrderedDict(
-        [(u'Actor', OrderedDict(
-            [(u'fVisibleNavmeshMoveDist', u'8192.0000')]))]),
-    u'Enderal Intro sequence, Disabled [Enderal].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'sIntroSequence', u'0')]))]),
-    u'Enderal Intro sequence, Enabled ~Default [Enderal].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'sIntroSequence', u'1')]))]),
-    u'Border Regions, Disabled [Enderal].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'bBorderRegionsEnabled', u'0')]))]),
-    u'Border Regions, Enabled [Enderal].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'bBorderRegionsEnabled', u'1')]))]),
-    u'Debug Log, Disabled [Enderal].ini': OrderedDict(
-        [(u'Papyrus', OrderedDict(
-            [(u'bEnableLogging', u'0'), (u'bLoadDebugInformation', u'0'),
-             (u'bEnableTrace', u'0')]))]),
-    u'Debug Log, Enabled ~Default [Enderal].ini': OrderedDict(
-        [(u'Papyrus', OrderedDict(
-        [(u'bEnableLogging', u'1'), (u'bLoadDebugInformation', u'1'),
-         (u'bEnableTrace', u'1')]))]),
-    u'Grass, Spacing 20 [Enderal].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'20')]))]),
-    u'Grass, Spacing 40 [Enderal].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'40')]))]),
-    u'Grass, Spacing 60 [Enderal].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'60')]))]),
-    u'Grass, Spacing 80 [Enderal].ini': OrderedDict(
-        [(u'Grass', OrderedDict([(u'iMinGrassSize', u'80')]))]),
-    u'Large Interiors Static Limit Fix [Enderal].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iLargeIntRefCount', u'999999')]))]),
-    u'Large Interiors Static Limit [Enderal].ini': OrderedDict(
-        [(u'General', OrderedDict([(u'iLargeIntRefCount', u'1000')]))]),
-    u'Particles, 100 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'100')]))]),
-    u'Particles, 150 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'150')]))]),
-    u'Particles, 250 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'250')]))]),
-    u'Particles, 350 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'350')]))]),
-    u'Particles, 450 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'450')]))]),
-    u'Particles, 550 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'550')]))]),
-    u'Particles, 650 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'650')]))]),
-    u'Particles, 750 ~Default [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Particles', OrderedDict([(u'iMaxDesired', u'750')]))]),
-    u'Screenshot, Disabled [Enderal].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'bAllowScreenShot', u'0')]))]),
-    u'Screenshot, Enabled ~Default [Enderal].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'bAllowScreenShot', u'1')]))]),
-    u'Shadows, Res512 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'512')]))]),
-    u'Shadows, Res1024 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'1024')]))]),
-    u'Shadows, Res2048 [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'2048')]))]),
-    u'Shadows, Res4096 ~Default [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Display', OrderedDict([(u'iShadowMapResolution', u'4096')]))]),
-    u'Vanity Camera, 120 [Enderal].ini': OrderedDict(
-        [(u'Camera', OrderedDict([(u'fAutoVanityModeDelay', u'120.0000')]))]),
-    u'Vanity Camera, 600 [Enderal].ini': OrderedDict(
-        [(u'Camera', OrderedDict([(u'fAutoVanityModeDelay', u'600.0000')]))]),
-    u'Vanity Camera, Disable [Enderal].ini': OrderedDict(
-        [(u'Camera', OrderedDict([(u'fAutoVanityModeDelay', u'0')]))]),
-    u'Window Mode Top left, 20-225 [Enderal].ini': OrderedDict(
-        [(u'Display', OrderedDict(
-            [(u'iLocation Y', u'20'), (u'iLocation X', u'225')]))]),
-    u'Window Mode Top left, 5-5 [Enderal].ini': OrderedDict(
-        [(u'Display', OrderedDict(
-            [(u'iLocation Y', u'5'), (u'iLocation X', u'5')]))]),
-    u'Window Mode Top left, 5-60 [Enderal].ini': OrderedDict(
-        [(u'Display', OrderedDict(
-            [(u'iLocation Y', u'5'), (u'iLocation X', u'60')]))]),
-    u'Invalidate, Allow loose files ~Default [Enderal].ini': OrderedDict(
-        [(u'Archive', OrderedDict([(u'bInvalidateOlderFiles', u'1')]))]),
-    u'Invalidate, Disallow loose files [Enderal].ini': OrderedDict(
-        [(u'Archive', OrderedDict([(u'bInvalidateOlderFiles', u'0')]))]),
-    u'Depth Of Field, Off [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Imagespace', OrderedDict([(u'bDoDepthOfField', u'0')]))]),
-    u'Depth Of Field, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Imagespace', OrderedDict([(u'bDoDepthOfField', u'1')]))]),
-    u'In Game Compass, Off [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowCompass', u'0')]))]),
-    u'In Game Compass, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowCompass', u'1')]))]),
-    u'In Game Crosshair, Off [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Main', OrderedDict([(u'bCrosshairEnabled', u'0')]))]),
-    u'In Game Crosshair, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'Main', OrderedDict([(u'bCrosshairEnabled', u'1')]))]),
-    u'In Game Quest Markers, Off [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowFloatingQuestMarkers', u'0')]))]),
-    u'In Game Quest Markers, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowFloatingQuestMarkers', u'1')]))]),
-    u'Map Quest Markers, Off [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowQuestMarkers', u'0')]))]),
-    u'Map Quest Markers, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
-        [(u'GamePlay', OrderedDict([(u'bShowQuestMarkers', u'1')]))]),
-    u'Tutorials, Off [Enderal].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowTutorials', u'0')]))]),
-    u'Tutorials, On [Enderal].ini': OrderedDict(
-        [(u'Interface', OrderedDict([(u'bShowTutorials', u'1')]))]),
+    'Archery, ArrowTilt 0.0 [Enderal].ini': OrderedDict(
+        [('Combat', OrderedDict(
+            [('f1PArrowTiltUpAngle', '0.0'),
+             ('f3PArrowTiltUpAngle', '0.0')]))]),
+    'Archery, ArrowTilt 0.7 [Enderal].ini': OrderedDict(
+        [('Combat', OrderedDict(
+            [('f1PArrowTiltUpAngle', '0.7'),
+             ('f3PArrowTiltUpAngle', '0.7')]))]),
+    'Archery, NavMeshMove 12288 [Enderal].ini': OrderedDict(
+        [('Actor', OrderedDict(
+            [('fVisibleNavmeshMoveDist', '12288.0000')]))]),
+    'Archery, NavMeshMove 4096 [Enderal].ini': OrderedDict(
+        [('Actor', OrderedDict(
+            [('fVisibleNavmeshMoveDist', '4096.0000')]))]),
+    'Archery, NavMeshMove 8192 [Enderal].ini': OrderedDict(
+        [('Actor', OrderedDict(
+            [('fVisibleNavmeshMoveDist', '8192.0000')]))]),
+    'Enderal Intro sequence, Disabled [Enderal].ini': OrderedDict(
+        [('General', OrderedDict([('sIntroSequence', '0')]))]),
+    'Enderal Intro sequence, Enabled ~Default [Enderal].ini': OrderedDict(
+        [('General', OrderedDict([('sIntroSequence', '1')]))]),
+    'Border Regions, Disabled [Enderal].ini': OrderedDict(
+        [('General', OrderedDict([('bBorderRegionsEnabled', '0')]))]),
+    'Border Regions, Enabled [Enderal].ini': OrderedDict(
+        [('General', OrderedDict([('bBorderRegionsEnabled', '1')]))]),
+    'Debug Log, Disabled [Enderal].ini': OrderedDict(
+        [('Papyrus', OrderedDict(
+            [('bEnableLogging', '0'), ('bLoadDebugInformation', '0'),
+             ('bEnableTrace', '0')]))]),
+    'Debug Log, Enabled ~Default [Enderal].ini': OrderedDict(
+        [('Papyrus', OrderedDict(
+        [('bEnableLogging', '1'), ('bLoadDebugInformation', '1'),
+         ('bEnableTrace', '1')]))]),
+    'Grass, Spacing 20 [Enderal].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '20')]))]),
+    'Grass, Spacing 40 [Enderal].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '40')]))]),
+    'Grass, Spacing 60 [Enderal].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '60')]))]),
+    'Grass, Spacing 80 [Enderal].ini': OrderedDict(
+        [('Grass', OrderedDict([('iMinGrassSize', '80')]))]),
+    'Large Interiors Static Limit Fix [Enderal].ini': OrderedDict(
+        [('General', OrderedDict([('iLargeIntRefCount', '999999')]))]),
+    'Large Interiors Static Limit [Enderal].ini': OrderedDict(
+        [('General', OrderedDict([('iLargeIntRefCount', '1000')]))]),
+    'Particles, 100 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '100')]))]),
+    'Particles, 150 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '150')]))]),
+    'Particles, 250 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '250')]))]),
+    'Particles, 350 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '350')]))]),
+    'Particles, 450 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '450')]))]),
+    'Particles, 550 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '550')]))]),
+    'Particles, 650 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '650')]))]),
+    'Particles, 750 ~Default [EnderalPrefs.ini].ini': OrderedDict(
+        [('Particles', OrderedDict([('iMaxDesired', '750')]))]),
+    'Screenshot, Disabled [Enderal].ini': OrderedDict(
+        [('Display', OrderedDict([('bAllowScreenShot', '0')]))]),
+    'Screenshot, Enabled ~Default [Enderal].ini': OrderedDict(
+        [('Display', OrderedDict([('bAllowScreenShot', '1')]))]),
+    'Shadows, Res512 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '512')]))]),
+    'Shadows, Res1024 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '1024')]))]),
+    'Shadows, Res2048 [EnderalPrefs.ini].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '2048')]))]),
+    'Shadows, Res4096 ~Default [EnderalPrefs.ini].ini': OrderedDict(
+        [('Display', OrderedDict([('iShadowMapResolution', '4096')]))]),
+    'Vanity Camera, 120 [Enderal].ini': OrderedDict(
+        [('Camera', OrderedDict([('fAutoVanityModeDelay', '120.0000')]))]),
+    'Vanity Camera, 600 [Enderal].ini': OrderedDict(
+        [('Camera', OrderedDict([('fAutoVanityModeDelay', '600.0000')]))]),
+    'Vanity Camera, Disable [Enderal].ini': OrderedDict(
+        [('Camera', OrderedDict([('fAutoVanityModeDelay', '0')]))]),
+    'Window Mode Top left, 20-225 [Enderal].ini': OrderedDict(
+        [('Display', OrderedDict(
+            [('iLocation Y', '20'), ('iLocation X', '225')]))]),
+    'Window Mode Top left, 5-5 [Enderal].ini': OrderedDict(
+        [('Display', OrderedDict(
+            [('iLocation Y', '5'), ('iLocation X', '5')]))]),
+    'Window Mode Top left, 5-60 [Enderal].ini': OrderedDict(
+        [('Display', OrderedDict(
+            [('iLocation Y', '5'), ('iLocation X', '60')]))]),
+    'Invalidate, Allow loose files ~Default [Enderal].ini': OrderedDict(
+        [('Archive', OrderedDict([('bInvalidateOlderFiles', '1')]))]),
+    'Invalidate, Disallow loose files [Enderal].ini': OrderedDict(
+        [('Archive', OrderedDict([('bInvalidateOlderFiles', '0')]))]),
+    'Depth Of Field, Off [EnderalPrefs.ini].ini': OrderedDict(
+        [('Imagespace', OrderedDict([('bDoDepthOfField', '0')]))]),
+    'Depth Of Field, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
+        [('Imagespace', OrderedDict([('bDoDepthOfField', '1')]))]),
+    'In Game Compass, Off [EnderalPrefs.ini].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowCompass', '0')]))]),
+    'In Game Compass, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowCompass', '1')]))]),
+    'In Game Crosshair, Off [EnderalPrefs.ini].ini': OrderedDict(
+        [('Main', OrderedDict([('bCrosshairEnabled', '0')]))]),
+    'In Game Crosshair, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
+        [('Main', OrderedDict([('bCrosshairEnabled', '1')]))]),
+    'In Game Quest Markers, Off [EnderalPrefs.ini].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowFloatingQuestMarkers', '0')]))]),
+    'In Game Quest Markers, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowFloatingQuestMarkers', '1')]))]),
+    'Map Quest Markers, Off [EnderalPrefs.ini].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowQuestMarkers', '0')]))]),
+    'Map Quest Markers, On ~Default [EnderalPrefs.ini].ini': OrderedDict(
+        [('GamePlay', OrderedDict([('bShowQuestMarkers', '1')]))]),
+    'Tutorials, Off [Enderal].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowTutorials', '0')]))]),
+    'Tutorials, On [Enderal].ini': OrderedDict(
+        [('Interface', OrderedDict([('bShowTutorials', '1')]))]),
 }

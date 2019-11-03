@@ -32,7 +32,7 @@ __author__ = 'Utumno'
 
 import copy
 import itertools
-import StringIO
+import io
 import struct
 import zlib
 from collections import OrderedDict
@@ -62,15 +62,15 @@ class SaveFileHeader(object):
                 self.load_header(ins)
         #--Errors
         except (OSError, struct.error, OverflowError):
-            bolt.deprint(u'Failed to read %s' % save_path, traceback=True)
-            raise_bolt_error(u'Failed to read %s' % save_path, SaveHeaderError)
+            bolt.deprint('Failed to read %s' % save_path, traceback=True)
+            raise_bolt_error('Failed to read %s' % save_path, SaveHeaderError)
 
     def load_header(self, ins):
         save_magic = unpack_string(ins, len(self.__class__.save_magic))
         if save_magic != self.__class__.save_magic:
-            raise SaveHeaderError(u'Magic wrong: %r (expected %r)' % (
+            raise SaveHeaderError('Magic wrong: %r (expected %r)' % (
                 save_magic, self.__class__.save_magic))
-        for attr, unp in self.__class__.unpackers.iteritems():
+        for attr, unp in self.__class__.unpackers.items():
             if unp[0]:
                 if unp[0] > 0: ins.seek(unp[0])
                 else: ins.seek(ins.tell() - unp[0])
@@ -93,13 +93,13 @@ class SaveFileHeader(object):
         # pick out only every 3 bytes, drop the 4th (alpha channel)
         #ssAlpha = ''.join(itertools.islice(ssData, 0, None, 4))
         self.ssData = ''.join(
-            itertools.compress(ssData, itertools.cycle(reversed(range(4)))))
+            itertools.compress(ssData, itertools.cycle(reversed(list(range(4))))))
 
     def load_masters(self, ins):
         self._mastersStart = ins.tell()
         self.masters = []
         numMasters = unpack_byte(ins)
-        for count in xrange(numMasters):
+        for count in range(numMasters):
             self.masters.append(unpack_str8(ins))
 
     def calc_time(self): pass
@@ -127,7 +127,7 @@ class SaveFileHeader(object):
         #--Offsets
         offset = out.tell() - ins.tell()
         #--File Location Table
-        for i in xrange(6):
+        for i in range(6):
             # formIdArrayCount offset, unkownTable3Offset,
             # globalDataTable1Offset, globalDataTable2Offset,
             # changeFormsOffset, globalDataTable3Offset
@@ -137,7 +137,7 @@ class SaveFileHeader(object):
 
     def _dump_masters(self, ins, numMasters, out, _pack):
         oldMasters = []
-        for x in xrange(numMasters):
+        for x in range(numMasters):
             oldMasters.append(unpack_str16(ins))
         #--Write new masters
         _pack('B', len(self.masters))
@@ -170,7 +170,7 @@ class OblivionSaveHeader(SaveFileHeader):
         #--Skip old masters
         numMasters = unpack_byte(ins)
         oldMasters = []
-        for x in xrange(numMasters):
+        for x in range(numMasters):
             oldMasters.append(unpack_str8(ins))
         #--Write new masters
         _pack('B', len(self.masters))
@@ -221,7 +221,7 @@ class SkyrimSaveHeader(SaveFileHeader):
         if self.__is_sse():
             self._compressType = unpack_short(ins)
         if ins.tell() != self.header_size + 17: raise SaveHeaderError(
-            u'New Save game header size (%s) not as expected (%s).' % (
+            'New Save game header size (%s) not as expected (%s).' % (
                 ins.tell() - 17, self.header_size))
         #--Image Data
         if self.__is_sse():
@@ -250,17 +250,17 @@ class SkyrimSaveHeader(SaveFileHeader):
         mastersSize = unpack_int(ins)
         self.masters = []
         numMasters = unpack_byte(ins)
-        for count in xrange(numMasters):
+        for count in range(numMasters):
             self.masters.append(unpack_str16(ins))
         # SSE / FO4 save format with esl block
         if self._esl_block():
             _num_esl_masters = unpack_short(ins)
-            for count in xrange(_num_esl_masters):
+            for count in range(_num_esl_masters):
                 self.masters.append(unpack_str16(ins))
         # Check for master's table size
         if ins.tell() + sse_offset != self._mastersStart + mastersSize + 4:
             raise SaveHeaderError(
-                u'Save game masters size (%i) not as expected (%i).' % (
+                'Save game masters size (%i) not as expected (%i).' % (
                     ins.tell() + sse_offset - self._mastersStart - 4,
                     mastersSize))
 
@@ -270,10 +270,10 @@ class SkyrimSaveHeader(SaveFileHeader):
         compressed_size = unpack_int(ins)
         decompressed_data = zlib.decompress(ins.read(compressed_size))
         if len(decompressed_data) != decompressed_size:
-            raise SaveHeaderError(_(u'zlib-decompressed header size incorrect '
-                                    u'- expected %u, but got %u.') %
+            raise SaveHeaderError(_('zlib-decompressed header size incorrect '
+                                    '- expected %u, but got %u.') %
                                   (decompressed_size, len(decompressed_data)))
-        return StringIO.StringIO(decompressed_data)
+        return io.StringIO(decompressed_data)
 
     @staticmethod
     def _decompress_masters_sse_lz4(ins):
@@ -333,7 +333,7 @@ class SkyrimSaveHeader(SaveFileHeader):
                 if len(uncompressed) >= masters_size + 5:
                     break
         # Wrap the decompressed data in a file-like object and return it
-        return StringIO.StringIO(uncompressed)
+        return io.StringIO(uncompressed)
 
     def calc_time(self):
         # gameDate format: hours.minutes.seconds
@@ -355,7 +355,7 @@ class Fallout4SaveHeader(SkyrimSaveHeader): # pretty similar to skyrim
 
     def load_image_data(self, ins):
         if ins.tell() != self.header_size + 16: raise SaveHeaderError(
-            u'New Save game header size (%s) not as expected (%s).' % (
+            'New Save game header size (%s) not as expected (%s).' % (
                 ins.tell() - 16, self.header_size))
         #--Image Data
         self._drop_alpha(ins)
@@ -373,18 +373,18 @@ class Fallout4SaveHeader(SkyrimSaveHeader): # pretty similar to skyrim
 
     def _dump_masters(self, ins, numMasters, out, _pack):
         oldMasters = []
-        self.masters.sort(key=lambda m: m.cext == u'.esl')
-        for x in xrange(numMasters):
+        self.masters.sort(key=lambda m: m.cext == '.esl')
+        for x in range(numMasters):
             oldMasters.append(unpack_str16(ins))
         if self._esl_block(): # new FO4 save format
             _num_esl_masters = unpack_short(ins)
-            for count in xrange(_num_esl_masters):
+            for count in range(_num_esl_masters):
                 oldMasters.append(unpack_str16(ins))
         #--Write new masters
-        esl_count = sum(1 for m in self.masters if m.cext == u'.esl')
+        esl_count = sum(1 for m in self.masters if m.cext == '.esl')
         _pack('B', len(self.masters) - esl_count)
         for master in self.masters:
-            if master.cext == u'.esl':
+            if master.cext == '.esl':
                 break
             _pack('H', len(master))
             out.write(master.s)
@@ -399,7 +399,7 @@ class Fallout4SaveHeader(SkyrimSaveHeader): # pretty similar to skyrim
     def calc_time(self):
         # gameDate format: Xd.Xh.Xm.X days.X hours.X minutes
         # russian game format: '0д.0ч.9м.0 д.0 ч.9 мин'
-        self.gameDate = unicode(self.gameDate, encoding='utf-8')
+        self.gameDate = str(self.gameDate, encoding='utf-8')
         days, hours, minutes, _days, _hours, _minutes = self.gameDate.split(
             '.')
         days = int(days[:-1])
@@ -434,13 +434,13 @@ class FalloutNVSaveHeader(SaveFileHeader):
         self._master_list_size(ins)
         self.masters = []
         numMasters = unpack_byte_delim(ins)
-        for count in xrange(numMasters):
+        for count in range(numMasters):
             self.masters.append(unpack_str16_delim(ins))
 
     def _master_list_size(self, ins):
         formVersion, masterListSize = unpack_many(ins, '=BI')
         if formVersion != self._masters_unknown_byte: raise SaveHeaderError(
-            u'Unknown byte at position %d is %r not 0x%X' % (
+            'Unknown byte at position %d is %r not 0x%X' % (
                 ins.tell() - 4, formVersion, self._masters_unknown_byte))
         return masterListSize
 
@@ -454,7 +454,7 @@ class FalloutNVSaveHeader(SaveFileHeader):
         #--Offsets
         offset = out.tell() - ins.tell()
         #--File Location Table
-        for i in xrange(5):
+        for i in range(5):
             # formIdArrayCount offset and 5 others
             oldOffset = unpack_int(ins)
             _pack('I', oldOffset + offset)
@@ -462,7 +462,7 @@ class FalloutNVSaveHeader(SaveFileHeader):
 
     def _dump_masters(self, ins, numMasters, out, _pack):
         oldMasters = []
-        for count in xrange(numMasters):
+        for count in range(numMasters):
             oldMasters.append(unpack_str16_delim(ins))
         #--Write new masters
         _pack('Bc', len(self.masters), '|')
@@ -492,13 +492,13 @@ class Fallout3SaveHeader(FalloutNVSaveHeader):
 # Factory
 def get_save_header_type(game_fsName):
     """:rtype: type"""
-    if game_fsName == u'Oblivion':
+    if game_fsName == 'Oblivion':
         return OblivionSaveHeader
-    elif game_fsName in (u'Enderal', u'Skyrim',  u'Skyrim Special Edition'):
+    elif game_fsName in ('Enderal', 'Skyrim',  'Skyrim Special Edition'):
         return SkyrimSaveHeader
-    elif game_fsName == u'Fallout4':
+    elif game_fsName == 'Fallout4':
         return Fallout4SaveHeader
-    elif game_fsName == u'FalloutNV':
+    elif game_fsName == 'FalloutNV':
         return FalloutNVSaveHeader
-    elif game_fsName == u'Fallout3':
+    elif game_fsName == 'Fallout3':
         return Fallout3SaveHeader

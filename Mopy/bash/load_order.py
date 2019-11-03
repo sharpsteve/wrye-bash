@@ -45,13 +45,13 @@ import math
 import collections
 import time
 # Internal
-import balt
-import bass
-import bolt
-import bush
-import exception
+from . import balt
+from . import bass
+from . import bolt
+from . import bush
+from . import exception
 # Game instance providing load order operations API
-import games
+from . import games
 _game_handle = None # type: games.Game
 _plugins_txt_path = _loadorder_txt_path = _lord_pickle_path = None
 # Load order locking
@@ -75,9 +75,9 @@ def initialize_load_order_files():
     else:
         _dir = bass.dirs['userApp']
     global _plugins_txt_path, _loadorder_txt_path, _lord_pickle_path
-    _plugins_txt_path = _dir.join(u'plugins.txt')
-    _loadorder_txt_path = _dir.join(u'loadorder.txt')
-    _lord_pickle_path = bass.dirs['saveBase'].join(u'BashLoadOrders.dat')
+    _plugins_txt_path = _dir.join('plugins.txt')
+    _loadorder_txt_path = _dir.join('loadorder.txt')
+    _lord_pickle_path = bass.dirs['saveBase'].join('BashLoadOrders.dat')
 
 def initialize_load_order_handle(mod_infos):
     global _game_handle
@@ -95,7 +95,7 @@ class LoadOrder(object):
         :type active: list | set | tuple"""
         if set(active) - set(loadOrder):
             raise exception.BoltError(
-                u'Active mods with no load order: ' + u', '.join(
+                'Active mods with no load order: ' + ', '.join(
                     [x.s for x in (set(active) - set(loadOrder))]))
         self._loadOrder = tuple(loadOrder)
         self._active = frozenset(active)
@@ -142,7 +142,7 @@ class LoadOrder(object):
             (a, i) for i, a in enumerate(self._activeOrdered))
 
     def __unicode__(self):
-        return u', '.join([((u'*%s' if x in self._active else u'%s') % x)
+        return ', '.join([(('*%s' if x in self._active else '%s') % x)
                            for x in self.loadOrder])
 
 # Module level cache
@@ -201,7 +201,7 @@ def cached_lo_index_or_max(mod):
     try:
         return cached_lo_index(mod)
     except KeyError:
-        return sys.maxint # sort mods that do not have a load order LAST
+        return sys.maxsize # sort mods that do not have a load order LAST
 
 def cached_active_index(mod): return cached_lord.activeIndex(mod)
 
@@ -223,7 +223,7 @@ def get_ordered(mod_names):
     return mod_names
 
 def filter_pinned(imods):
-    return filter(_game_handle.pinned_mods.__contains__, imods)
+    return list(filter(_game_handle.pinned_mods.__contains__, imods))
 
 # Get and set API -------------------------------------------------------------
 def save_lo(lord, acti=None, __index_move=0, quiet=False):
@@ -256,7 +256,7 @@ def _update_cache(lord=None, acti_sorted=None, __index_move=0):
         fix_lo.lo_deprint()
         cached_lord = LoadOrder(lord, acti_sorted)
     except Exception:
-        bolt.deprint(u'Error updating load_order cache')
+        bolt.deprint('Error updating load_order cache')
         cached_lord = __empty
         raise
     finally:
@@ -292,8 +292,8 @@ def refresh_lo(cached=False, cached_active=True):
             list(saved.loadOrder), list(saved.activeOrdered), dry_run=True)
         fixed = LoadOrder(lord, acti)
         if fixed != saved:
-            bolt.deprint(u'Saved load order is no longer valid: %s'
-                         u'\nCorrected to %s' % (saved, fixed))
+            bolt.deprint('Saved load order is no longer valid: %s'
+                         '\nCorrected to %s' % (saved, fixed))
         saved = fixed
     else: saved = None
     if cached_lord is not __empty:
@@ -364,12 +364,12 @@ def toggle_lock_load_order():
     global locked
     lock = not locked
     if lock:
-        message =  _(u'Lock Load Order is a feature which resets load order '
-            u'to a previously memorized state.  While this feature is good '
-            u'for maintaining your load order, it will also undo any load '
-            u'order changes that you have made outside Bash.')
+        message =  _('Lock Load Order is a feature which resets load order '
+            'to a previously memorized state.  While this feature is good '
+            'for maintaining your load order, it will also undo any load '
+            'order changes that you have made outside Bash.')
         lock = balt.askContinue(None, message, 'bash.load_order.lock_continue',
-                                title=_(u'Lock Load Order'))
+                                title=_('Lock Load Order'))
     bass.settings['bosh.modInfos.resetMTimes'] = locked = lock
 
 class Unlock(object):

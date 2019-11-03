@@ -63,8 +63,8 @@
 from string import digits, whitespace
 import types
 #--------------------------------------------------
-name_start = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'
-name_chars = name_start + u'0123456789'
+name_start = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'
+name_chars = name_start + '0123456789'
 
 # validName ---------------------------------------
 #  Test if a string can be used as a valid name
@@ -84,7 +84,7 @@ def validName(name):
 def validNumber(string):
     try:
         float(string)
-        if u'.' in string and string == u'.': return False
+        if '.' in string and string == '.': return False
         return True
     except ValueError:
         return False
@@ -92,9 +92,9 @@ def validNumber(string):
 # Define Some Constants ---------------------------
 
 # Some error string
-ERR_CANNOT_SET = u"Cannot set %s '%s': type is '%s'."
-ERR_TOO_FEW_ARGS = u"Too few arguments to %s '%s':  got %s, expected %s."
-ERR_TOO_MANY_ARGS = u"Too many arguments to %s '%s':  got %s, expected %s."
+ERR_CANNOT_SET = "Cannot set %s '%s': type is '%s'."
+ERR_TOO_FEW_ARGS = "Too few arguments to %s '%s':  got %s, expected %s."
+ERR_TOO_MANY_ARGS = "Too many arguments to %s '%s':  got %s, expected %s."
 
 class KEY:
     # Constants for keyword args
@@ -139,23 +139,23 @@ OPEN_BRACKET = 14
 CLOSE_BRACKET = 15
 COLON = 16
 
-Types = {UNKNOWN:u'UNKNOWN',
-         NAME:u'NAME',
-         CONSTANT:u'CONSTANT',
-         VARIABLE:u'VARIABLE',
-         FUNCTION:u'FUNCTION',
-         KEYWORD:u'KEYWORD',
-         OPERATOR:u'OPERATOR',
-         INTEGER:u'INTEGER',
-         DECIMAL:u'DECIMAL',
-         OPEN_PARENS:u'OPEN_PARENS',
-         CLOSE_PARENS:u'CLOSE_PARENS',
-         COMMA:u'COMMA',
-         WHITESPACE:u'WHITESPACE',
-         STRING:u'STRING',
-         OPEN_BRACKET:u'OPEN_BRACKET',
-         CLOSE_BRACKET:u'CLOSE_BRACKET',
-         COLON:u'COLON',
+Types = {UNKNOWN:'UNKNOWN',
+         NAME:'NAME',
+         CONSTANT:'CONSTANT',
+         VARIABLE:'VARIABLE',
+         FUNCTION:'FUNCTION',
+         KEYWORD:'KEYWORD',
+         OPERATOR:'OPERATOR',
+         INTEGER:'INTEGER',
+         DECIMAL:'DECIMAL',
+         OPEN_PARENS:'OPEN_PARENS',
+         CLOSE_PARENS:'CLOSE_PARENS',
+         COMMA:'COMMA',
+         WHITESPACE:'WHITESPACE',
+         STRING:'STRING',
+         OPEN_BRACKET:'OPEN_BRACKET',
+         CLOSE_BRACKET:'CLOSE_BRACKET',
+         COLON:'COLON',
          }
 
 # getType ---------------------------------------
@@ -164,28 +164,28 @@ Types = {UNKNOWN:u'UNKNOWN',
 #  various names as well.
 #------------------------------------------------
 def getType(item, parser=None):
-    if isinstance(item, unicode):
+    if isinstance(item, str):
         if not parser: return STRING
         if item in parser.constants: return CONSTANT
         if item in parser.variables: return VARIABLE
         if item in parser.keywords : return KEYWORD
         if item in parser.functions: return FUNCTION
         if item in parser.operators: return OPERATOR
-        if item == u'(': return OPEN_PARENS
-        if item == u')': return CLOSE_PARENS
-        if item == u'[': return OPEN_BRACKET
-        if item == u']': return CLOSE_BRACKET
-        if item == u':': return COLON
-        if item == u',': return COMMA
+        if item == '(': return OPEN_PARENS
+        if item == ')': return CLOSE_PARENS
+        if item == '[': return OPEN_BRACKET
+        if item == ']': return CLOSE_BRACKET
+        if item == ':': return COLON
+        if item == ',': return COMMA
         if validName(item): return NAME
         if validNumber(item):
-            if u'.' in item: return DECIMAL
+            if '.' in item: return DECIMAL
             return INTEGER
         for i in item:
             if i not in whitespace: return UNKNOWN
         return WHITESPACE
-    if type(item) == types.IntType: return INTEGER
-    if type(item) == types.FloatType: return DECIMAL
+    if type(item) == int: return INTEGER
+    if type(item) == float: return DECIMAL
     return UNKNOWN
 
 # FlowControl -------------------------------------
@@ -213,9 +213,9 @@ class ParserError(SyntaxError): pass
 gParser = None
 def error(msg):
     if gParser:
-        raise ParserError, u'(Line %s, Column %s): %s' % (gParser.cLine, gParser.cCol, msg)
+        raise ParserError('(Line %s, Column %s): %s' % (gParser.cLine, gParser.cCol, msg))
     else:
-        raise ParserError, msg
+        raise ParserError(msg)
 
 # Parser ------------------------------------------
 #  This is where the magic happens
@@ -253,19 +253,19 @@ class Parser(object):
                 else:
                     error(ERR_TOO_MANY_ARGS % (
                         self.Type, self.callable_name, numArgs,
-                        u'min: %s, max: %s' % (self.minArgs,self.maxArgs)))
+                        'min: %s, max: %s' % (self.minArgs,self.maxArgs)))
             if numArgs < self.minArgs:
                 if self.maxArgs == KEY.NO_MAX:
                     error(ERR_TOO_FEW_ARGS % (
                         self.Type, self.callable_name, numArgs,
-                        u'min: %s' % self.minArgs))
+                        'min: %s' % self.minArgs))
                 elif self.minArgs == self.maxArgs:
                     error(ERR_TOO_FEW_ARGS % (
                         self.Type, self.callable_name, numArgs, self.minArgs))
                 else:
                     error(ERR_TOO_FEW_ARGS % (
                         self.Type, self.callable_name, numArgs,
-                        u'min: %s, max: %s' % (self.minArgs, self.maxArgs)))
+                        'min: %s, max: %s' % (self.minArgs, self.maxArgs)))
             return self.function(*args)
 
     class Operator(Callable):
@@ -371,16 +371,16 @@ class Parser(object):
         def __and__(self, other): return Parser.Token(self.tkn & other.tkn)
         def __xor__(self, other): return Parser.Token(self.tkn ^ other.tkn)
         def __or__(self, other): return Parser.Token(self.tkn | other.tkn)
-        def __nonzero__(self): return bool(self.tkn)
+        def __bool__(self): return bool(self.tkn)
         def __neg__(self): return Parser.Token(-self.tkn)
         def __pos__(self): return Parser.Token(+self.tkn)
         def __abs__(self): return abs(self.tkn)
         def __int__(self): return int(self.tkn)
-        def __long__(self): return long(self.tkn)
+        def __long__(self): return int(self.tkn)
         def __float__(self): return float(self.tkn)
         def __str__(self): return str(self.tkn)
 
-        def __repr__(self): return u'<Token-%s:%s>' % (Types[self.type],self.text)
+        def __repr__(self): return '<Token-%s:%s>' % (Types[self.type],self.text)
 
         # Fall through to function/keyword
         def __call__(self, *args, **kwdargs): return self.tkn(*args, **kwdargs)
@@ -388,10 +388,10 @@ class Parser(object):
 
     # Now for the Parser class
     def __init__(self,
-                 doImplicit=u'*',
-                 dotOperator=u'.',
-                 comment=u';',
-                 constants={u'True':True,u'False':False},
+                 doImplicit='*',
+                 dotOperator='.',
+                 comment=';',
+                 constants={'True':True,'False':False},
                  variables=None
                  ):
         self.doImplicit = doImplicit
@@ -411,8 +411,8 @@ class Parser(object):
         self.functions = {}
         self.constants = constants or {}
         self.variables = variables or {}
-        self.escapes = {u'n':u'\n',
-                        u't':u'\t'
+        self.escapes = {'n':'\n',
+                        't':'\t'
                         }
 
         self.word = None
@@ -421,7 +421,7 @@ class Parser(object):
         if dotOperator:
             self.SetOperator(dotOperator, self.opDotOperator, OP.PAR)
         # Special function
-        self.functions[u']index['] = Parser.Function(self.fnIndex, 2, 4)
+        self.functions[']index['] = Parser.Function(self.fnIndex, 2, 4)
 
         global gParser
         gParser = self
@@ -433,57 +433,57 @@ class Parser(object):
     _marker = object()
     def fnIndex(self, item, start, stop=None, step=None):
         try:
-            fn = u'item['
+            fn = 'item['
 
             # Start
             if start is not Parser._marker:
-                fn += u'%i'% start
+                fn += '%i'% start
             elif stop is None:
-                fn += u':'
+                fn += ':'
 
             # Stop
             if stop is Parser._marker:
-                fn += u':'
+                fn += ':'
             elif stop is not None:
-                fn += u':%i' % stop
+                fn += ':%i' % stop
 
             # Step
             if step is Parser._marker:
-                fn += u':'
+                fn += ':'
             elif step is not None:
-                fn += u':%i' % step
+                fn += ':%i' % step
 
-            fn += u']'
+            fn += ']'
             return eval(fn)
         except:
-            error(_(u'IndexError'))
+            error(_('IndexError'))
 
     def SetOperator(self, name, *args, **kwdargs):
         type_ = getType(name, self)
         if type_ not in [NAME,OPERATOR,UNKNOWN]:
-            error(ERR_CANNOT_SET % (u'operator', name, Types[type_]))
+            error(ERR_CANNOT_SET % ('operator', name, Types[type_]))
         self.operators[name] = Parser.Operator(name, *args, **kwdargs)
         for i in name:
             if i not in self.opChars: self.opChars += i
     def SetKeyword(self, name, *args, **kwdargs):
         type_ = getType(name, self)
         if type_ not in [NAME,KEYWORD]:
-            error(ERR_CANNOT_SET % (u'keyword', name, Types[type_]))
+            error(ERR_CANNOT_SET % ('keyword', name, Types[type_]))
         self.keywords[name] = Parser.Keyword(name, *args, **kwdargs)
     def SetFunction(self, name, *args, **kwdargs):
         type_ = getType(name, self)
         if type_ not in [NAME,FUNCTION]:
-            error(ERR_CANNOT_SET % (u'function', name, Types[type_]))
+            error(ERR_CANNOT_SET % ('function', name, Types[type_]))
         self.functions[name] = Parser.Function(name, *args, **kwdargs)
     def SetConstant(self, name, value):
         type_ = getType(name, self)
         if type_ not in [NAME,CONSTANT]:
-            error(ERR_CANNOT_SET % (u'constant', name, Types[type_]))
+            error(ERR_CANNOT_SET % ('constant', name, Types[type_]))
         self.constants[name] = value
     def SetVariable(self, name, value):
         type_ = getType(name, self)
         if type_ not in [NAME, VARIABLE]:
-            error(ERR_CANNOT_SET % (u'variable', name, Types[type_]))
+            error(ERR_CANNOT_SET % ('variable', name, Types[type_]))
         self.variables[name] = value
 
     # Flow control stack
@@ -546,13 +546,13 @@ class Parser(object):
             elif tok.type == CLOSE_PARENS:
                 parenDepth -= 1
                 if parenDepth < 0:
-                    error(_(u"Missmatched parenthesis."))
+                    error(_("Missmatched parenthesis."))
             elif tok.type == OPEN_BRACKET:
                 bracketDepth += 1
             elif tok.type == CLOSE_BRACKET:
                 bracketDepth -= 1
                 if bracketDepth < 0:
-                    error(_(u"Mismatched brackets."))
+                    error(_("Mismatched brackets."))
             if tok.type == COMMA and parenDepth == 0 and bracketDepth == 0:
                     ret.append([])
             else:
@@ -610,7 +610,7 @@ class Parser(object):
                 while len(stack) > 0 and stack[-1].type != OPEN_PARENS:
                     rpn.append(stack.pop())
                 if len(stack) == 0:
-                    error(_(u"Misplaced ',' or missing parenthesis."))
+                    error(_("Misplaced ',' or missing parenthesis."))
                 if len(stack) > 1 and stack[-2].type == FUNCTION:
                     stack[-2].numArgs += stack[-1].numArgs
                     stack[-1].numArgs = 0
@@ -619,7 +619,7 @@ class Parser(object):
                 while len(stack) > 0 and stack[-1].type != OPEN_BRACKET:
                     temp.append(stack.pop())
                 if len(stack) <= 1:
-                    error(_(u"Misplaced ':' or missing bracket."))
+                    error(_("Misplaced ':' or missing bracket."))
                 stack[-2].numArgs += stack[-1].numArgs
                 if len(temp) == 0 and stack[-1].numArgs == 0:
                     rpn.append(Parser.Token(Parser._marker,Type=UNKNOWN,parser=self))
@@ -633,11 +633,11 @@ class Parser(object):
                 # Dot operator
                 if i.text == self.dotOperator:
                     if idex+1 >= len(tokens):
-                        error(_(u"Dot operator: no function to call."))
+                        error(_("Dot operator: no function to call."))
                     if tokens[idex+1].type != FUNCTION:
-                        error(_(u"Dot operator: cannot access non-function '%s'.") % tokens[idex+1].text)
+                        error(_("Dot operator: cannot access non-function '%s'.") % tokens[idex+1].text)
                     if not tokens[idex+1].tkn.dotFunction:
-                        error(_(u"Dot operator: cannot access function '%s'.") % tokens[idex+1].text)
+                        error(_("Dot operator: cannot access function '%s'.") % tokens[idex+1].text)
                     tokens[idex+1].numArgs += 1
                 # Other operators
                 else:
@@ -648,21 +648,21 @@ class Parser(object):
                             rpn.append(stack.pop())
                         else:
                             break
-                    if i.text == u'-':
+                    if i.text == '-':
                         # Special unary minus type
                         if idex == 0 or tokens[idex-1].type in [OPEN_BRACKET,OPEN_PARENS,COMMA,COLON,OPERATOR,KEYWORD]:
-                            rpnAppend(Parser.Token(u'0',parser=self))
+                            rpnAppend(Parser.Token('0',parser=self))
                     stack.append(i)
             elif i.type == OPEN_PARENS:
                 stack.append(i)
             elif i.type == OPEN_BRACKET:
-                stack.append(Parser.Token(u']index[', parser=self))
+                stack.append(Parser.Token(']index[', parser=self))
                 stack.append(i)
             elif i.type == CLOSE_PARENS:
                 while len(stack) > 0 and stack[-1].type != OPEN_PARENS:
                     rpn.append(stack.pop())
                 if len(stack) == 0:
-                    error(_(u'Unmatched parenthesis.'))
+                    error(_('Unmatched parenthesis.'))
                 numArgs = stack[-1].numArgs
                 stack.pop()
                 if len(stack) > 0 and stack[-1].type == FUNCTION:
@@ -673,7 +673,7 @@ class Parser(object):
                 while len(stack) > 0 and stack[-1].type != OPEN_BRACKET:
                     temp.append(stack.pop())
                 if len(stack) == 0:
-                    error(_(u'Unmatched brackets.'))
+                    error(_('Unmatched brackets.'))
                 numArgs = stack[-1].numArgs
                 stack.pop()
                 if len(temp) == 0 and numArgs == 0 and stack[-1].numArgs != 0:
@@ -682,14 +682,14 @@ class Parser(object):
                 rpn.extend(temp)
                 stack[-1].numArgs += numArgs + 1
                 if stack[-1].numArgs == 1:
-                    error(_(u'IndexError'))
+                    error(_('IndexError'))
                 rpn.append(stack.pop())
             else:
-                error(_(u"Unrecognized token: '%s', type: %s") % (i.text, Types[i.type]))
+                error(_("Unrecognized token: '%s', type: %s") % (i.text, Types[i.type]))
         while len(stack) > 0:
             i = stack.pop()
             if i.type in [OPEN_PARENS,CLOSE_PARENS]:
-                error(_(u'Unmatched parenthesis.'))
+                error(_('Unmatched parenthesis.'))
             rpn.append(i)
         self.rpn = rpn
         return rpn
@@ -701,7 +701,7 @@ class Parser(object):
         for i in rpn:
             if i.type == OPERATOR:
                 if len(stack) < i.tkn.minArgs:
-                    error(ERR_TOO_FEW_ARGS % (u'operator', i.text, len(stack), i.tkn.minArgs))
+                    error(ERR_TOO_FEW_ARGS % ('operator', i.text, len(stack), i.tkn.minArgs))
                 args = []
                 while len(args) < i.tkn.minArgs:
                     args.append(stack.pop())
@@ -713,7 +713,7 @@ class Parser(object):
                     stack.append(Parser.Token(ret))
             elif i.type == FUNCTION:
                 if len(stack) < i.numArgs:
-                    error(ERR_TOO_FEW_ARGS % (u'function', i.text, len(stack), i.numArgs))
+                    error(ERR_TOO_FEW_ARGS % ('function', i.text, len(stack), i.numArgs))
                 args = []
                 while len(args) < i.numArgs:
                     args.append(stack.pop())
@@ -727,10 +727,10 @@ class Parser(object):
                 stack.append(i)
         if len(stack) == 1:
             return stack[0].tkn
-        error(_(u'Too many values left at the end of evaluation.'))
+        error(_('Too many values left at the end of evaluation.'))
 
     def error(self, msg):
-        raise ParserError, u'(Line %s, Column %s): %s' % (self.cLine, self.cCol, msg)
+        raise ParserError('(Line %s, Column %s): %s' % (self.cLine, self.cCol, msg))
 
     #Functions for parsing a line into tokens
     def _grow(self, c):
@@ -784,30 +784,30 @@ class Parser(object):
     def _stateSpace(self, c):
         self._emit()
         if c in whitespace: return self._stateSpace
-        if c == u"'": return self._stateSQuote
-        if c == u'"': return self._stateDQuote
-        if c == u'\\': return self._stateEscape
+        if c == "'": return self._stateSQuote
+        if c == '"': return self._stateDQuote
+        if c == '\\': return self._stateEscape
         if c == self.comment: return self._stateComment
         self._grow(c)
         if c in name_start: return self._stateName
         if c in self.opChars: return self._stateOperator
         if c in digits: return self._stateNumber
-        if c == u'.': return self._stateDecimal
-        if c == u'(': return self._stateSpace
-        if c == u'[': return self._stateSpace
-        if c == u')': return self._stateEndBracket
-        if c == u']': return self._stateEndBracket
-        if c == u',': return self._stateSpace
-        error(_(u"Invalid character: '%s'") % c)
+        if c == '.': return self._stateDecimal
+        if c == '(': return self._stateSpace
+        if c == '[': return self._stateSpace
+        if c == ')': return self._stateEndBracket
+        if c == ']': return self._stateEndBracket
+        if c == ',': return self._stateSpace
+        error(_("Invalid character: '%s'") % c)
 
     def _stateSQuote(self, c):
-        if c == u'\\': return self._stateSQuoteEscape
-        if c == u"'":
-            if not self.word: self.word = u''
+        if c == '\\': return self._stateSQuoteEscape
+        if c == "'":
+            if not self.word: self.word = ''
             self._emit(type_=STRING)
             return self._stateSpace
-        if c == u'\n':
-            error(_(u'Unterminated single quote.'))
+        if c == '\n':
+            error(_('Unterminated single quote.'))
         self._grow(c)
         return self._stateSQuote
     def _stateSQuoteEscape(self, c):
@@ -816,13 +816,13 @@ class Parser(object):
         return self._stateSQuote
 
     def _stateDQuote(self, c):
-        if c == u'\\': return self._stateDQuoteEscape
-        if c == u'"':
-            if not self.word: self.word = u""
+        if c == '\\': return self._stateDQuoteEscape
+        if c == '"':
+            if not self.word: self.word = ""
             self._emit(type_=STRING)
             return self._stateSpace
-        if c == u'\n':
-            error(_(u"Unterminated double quote."))
+        if c == '\n':
+            error(_("Unterminated double quote."))
         self._grow(c)
         return self._stateDQuote
     def _stateDQuoteEscape(self, c):
@@ -831,7 +831,7 @@ class Parser(object):
         return self._stateDQuote
 
     def _stateEscape(self, c):
-        if c == u'\n':
+        if c == '\n':
             self.runon = True
             return
         return self._stateSpace(c)
@@ -842,9 +842,9 @@ class Parser(object):
         if c in name_chars:
             self._grow(c)
             return self._stateName
-        if c in [u"'",u'"']:
-            error(_(u'Unexpected quotation %s following name token.') % c)
-        if c == u':' and self.word.endswith(u'in'):
+        if c in ["'",'"']:
+            error(_('Unexpected quotation %s following name token.') % c)
+        if c == ':' and self.word.endswith('in'):
             self._grow(c)
             return self._stateOperator
         return self._stateSpace(c)
@@ -859,21 +859,21 @@ class Parser(object):
         if c in digits:
             self._grow(c)
             return self._stateNumber
-        if c == u'.':
+        if c == '.':
             self._grow(c)
             return self._stateDecimal
-        if c in [u'"',u"'"]:
-            error(_(u'Unexpected quotation %s following number token.') % c)
+        if c in ['"',"'"]:
+            error(_('Unexpected quotation %s following number token.') % c)
         return self._stateSpace(c)
     def _stateDecimal(self, c):
         if c in digits:
             self._grow(c)
             return self._stateDecimal
-        if c in [u'"',u"'",u'.']:
-            error(_(u'Unexpected %s following decimal token.') % c)
+        if c in ['"',"'",'.']:
+            error(_('Unexpected %s following decimal token.') % c)
         return self._stateSpace(c)
 
     def _stateEndBracket(self, c):
-        if c in [u'"',u"'"]:
-            error(_(u'Unexpected quotation %s following parenthesis.') % c)
+        if c in ['"',"'"]:
+            error(_('Unexpected quotation %s following parenthesis.') % c)
         return self._stateSpace(c)

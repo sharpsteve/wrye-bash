@@ -33,17 +33,17 @@ def configIsCBash(patchConfigs): ##: belongs to basher but used also in bosh
     return False
 
 def exportConfig(patch_name, config, isCBash, win, outDir):
-    outFile = patch_name + u'_Configuration.dat'
+    outFile = patch_name + '_Configuration.dat'
     outDir.makedirs()
     #--File dialog
     outPath = balt.askSave(win,
-        title=_(u'Export Bashed Patch configuration to:'),
+        title=_('Export Bashed Patch configuration to:'),
         defaultDir=outDir, defaultFile=outFile,
-        wildcard=u'*_Configuration.dat')
+        wildcard='*_Configuration.dat')
     if outPath:
         table = bolt.Table(bolt.PickleDict(outPath))
-        table.setItem(bolt.GPath(u'Saved Bashed Patch Configuration (%s)' % (
-            [u'Python', u'CBash'][isCBash])), 'bash.patch.configs', config)
+        table.setItem(bolt.GPath('Saved Bashed Patch Configuration (%s)' % (
+            ['Python', 'CBash'][isCBash])), 'bash.patch.configs', config)
         table.save()
 
 def getPatchesPath(fileName):

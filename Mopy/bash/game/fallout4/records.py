@@ -74,8 +74,8 @@ class MreHeader(MreHeaderBase):
     melSet = MelSet(
         MelStruct('HEDR','f2I',('version',0.95),'numRecords',('nextObject',0xCE6)),
         MelBase('TNAM', 'tnam_p'),
-        MelUnicode('CNAM','author',u'',512),
-        MelUnicode('SNAM','description',u'',512),
+        MelUnicode('CNAM','author','',512),
+        MelUnicode('SNAM','description','',512),
         MreHeaderBase.MelMasterName('MAST','masters'),
         MelNull('DATA'), # 8 Bytes in Length
         MelFidList('ONAM','overrides',),
@@ -100,7 +100,7 @@ class MreLvli(MreLeveledList):
         MelBounds(),
         MelStruct('LVLD','B','chanceNone'),
         MelStruct('LVLM','B','maxCount'),
-        MelStruct('LVLF','B',(MreLeveledListBase._flags,'flags',0L)),
+        MelStruct('LVLF','B',(MreLeveledListBase._flags,'flags',0)),
         MelOptStruct('LVLG','I',(FID,'glob')),
         MelNull('LLCT'),
         MreLeveledList.MelLevListLvlo(),
@@ -122,7 +122,7 @@ class MreLvln(MreLeveledList):
         MelBounds(),
         MelStruct('LVLD','B','chanceNone'),
         MelStruct('LVLM','B','maxCount'),
-        MelStruct('LVLF','B',(MreLeveledListBase._flags,'flags',0L)),
+        MelStruct('LVLF','B',(MreLeveledListBase._flags,'flags',0)),
         MelOptStruct('LVLG','I',(FID,'glob')),
         MelNull('LLCT'),
         MreLeveledList.MelLevListLvlo(),

@@ -42,9 +42,9 @@ class _Abstract_Patcher(object):
      in MRO (method resolution order), just before object"""
     scanOrder = 10
     editOrder = 10
-    group = u'UNDEFINED'
-    name = u'UNDEFINED'
-    text = u"UNDEFINED."
+    group = 'UNDEFINED'
+    name = 'UNDEFINED'
+    text = "UNDEFINED."
     tip = None
     iiMode = False
 
@@ -103,7 +103,7 @@ class CBash_Patcher(_Abstract_Patcher):
     """Abstract base class for patcher elements performing a CBash patch - must
     be just before Abstract_Patcher in MRO.""" ##: "performing" ? how ?
     # would it make any sense to make getTypes into classmethod ?
-    unloadedText = u""
+    unloadedText = ""
     allowUnloaded = True
     scanRequiresChecked = False
     applyRequiresChecked = False
@@ -141,7 +141,7 @@ class AListPatcher(_Abstract_Patcher):
     #--Get/Save Config
     autoKey = None
     # log header to be used if the ListPatcher has mods/files source files
-    srcsHeader = u'=== '+ _(u'Source Mods')
+    srcsHeader = '=== '+ _('Source Mods')
     _patches_set = None
 
     @staticmethod
@@ -165,10 +165,10 @@ class AListPatcher(_Abstract_Patcher):
         attribute otherwise an AttributeError will be raised."""
         log(self.__class__.srcsHeader)
         if not self.srcs:
-            log(u". ~~%s~~" % _(u'None'))
+            log(". ~~%s~~" % _('None'))
         else:
             for srcFile in self.srcs:
-                log(u"* " +srcFile.s)
+                log("* " +srcFile.s)
 
     #--Patch Phase ------------------------------------------------------------
     def getConfigChecked(self):
@@ -178,7 +178,7 @@ class AListPatcher(_Abstract_Patcher):
 class AMultiTweaker(_Abstract_Patcher):
     """Combines a number of sub-tweaks which can be individually enabled and
     configured through a choice menu."""
-    group = _(u'Tweakers')
+    group = _('Tweakers')
     scanOrder = 20
     editOrder = 20
 
@@ -186,9 +186,9 @@ class AAliasesPatcher(_Abstract_Patcher):
     """Specify mod aliases for patch files."""
     scanOrder = 10
     editOrder = 10
-    group = _(u'General')
-    name = _(u"Alias Mod Names")
-    text = _(u"Specify mod aliases for reading CSV source files.")
+    group = _('General')
+    name = _("Alias Mod Names")
+    text = _("Specify mod aliases for reading CSV source files.")
     tip = None
 
     #--Patch Phase ------------------------------------------------------------
@@ -216,7 +216,7 @@ class AMultiTweakItem(object):
         self.default = 0
         for choice_tuple in choices: # (choice_label, choice1, choice2, ...)
             self.choiceLabels.append(choice_tuple[0])
-            if choice_tuple[0][0] == u'[':
+            if choice_tuple[0][0] == '[':
                 self.default = choices.index(choice_tuple)
             self.choiceValues.append(choice_tuple[1:])
         #--Config
@@ -224,14 +224,14 @@ class AMultiTweakItem(object):
         self.defaultEnabled = kwargs.get('defaultEnabled', False)
         self.chosen = 0
         #--Log
-        self.logHeader = u'=== '+ label
+        self.logHeader = '=== '+ label
 
     def _patchLog(self, log, count):
         """Log - must define self.logMsg in subclasses"""
         log.setHeader(self.logHeader)
         log(self.logMsg % sum(count.values()))
-        for srcMod in load_order.get_ordered(count.keys()):
-            log(u'  * %s: %d' % (srcMod.s, count[srcMod]))
+        for srcMod in load_order.get_ordered(list(count.keys())):
+            log('  * %s: %d' % (srcMod.s, count[srcMod]))
 
     #--Config Phase -----------------------------------------------------------
     # Methods present in _Abstract_Patcher too
@@ -245,7 +245,7 @@ class AMultiTweakItem(object):
                 self.chosen = self.choiceValues.index(value)
             else:
                 for label in self.choiceLabels:
-                    if label.startswith(_(u'Custom')):
+                    if label.startswith(_('Custom')):
                         self.chosen = self.choiceLabels.index(label)
                         self.choiceValues[self.chosen] = value
         else:
@@ -268,7 +268,7 @@ class AMultiTweakItem(object):
         """Returns label to be used in list"""
         label = self.label
         if len(self.choiceLabels) > 1:
-            label += u' [' + self.choiceLabels[self.chosen] + u']'
+            label += ' [' + self.choiceLabels[self.chosen] + ']'
         return label
 
 #------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ class AMultiTweakItem(object):
 #------------------------------------------------------------------------------
 class AImportPatcher(AListPatcher):
     """Subclass for patchers in group Importer."""
-    group = _(u'Importers')
+    group = _('Importers')
     scanOrder = 20
     editOrder = 20
     masters = {}
@@ -285,10 +285,10 @@ class APatchMerger(AListPatcher):
     """Merges specified patches into Bashed Patch."""
     scanOrder = 10
     editOrder = 10
-    group = _(u'General')
-    name = _(u'Merge Patches')
-    text = _(u"Merge patch mods into Bashed Patch.")
-    autoKey = {u'Merge'}
+    group = _('General')
+    name = _('Merge Patches')
+    text = _("Merge patch mods into Bashed Patch.")
+    autoKey = {'Merge'}
 
     #--Patch Phase ------------------------------------------------------------
     def initPatchFile(self, patchFile):
@@ -305,7 +305,7 @@ class AUpdateReferences(AListPatcher):
     """Imports Form Id replacers into the Bashed Patch."""
     scanOrder = 15
     editOrder = 15
-    group = _(u'General')
-    name = _(u'Replace Form IDs')
-    text = _(u"Imports Form Id replacers from csv files into the Bashed Patch.")
-    autoKey = {u'Formids'}
+    group = _('General')
+    name = _('Replace Form IDs')
+    text = _("Imports Form Id replacers from csv files into the Bashed Patch.")
+    autoKey = {'Formids'}

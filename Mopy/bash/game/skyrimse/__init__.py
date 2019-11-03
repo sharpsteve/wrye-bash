@@ -28,41 +28,41 @@ from ... import brec
 from ...brec import MreGlob
 
 class SkyrimSEGameInfo(SkyrimGameInfo):
-    displayName = u'Skyrim Special Edition'
-    fsName = u'Skyrim Special Edition'
-    altName = u'Wrye Smash'
-    defaultIniFile = u'Skyrim_Default.ini'
-    launch_exe = u'SkyrimSE.exe'
-    game_detect_file = [u'SkyrimSE.exe']
-    version_detect_file = [u'SkyrimSE.exe']
-    masterlist_dir = u'SkyrimSE'
+    displayName = 'Skyrim Special Edition'
+    fsName = 'Skyrim Special Edition'
+    altName = 'Wrye Smash'
+    defaultIniFile = 'Skyrim_Default.ini'
+    launch_exe = 'SkyrimSE.exe'
+    game_detect_file = ['SkyrimSE.exe']
+    version_detect_file = ['SkyrimSE.exe']
+    masterlist_dir = 'SkyrimSE'
     regInstallKeys = (
-        u'Bethesda Softworks\\Skyrim Special Edition',
-        u'Installed Path'
+        'Bethesda Softworks\\Skyrim Special Edition',
+        'Installed Path'
     )
 
-    nexusUrl = u'https://www.nexusmods.com/skyrimspecialedition/'
-    nexusName = u'Skyrim SE Nexus'
+    nexusUrl = 'https://www.nexusmods.com/skyrimspecialedition/'
+    nexusName = 'Skyrim SE Nexus'
     nexusKey = 'bash.installers.openSkyrimSeNexus.continue'
 
     vanilla_string_bsas = {
-        u'skyrim.esm': [u'Skyrim - Patch.bsa', u'Skyrim - Interface.bsa'],
-        u'update.esm': [u'Skyrim - Patch.bsa', u'Skyrim - Interface.bsa'],
-        u'dawnguard.esm': [u'Skyrim - Patch.bsa', u'Skyrim - Interface.bsa'],
-        u'hearthfires.esm': [u'Skyrim - Patch.bsa', u'Skyrim - Interface.bsa'],
-        u'dragonborn.esm': [u'Skyrim - Patch.bsa', u'Skyrim - Interface.bsa'],
+        'skyrim.esm': ['Skyrim - Patch.bsa', 'Skyrim - Interface.bsa'],
+        'update.esm': ['Skyrim - Patch.bsa', 'Skyrim - Interface.bsa'],
+        'dawnguard.esm': ['Skyrim - Patch.bsa', 'Skyrim - Interface.bsa'],
+        'hearthfires.esm': ['Skyrim - Patch.bsa', 'Skyrim - Interface.bsa'],
+        'dragonborn.esm': ['Skyrim - Patch.bsa', 'Skyrim - Interface.bsa'],
     }
 
-    espm_extensions = {u'.esp', u'.esm', u'.esl'}
+    espm_extensions = {'.esp', '.esm', '.esl'}
     has_achlist = True
     check_esl = True
 
-    allTags = SkyrimGameInfo.allTags - {u'NoMerge'}
+    allTags = SkyrimGameInfo.allTags - {'NoMerge'}
 
     patchers = (
-        u'CellImporter', u'GmstTweaker', u'GraphicsPatcher',
-        u'ImportInventory', u'ListsMerger', u'SoundPatcher', u'StatsPatcher',
-        u'NamesPatcher',
+        'CellImporter', 'GmstTweaker', 'GraphicsPatcher',
+        'ImportInventory', 'ListsMerger', 'SoundPatcher', 'StatsPatcher',
+        'NamesPatcher',
         )
 
     # MreScpt is Oblivion/FO3/FNV Only
@@ -70,18 +70,18 @@ class SkyrimSEGameInfo(SkyrimGameInfo):
 
     # Plugin dir, cosave extension and the URLs are unchanged
     class se(SkyrimGameInfo.se):
-        se_abbrev = u'SKSE64'
-        long_name = u'Skyrim SE Script Extender'
-        exe = u'skse64_loader.exe'
-        steam_exe = u'skse64_loader.exe'
+        se_abbrev = 'SKSE64'
+        long_name = 'Skyrim SE Script Extender'
+        exe = 'skse64_loader.exe'
+        steam_exe = 'skse64_loader.exe'
 
     # ScriptDragon doesn't exist for SSE
     class sd(SkyrimGameInfo.sd):
-        sd_abbrev = u''
-        long_name = u''
-        install_dir = u''
+        sd_abbrev = ''
+        long_name = ''
+        install_dir = ''
 
-    SkipBAINRefresh = {u'sseedit backups', u'sseedit cache'}
+    SkipBAINRefresh = {'sseedit backups', 'sseedit cache'}
 
     @classmethod
     def init(cls):

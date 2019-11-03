@@ -28,165 +28,165 @@ from ... import brec
 from ...brec import MreGlob
 
 class SkyrimGameInfo(GameInfo):
-    displayName = u'Skyrim'
-    fsName = u'Skyrim'
-    altName = u'Wrye Smash'
-    defaultIniFile = u'Skyrim_default.ini'
-    launch_exe = u'TESV.exe'
+    displayName = 'Skyrim'
+    fsName = 'Skyrim'
+    altName = 'Wrye Smash'
+    defaultIniFile = 'Skyrim_default.ini'
+    launch_exe = 'TESV.exe'
     # Set to this because TESV.exe also exists for Enderal
-    game_detect_file = [u'SkyrimLauncher.exe']
-    version_detect_file = [u'TESV.exe']
-    masterFiles = [u'Skyrim.esm', u'Update.esm']
-    iniFiles = [u'Skyrim.ini', u'SkyrimPrefs.ini']
-    pklfile = u'bash\\db\\Skyrim_ids.pkl'
-    masterlist_dir = u'Skyrim'
-    regInstallKeys = (u'Bethesda Softworks\\Skyrim', u'Installed Path')
-    nexusUrl = u'https://www.nexusmods.com/skyrim/'
-    nexusName = u'Skyrim Nexus'
+    game_detect_file = ['SkyrimLauncher.exe']
+    version_detect_file = ['TESV.exe']
+    masterFiles = ['Skyrim.esm', 'Update.esm']
+    iniFiles = ['Skyrim.ini', 'SkyrimPrefs.ini']
+    pklfile = 'bash\\db\\Skyrim_ids.pkl'
+    masterlist_dir = 'Skyrim'
+    regInstallKeys = ('Bethesda Softworks\\Skyrim', 'Installed Path')
+    nexusUrl = 'https://www.nexusmods.com/skyrim/'
+    nexusName = 'Skyrim Nexus'
     nexusKey = 'bash.installers.openSkyrimNexus.continue'
 
     has_bsl = True
     vanilla_string_bsas = {
-        u'skyrim.esm': [u'Skyrim - Interface.bsa'],
-        u'update.esm': [u'Skyrim - Interface.bsa'],
-        u'dawnguard.esm': [u'Dawnguard.bsa'],
-        u'hearthfires.esm': [u'Hearthfires.bsa'],
-        u'dragonborn.esm': [u'Dragonborn.bsa'],
+        'skyrim.esm': ['Skyrim - Interface.bsa'],
+        'update.esm': ['Skyrim - Interface.bsa'],
+        'dawnguard.esm': ['Dawnguard.bsa'],
+        'hearthfires.esm': ['Hearthfires.bsa'],
+        'dragonborn.esm': ['Dragonborn.bsa'],
     }
-    resource_archives_keys = (u'sResourceArchiveList', u'sResourceArchiveList2')
-    script_extensions = {u'.psc'}
+    resource_archives_keys = ('sResourceArchiveList', 'sResourceArchiveList2')
+    script_extensions = {'.psc'}
 
     class cs(GameInfo.cs):
-        cs_abbrev = u'CK'
-        long_name = u'Creation Kit'
-        exe = u'CreationKit.exe'
+        cs_abbrev = 'CK'
+        long_name = 'Creation Kit'
+        exe = 'CreationKit.exe'
         se_args = None  # u'-editor'
-        image_name = u'creationkit%s.png'
+        image_name = 'creationkit%s.png'
 
     class se(GameInfo.se):
-        se_abbrev = u'SKSE'
-        long_name = u'Skyrim Script Extender'
-        exe = u'skse_loader.exe'
-        steam_exe = u'skse_loader.exe'
-        plugin_dir = u'SKSE'
-        cosave_ext = u'.skse'
-        url = u'http://skse.silverlock.org/'
-        url_tip = u'http://skse.silverlock.org/'
+        se_abbrev = 'SKSE'
+        long_name = 'Skyrim Script Extender'
+        exe = 'skse_loader.exe'
+        steam_exe = 'skse_loader.exe'
+        plugin_dir = 'SKSE'
+        cosave_ext = '.skse'
+        url = 'http://skse.silverlock.org/'
+        url_tip = 'http://skse.silverlock.org/'
 
     class sd(GameInfo.sd):
-        sd_abbrev = u'SD'
-        long_name = u'Script Dragon'
-        install_dir = u'asi'
+        sd_abbrev = 'SD'
+        long_name = 'Script Dragon'
+        install_dir = 'asi'
 
     class sp(GameInfo.sp):
-        sp_abbrev = u'SP'
-        long_name = u'SkyProc'
-        install_dir = u'SkyProc Patchers'
+        sp_abbrev = 'SP'
+        long_name = 'SkyProc'
+        install_dir = 'SkyProc Patchers'
 
     class ini(GameInfo.ini):
         allowNewLines = True
-        bsaRedirection = (u'', u'')
+        bsaRedirection = ('', '')
 
     class pnd(GameInfo.pnd):
-        facegen_dir_1 = [u'meshes', u'actors', u'character', u'facegendata',
-                         u'facegeom']
-        facegen_dir_2 = [u'textures', u'actors', u'character', u'facegendata',
-                         u'facetint']
+        facegen_dir_1 = ['meshes', 'actors', 'character', 'facegendata',
+                         'facegeom']
+        facegen_dir_2 = ['textures', 'actors', 'character', 'facegendata',
+                         'facetint']
 
     # BAIN:
     dataDirs = GameInfo.dataDirs | {
-        u'dialogueviews',
-        u'grass',
-        u'interface',
-        u'lodsettings',
-        u'scripts',
-        u'seq',
-        u'shadersfx',
-        u'strings',
+        'dialogueviews',
+        'grass',
+        'interface',
+        'lodsettings',
+        'scripts',
+        'seq',
+        'shadersfx',
+        'strings',
     }
     dataDirsPlus = {
-        u'asi',
-        u'calientetools', # bodyslide
-        u'dyndolod',
-        u'ini',
-        u'skse',
-        u'skyproc patchers',
-        u'tools', # Bodyslide, FNIS
+        'asi',
+        'calientetools', # bodyslide
+        'dyndolod',
+        'ini',
+        'skse',
+        'skyproc patchers',
+        'tools', # Bodyslide, FNIS
     }
     dontSkip = (
            # These are all in the Interface folder. Apart from the skyui_ files,
            # they are all present in vanilla.
-           u'skyui_cfg.txt',
-           u'skyui_translate.txt',
-           u'credits.txt',
-           u'credits_french.txt',
-           u'fontconfig.txt',
-           u'controlmap.txt',
-           u'gamepad.txt',
-           u'mouse.txt',
-           u'keyboard_english.txt',
-           u'keyboard_french.txt',
-           u'keyboard_german.txt',
-           u'keyboard_spanish.txt',
-           u'keyboard_italian.txt',
+           'skyui_cfg.txt',
+           'skyui_translate.txt',
+           'credits.txt',
+           'credits_french.txt',
+           'fontconfig.txt',
+           'controlmap.txt',
+           'gamepad.txt',
+           'mouse.txt',
+           'keyboard_english.txt',
+           'keyboard_french.txt',
+           'keyboard_german.txt',
+           'keyboard_spanish.txt',
+           'keyboard_italian.txt',
     )
     dontSkipDirs = {
         # This rule is to allow mods with string translation enabled.
         'interface\\translations':['.txt']
     }
-    SkipBAINRefresh = {u'tes5edit backups', u'tes5edit cache'}
-    ignoreDataDirs = {u'LSData'}
+    SkipBAINRefresh = {'tes5edit backups', 'tes5edit cache'}
+    ignoreDataDirs = {'LSData'}
 
     class esp(GameInfo.esp):
         canBash = True
         canEditHeader = True
         validHeaderVersions = (0.94, 1.70,)
 
-    allTags = {u'C.Acoustic', u'C.Climate', u'C.Encounter', u'C.ForceHideLand',
-               u'C.ImageSpace', u'C.Light', u'C.Location', u'C.LockList',
-               u'C.Music', u'C.Name', u'C.Owner', u'C.RecordFlags',
-               u'C.Regions', u'C.SkyLighting', u'C.Water', u'Deactivate',
-               u'Delev', u'Filter', u'Graphics', u'Invent', u'Names',
-               u'NoMerge', u'Relev', u'Sound', u'Stats'}
+    allTags = {'C.Acoustic', 'C.Climate', 'C.Encounter', 'C.ForceHideLand',
+               'C.ImageSpace', 'C.Light', 'C.Location', 'C.LockList',
+               'C.Music', 'C.Name', 'C.Owner', 'C.RecordFlags',
+               'C.Regions', 'C.SkyLighting', 'C.Water', 'Deactivate',
+               'Delev', 'Filter', 'Graphics', 'Invent', 'Names',
+               'NoMerge', 'Relev', 'Sound', 'Stats'}
 
     patchers = (
-        u'CellImporter', u'GmstTweaker', u'GraphicsPatcher',
-        u'ImportInventory', u'ListsMerger', u'PatchMerger', u'SoundPatcher',
-        u'StatsPatcher', u'NamesPatcher',
+        'CellImporter', 'GmstTweaker', 'GraphicsPatcher',
+        'ImportInventory', 'ListsMerger', 'PatchMerger', 'SoundPatcher',
+        'StatsPatcher', 'NamesPatcher',
         )
 
     weaponTypes = (
-        _(u'Blade (1 Handed)'),
-        _(u'Blade (2 Handed)'),
-        _(u'Blunt (1 Handed)'),
-        _(u'Blunt (2 Handed)'),
-        _(u'Staff'),
-        _(u'Bow'),
+        _('Blade (1 Handed)'),
+        _('Blade (2 Handed)'),
+        _('Blunt (1 Handed)'),
+        _('Blunt (2 Handed)'),
+        _('Staff'),
+        _('Bow'),
         )
 
     raceNames = {
-        0x13740 : _(u'Argonian'),
-        0x13741 : _(u'Breton'),
-        0x13742 : _(u'Dark Elf'),
-        0x13743 : _(u'High Elf'),
-        0x13744 : _(u'Imperial'),
-        0x13745 : _(u'Khajiit'),
-        0x13746 : _(u'Nord'),
-        0x13747 : _(u'Orc'),
-        0x13748 : _(u'Redguard'),
-        0x13749 : _(u'Wood Elf'),
+        0x13740 : _('Argonian'),
+        0x13741 : _('Breton'),
+        0x13742 : _('Dark Elf'),
+        0x13743 : _('High Elf'),
+        0x13744 : _('Imperial'),
+        0x13745 : _('Khajiit'),
+        0x13746 : _('Nord'),
+        0x13747 : _('Orc'),
+        0x13748 : _('Redguard'),
+        0x13749 : _('Wood Elf'),
         }
     raceShortNames = {
-        0x13740 : u'Arg',
-        0x13741 : u'Bre',
-        0x13742 : u'Dun',
-        0x13743 : u'Alt',
-        0x13744 : u'Imp',
-        0x13745 : u'Kha',
-        0x13746 : u'Nor',
-        0x13747 : u'Orc',
-        0x13748 : u'Red',
-        0x13749 : u'Bos',
+        0x13740 : 'Arg',
+        0x13741 : 'Bre',
+        0x13742 : 'Dun',
+        0x13743 : 'Alt',
+        0x13744 : 'Imp',
+        0x13745 : 'Kha',
+        0x13746 : 'Nor',
+        0x13747 : 'Orc',
+        0x13748 : 'Red',
+        0x13749 : 'Bos',
         }
     raceHairMale = {
         0x13740 : 0x64f32, #--Arg

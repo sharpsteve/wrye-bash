@@ -32,15 +32,15 @@ from .. import brec
 class GameInfo(object):
     # Main game info - should be overridden -----------------------------------
     # Name of the game to use in UI.
-    displayName = u'' ## Example: u'Skyrim'
+    displayName = '' ## Example: u'Skyrim'
     # Name of the game's filesystem folder.
-    fsName = u'' ## Example: u'Skyrim'
+    fsName = '' ## Example: u'Skyrim'
     # Alternate display name of Wrye Bash when managing this game
-    altName = u'' ## Example: u'Wrye Smash'
+    altName = '' ## Example: u'Wrye Smash'
     # Name of game's default ini file.
-    defaultIniFile = u''
+    defaultIniFile = ''
     # The exe to use when launching the game (without xSE present)
-    launch_exe = u'' ## Example: u'TESV.exe'
+    launch_exe = '' ## Example: u'TESV.exe'
     # Path to a file to look for to see if this is the right game. Given as a
     # list of strings that will be joined with the -o parameter. Must be unique
     # among all games. As a rule of thumb, use the file you specified in
@@ -59,10 +59,10 @@ class GameInfo(object):
     iniFiles = []
     # The pickle file for this game.  Holds encoded GMST IDs from the big list
     # below
-    pklfile = u'bash\\db\\*GAMENAME*_ids.pkl'
+    pklfile = 'bash\\db\\*GAMENAME*_ids.pkl'
     # The directory containing the masterlist for this game, relative to
     # 'Mopy/Bash Patches'
-    masterlist_dir = u''
+    masterlist_dir = ''
     # Registry keys to read to find the install location
     # These are relative to:
     #  HKLM\Software
@@ -72,19 +72,19 @@ class GameInfo(object):
     # Example: (u'Bethesda Softworks\\Oblivion', u'Installed Path')
     regInstallKeys = ()
     # URL to the Nexus site for this game
-    nexusUrl = u''   # URL
-    nexusName = u''  # Long Name
-    nexusKey = u''   # Key for the "always ask this question" setting in
+    nexusUrl = ''   # URL
+    nexusName = ''  # Long Name
+    nexusKey = ''   # Key for the "always ask this question" setting in
                      # settings.dat
 
     # Additional game info - override as needed -------------------------------
     # URL to download patches for the main game.
-    patchURL = u''
+    patchURL = ''
     # Tooltip to display over the URL when displayed
-    patchTip = u'Update via Steam'
+    patchTip = 'Update via Steam'
     # Bsa info
     allow_reset_bsa_timestamps = False
-    bsa_extension = u'bsa'
+    bsa_extension = 'bsa'
     # Whether or not the Archive.exe tool for this game creates BSL files
     has_bsl = False
     supports_mod_inis = True  # this game supports mod ini files aka ini
@@ -92,7 +92,7 @@ class GameInfo(object):
     vanilla_string_bsas = {}
     resource_archives_keys = ()
     # plugin extensions
-    espm_extensions = {u'.esp', u'.esm'}
+    espm_extensions = {'.esp', '.esm'}
     # Extensions for external script files. Empty if this game doesn't have any
     script_extensions = {}
     # Load order info
@@ -107,54 +107,54 @@ class GameInfo(object):
 
     def __init__(self, gamePath):
         self.gamePath = gamePath # absolute bolt Path to the game directory
-        self.has_esl = u'.esl' in self.espm_extensions
+        self.has_esl = '.esl' in self.espm_extensions
 
     # Construction Set information
     class cs(object):
-        cs_abbrev = u''   # Abbreviated name
-        long_name = u''   # Full name
-        exe = u'*DNE*'    # Executable to run
-        se_args = u''     # Argument to pass to the SE to load the CS
-        image_name = u''  # Image name template for the status bar
+        cs_abbrev = ''   # Abbreviated name
+        long_name = ''   # Full name
+        exe = '*DNE*'    # Executable to run
+        se_args = ''     # Argument to pass to the SE to load the CS
+        image_name = ''  # Image name template for the status bar
 
     # Script Extender information
     class se(object):
-        se_abbrev = u''   # Abbreviated name. If this is empty, it signals that
+        se_abbrev = ''   # Abbreviated name. If this is empty, it signals that
                           # no xSE is available for this game. Note that this
                           # should NEVER be used to program other xSE
                           # behavior - create new variables like plugin_dir and
                           # cosave_ext instead.
-        long_name = u''   # Full name
-        exe = u''         # Exe to run
-        steam_exe = u''   # Exe to run if a steam install
-        plugin_dir = u''  # One level above the directory in which xSE plugins
+        long_name = ''   # Full name
+        exe = ''         # Exe to run
+        steam_exe = ''   # Exe to run if a steam install
+        plugin_dir = ''  # One level above the directory in which xSE plugins
                           # should be placed (e.g. when plugins should be in
                           # Data\OBSE\Plugins, this should be u'OBSE')
-        cosave_ext = u''  # The extension that the cosaves use (e.g. u'.skse')
-        url = u''         # URL to download from
-        url_tip = u''     # Tooltip for mouse over the URL
+        cosave_ext = ''  # The extension that the cosaves use (e.g. u'.skse')
+        url = ''         # URL to download from
+        url_tip = ''     # Tooltip for mouse over the URL
 
     # Script Dragon
     class sd(object):
-        sd_abbrev = u''   # Abbreviated name. If this is empty, it signals that
+        sd_abbrev = ''   # Abbreviated name. If this is empty, it signals that
                           # no Script Dragon is available for this game.
-        long_name = u''   # Full name
-        install_dir = u'' # The directory, relative to the Data folder, into
+        long_name = ''   # Full name
+        install_dir = '' # The directory, relative to the Data folder, into
                           # which Script Dragon plugins will be installed.
 
     # SkyProc Patchers
     class sp(object):
-        sp_abbrev = u''   # Abbreviated name. If this is empty, it signals that
+        sp_abbrev = ''   # Abbreviated name. If this is empty, it signals that
                           # this game does not support SkyProc patchers.
-        long_name = u''   # Full name
-        install_dir = u'' # The directory, relative to the Data folder, into
+        long_name = ''   # Full name
+        install_dir = '' # The directory, relative to the Data folder, into
                           # which SkyProc patchers will be installed.
 
     # Graphics Extender information
     class ge(object):
-        ge_abbrev = u'' # Abbreviated name. If this is empty, it signals
+        ge_abbrev = '' # Abbreviated name. If this is empty, it signals
                         # that no graphics extender is available for this game.
-        long_name = u'' # Full name
+        long_name = '' # Full name
         # exe is treated specially here.  If it is a string, then it should
         # be the path relative to the root directory of the game, if it is
         # a list, each list element should be an iterable to pass to Path.join
@@ -162,14 +162,14 @@ class GameInfo(object):
         # each filename will be tested in reverse order.  This was required
         # for Oblivion, as the newer OBGE has a different filename than the
         # older OBGE
-        exe = u''
-        url = u''       # URL to download from
-        url_tip = u''   # Tooltip for mouse over the URL
+        exe = ''
+        url = ''       # URL to download from
+        url_tip = ''   # Tooltip for mouse over the URL
 
     # 4gb Launcher
     class laa(object):
-        name = u''          # Display name of the launcher
-        exe = u'*DNE*'      # Executable to run
+        name = ''          # Display name of the launcher
+        exe = '*DNE*'      # Executable to run
         launchesSE = False  # Whether the launcher will automatically launch
                             # the SE
 
@@ -179,14 +179,14 @@ class GameInfo(object):
         #  (by default)
         allowNewLines = False
         # INI Entry to enable BSA Redirection
-        bsaRedirection = (u'Archive', u'sArchiveList')
+        bsaRedirection = ('Archive', 'sArchiveList')
 
     # Save Game format stuff
     class ess(object):
         # Save file capabilities
         canReadBasic = True # Can read the info needed for the Save Tab display
         canEditMore = False # Advanced editing
-        ext = u'.ess'       # Save file extension
+        ext = '.ess'       # Save file extension
 
     # Information about Plugin-Name-specific Directories supported by this game
     # Some examples are sound\voices\PLUGIN_NAME.esp, or the facegendata ones.
@@ -201,16 +201,16 @@ class GameInfo(object):
         facegen_dir_2 = []
         # The path to the plugin-name-specific directory for voice files
         # This is the same for every game released thus far (sound\\voice\\%s)
-        voice_dir = [u'sound', u'voice']
+        voice_dir = ['sound', 'voice']
 
     # INI setting used to setup Save Profiles
     #  (section,key)
-    saveProfilesKey = (u'General', u'SLocalSavePath')
-    save_prefix = u'Saves' # base dir for save files
+    saveProfilesKey = ('General', 'SLocalSavePath')
+    save_prefix = 'Saves' # base dir for save files
 
     # BAIN:
     #  These are the allowed default data directories that BAIN can install to
-    dataDirs = {u'meshes', u'music', u'sound', u'textures', u'video'}
+    dataDirs = {'meshes', 'music', 'sound', 'textures', 'video'}
     #  These are additional special directories that BAIN can install to
     dataDirsPlus = set()
     # Files BAIN shouldn't skip
@@ -222,10 +222,10 @@ class GameInfo(object):
         # Use lowercase names
     ))
     # Files to exclude from clean data
-    wryeBashDataFiles = {u'Docs\\Bash Readme Template.html',
-                         u'Docs\\wtxt_sand_small.css', u'Docs\\wtxt_teal.css',
-                         u'Docs\\Bash Readme Template.txt'}
-    wryeBashDataDirs = {u'Bash Patches', u'BashTags', u'INI Tweaks'}
+    wryeBashDataFiles = {'Docs\\Bash Readme Template.html',
+                         'Docs\\wtxt_sand_small.css', 'Docs\\wtxt_teal.css',
+                         'Docs\\Bash Readme Template.txt'}
+    wryeBashDataDirs = {'Bash Patches', 'BashTags', 'INI Tweaks'}
     ignoreDataFiles = set()
     ignoreDataFilePrefixes = set()
     ignoreDataDirs = set()
@@ -241,9 +241,9 @@ class GameInfo(object):
         validHeaderVersions = tuple()
         # used to locate string translation files
         stringsFiles = [
-            ((u'Strings',), u'%(body)s_%(language)s.STRINGS'),
-            ((u'Strings',), u'%(body)s_%(language)s.DLSTRINGS'),
-            ((u'Strings',), u'%(body)s_%(language)s.ILSTRINGS'),
+            (('Strings',), '%(body)s_%(language)s.STRINGS'),
+            (('Strings',), '%(body)s_%(language)s.DLSTRINGS'),
+            (('Strings',), '%(body)s_%(language)s.ILSTRINGS'),
         ]
 
     # Bash Tags supported by this game
@@ -439,7 +439,7 @@ class GameInfo(object):
         for k in dir(constants):
             if k.startswith('_'): continue
             if k not in cls._constants_members:
-                raise RuntimeError(u'Unexpected game constant %s' % k)
+                raise RuntimeError('Unexpected game constant %s' % k)
             setattr(cls, k, getattr(constants, k))
         tweaks_module = importlib.import_module('.default_tweaks',
                                                 package=package_name)

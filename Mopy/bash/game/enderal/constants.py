@@ -27,26 +27,26 @@
 from ..skyrim.constants import *
 
 bethDataFiles = {
-    u'skyrim.esm',
-    u'update.esm',
-    u'update.bsa',
-    u'enderal - forgotten stories.esm',
-    u'e - meshes.bsa',
-    u'e - music.bsa',
-    u'e - scripts.bsa',
-    u'e - sounds.bsa',
-    u'e - textures1.bsa',
-    u'e - textures2.bsa',
-    u'e - textures3.bsa',
-    u'l - textures.bsa',
-    u'l - voices.bsa',
-    u'skyrim - animations.bsa',
-    u'skyrim - interface.bsa',
-    u'skyrim - meshes.bsa',
-    u'skyrim - misc.bsa',
-    u'skyrim - shaders.bsa',
-    u'skyrim - sounds.bsa',
-    u'skyrim - textures.bsa',
+    'skyrim.esm',
+    'update.esm',
+    'update.bsa',
+    'enderal - forgotten stories.esm',
+    'e - meshes.bsa',
+    'e - music.bsa',
+    'e - scripts.bsa',
+    'e - sounds.bsa',
+    'e - textures1.bsa',
+    'e - textures2.bsa',
+    'e - textures3.bsa',
+    'l - textures.bsa',
+    'l - voices.bsa',
+    'skyrim - animations.bsa',
+    'skyrim - interface.bsa',
+    'skyrim - meshes.bsa',
+    'skyrim - misc.bsa',
+    'skyrim - shaders.bsa',
+    'skyrim - sounds.bsa',
+    'skyrim - textures.bsa',
 }
 
 gmstEids = [
@@ -951,4 +951,4 @@ gmstEids = [
 ]
 
 # xEdit menu string and key for expert setting
-xEdit_expert = (_(u'EnderalEdit Expert'), 'enderalView.iKnowWhatImDoing')
+xEdit_expert = (_('EnderalEdit Expert'), 'enderalView.iKnowWhatImDoing')

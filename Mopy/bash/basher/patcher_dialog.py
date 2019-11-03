@@ -23,7 +23,7 @@
 # =============================================================================
 
 """Patch dialog"""
-import StringIO
+import io
 import copy
 import errno
 import re
@@ -61,14 +61,14 @@ class PatchDialog(balt.Dialog):
         else:
             doCBash = False
         self.doCBash = doCBash
-        title = _(u'Update ') + patchInfo.name.s + [u'', u' (CBash)'][doCBash]
+        title = _('Update ') + patchInfo.name.s + ['', ' (CBash)'][doCBash]
         size = balt.sizes.get(self.__class__.__name__, (500,600))
         super(PatchDialog, self).__init__(parent, title=title, size=size)
         self.SetSizeHints(400,300)
         #--Data
         AListPatcher.list_patches_dir()
         groupOrder = dict([(group,index) for index,group in
-            enumerate((_(u'General'),_(u'Importers'),_(u'Tweakers'),_(u'Special')))])
+            enumerate((_('General'),_('Importers'),_('Tweakers'),_('Special')))])
         patchConfigs = bosh.modInfos.table.getItem(patchInfo.name,'bash.patch.configs',{})
         # If the patch config isn't from the same mode (CBash/Python), try converting
         # it over to the current mode
@@ -89,33 +89,33 @@ class PatchDialog(balt.Dialog):
         self.currentPatcher = None
         patcherNames = [patcher.getName() for patcher in self.patchers]
         #--GUI elements
-        self.gExecute = OkButton(self, label=_(u'Build Patch'),
+        self.gExecute = OkButton(self, label=_('Build Patch'),
                                  onButClick=self.PatchExecute)
         # TODO(nycz): somehow move setUAC further into env?
         # Note: for this to work correctly, it needs to be run BEFORE
         # appending a menu item to a menu (and so, needs to be enabled/
         # disabled prior to that as well.
         env.setUAC(self.gExecute.GetHandle(), True)
-        self.gSelectAll = SelectAllButton(self, label=_(u'Select All'),
+        self.gSelectAll = SelectAllButton(self, label=_('Select All'),
                                           onButClick=self.SelectAll)
-        self.gDeselectAll = SelectAllButton(self, label=_(u'Deselect All'),
+        self.gDeselectAll = SelectAllButton(self, label=_('Deselect All'),
                                             onButClick=self.DeselectAll)
         cancelButton = CancelButton(self)
         self.gPatchers = balt.listBox(self, choices=patcherNames,
                                       isSingle=True, kind='checklist',
                                       onSelect=self.OnSelect,
                                       onCheck=self.OnCheck)
-        self.gExportConfig = SaveAsButton(self, label=_(u'Export'),
+        self.gExportConfig = SaveAsButton(self, label=_('Export'),
                                           onButClick=self.ExportConfig)
-        self.gImportConfig = OpenButton(self, label=_(u'Import'),
+        self.gImportConfig = OpenButton(self, label=_('Import'),
                                         onButClick=self.ImportConfig)
         self.gRevertConfig = RevertToSavedButton(
-            self, label=_(u'Revert To Saved'), onButClick=self.RevertConfig)
+            self, label=_('Revert To Saved'), onButClick=self.RevertConfig)
         self.gRevertToDefault = RevertButton(
-            self, label=_(u'Revert To Default'), onButClick=self.DefaultConfig)
+            self, label=_('Revert To Default'), onButClick=self.DefaultConfig)
         for index,patcher in enumerate(self.patchers):
             self.gPatchers.Check(index,patcher.isEnabled)
-        self.defaultTipText = _(u'Items that are new since the last time this patch was built are displayed in bold')
+        self.defaultTipText = _('Items that are new since the last time this patch was built are displayed in bold')
         self.gTipText = StaticText(self,self.defaultTipText)
         #--Events
         set_event_hook(self, Events.RESIZE, self.OnSize) # save dialog size
@@ -185,12 +185,12 @@ class PatchDialog(balt.Dialog):
         try:
             patch_name = self.patchInfo.name
             patch_size = self.patchInfo.size
-            progress = balt.Progress(patch_name.s,(u' '*60+u'\n'), abort=True)
+            progress = balt.Progress(patch_name.s,(' '*60+'\n'), abort=True)
             timer1 = time.clock()
             #--Save configs
             self._saveConfig(patch_name)
             #--Do it
-            log = bolt.LogFile(StringIO.StringIO())
+            log = bolt.LogFile(io.StringIO())
             patchers = [patcher for patcher in self.patchers if patcher.isEnabled]
             patchFile = CBash_PatchFile(patch_name, patchers) if self.doCBash \
                    else PatchFile(self.patchInfo, patchers)
@@ -202,7 +202,7 @@ class PatchDialog(balt.Dialog):
                 patchFile.buildPatchLog(log, SubProgress(progress, 0.95, 0.99))
                 #--Save
                 progress.setCancel(False)
-                progress(1.0,patch_name.s+u'\n'+_(u'Saving...'))
+                progress(1.0,patch_name.s+'\n'+_('Saving...'))
                 self._save_cbash(patchFile, patch_name)
             else:
                 patchFile.initFactories(SubProgress(progress,0.1,0.2)) #no speeding needed/really possible (less than 1/4 second even with large LO)
@@ -210,28 +210,28 @@ class PatchDialog(balt.Dialog):
                 patchFile.buildPatch(log,SubProgress(progress,0.8,0.9))#no speeding needed/really possible (less than 1/4 second even with large LO)
                 #--Save
                 progress.setCancel(False)
-                progress(0.9,patch_name.s+u'\n'+_(u'Saving...'))
+                progress(0.9,patch_name.s+'\n'+_('Saving...'))
                 self._save_pbash(patchFile, patch_name)
             #--Done
             progress.Destroy(); progress = None
             timer2 = time.clock()
             #--Readme and log
             log.setHeader(None)
-            log(u'{{CSS:wtxt_sand_small.css}}')
+            log('{{CSS:wtxt_sand_small.css}}')
             logValue = log.out.getvalue()
             log.out.close()
-            timerString = unicode(timedelta(seconds=round(timer2 - timer1, 3))).rstrip(u'0')
-            logValue = re.sub(u'TIMEPLACEHOLDER', timerString, logValue, 1)
-            readme = bosh.modInfos.store_dir.join(u'Docs', patch_name.sroot + u'.txt')
-            docsDir = bass.settings.get('balt.WryeLog.cssDir', GPath(u''))
+            timerString = str(timedelta(seconds=round(timer2 - timer1, 3))).rstrip('0')
+            logValue = re.sub('TIMEPLACEHOLDER', timerString, logValue, 1)
+            readme = bosh.modInfos.store_dir.join('Docs', patch_name.sroot + '.txt')
+            docsDir = bass.settings.get('balt.WryeLog.cssDir', GPath(''))
             if self.doCBash: ##: eliminate this if/else
                 with readme.open('w',encoding='utf-8') as file:
                     file.write(logValue)
                 #--Convert log/readme to wtxt and show log
                 bolt.WryeText.genHtml(readme,None,docsDir)
             else:
-                tempReadmeDir = Path.tempDir().join(u'Docs')
-                tempReadme = tempReadmeDir.join(patch_name.sroot+u'.txt')
+                tempReadmeDir = Path.tempDir().join('Docs')
+                tempReadme = tempReadmeDir.join(patch_name.sroot+'.txt')
                 #--Write log/readme to temp dir first
                 with tempReadme.open('w',encoding='utf-8-sig') as file:
                     file.write(logValue)
@@ -243,17 +243,17 @@ class PatchDialog(balt.Dialog):
                                   parent=self)
                 except (CancelError,SkipError):
                     # User didn't allow UAC, move to My Games directory instead
-                    env.shellMove([tempReadme, tempReadme.root + u'.html'],
+                    env.shellMove([tempReadme, tempReadme.root + '.html'],
                                   bass.dirs['saveBase'], parent=self)
                     readme = bass.dirs['saveBase'].join(readme.tail)
                 #finally:
                 #    tempReadmeDir.head.rmtree(safety=tempReadmeDir.head.stail)
             bosh.modInfos.table.setItem(patch_name,'doc',readme)
             balt.playSound(self.parent, bass.inisettings['SoundSuccess'].s)
-            balt.WryeLog(self.parent, readme.root + u'.html', patch_name.s,
+            balt.WryeLog(self.parent, readme.root + '.html', patch_name.s,
                          log_icons=Resources.bashBlue)
             #--Select?
-            count, message = 0, _(u'Activate %s?') % patch_name.s
+            count, message = 0, _('Activate %s?') % patch_name.s
             if load_order.cached_is_active(patch_name) or (
                         bass.inisettings['PromptActivateBashedPatch'] and
                         balt.askYes(self.parent, message, patch_name.s)):
@@ -262,10 +262,10 @@ class PatchDialog(balt.Dialog):
                                                              doSave=True)
                     count = len(changedFiles)
                     if count > 1: Link.Frame.SetStatusInfo(
-                            _(u'Masters Activated: ') + unicode(count - 1))
+                            _('Masters Activated: ') + str(count - 1))
                 except PluginsFullError:
                     balt.showError(self, _(
-                        u'Unable to add mod %s because load list is full.')
+                        'Unable to add mod %s because load list is full.')
                                    % patch_name.s)
             # although improbable user has package with bashed patches...
             info = bosh.modInfos.new_info(patch_name, notify_bain=True)
@@ -279,12 +279,12 @@ class PatchDialog(balt.Dialog):
             BashFrame.modList.RefreshUI(refreshSaves=bool(count))
         except FileEditError as error:
             balt.playSound(self.parent, bass.inisettings['SoundError'].s)
-            balt.showError(self,u'%s'%error,_(u'File Edit Error'))
+            balt.showError(self,'%s'%error,_('File Edit Error'))
         except CancelError:
             pass
         except BoltError as error:
             balt.playSound(self.parent, bass.inisettings['SoundError'].s)
-            balt.showError(self,u'%s'%error,_(u'Processing Error'))
+            balt.showError(self,'%s'%error,_('Processing Error'))
         except:
             balt.playSound(self.parent, bass.inisettings['SoundError'].s)
             raise
@@ -292,7 +292,7 @@ class PatchDialog(balt.Dialog):
             if self.doCBash:
                 try: patchFile.Current.Close()
                 except:
-                    bolt.deprint(u'Failed to close CBash collection',
+                    bolt.deprint('Failed to close CBash collection',
                                  traceback=True)
             if progress: progress.Destroy()
 
@@ -328,23 +328,23 @@ class PatchDialog(balt.Dialog):
 
     def _pretry(self, patch_name):
         return balt.askYes(self, (
-            _(u'Bash encountered and error when saving %(patch_name)s.') +
-            u'\n\n' + _(u'Either Bash needs Administrator Privileges to '
-            u'save the file, or the file is in use by another process '
-            u'such as TES4Edit.') + u'\n' + _(u'Please close any program '
-            u'that is accessing %(patch_name)s, and provide Administrator '
-            u'Privileges if prompted to do so.') + u'\n\n' +
-            _(u'Try again?')) % {'patch_name': patch_name.s},
-                           _(u'Bash Patch - Save Error'))
+            _('Bash encountered and error when saving %(patch_name)s.') +
+            '\n\n' + _('Either Bash needs Administrator Privileges to '
+            'save the file, or the file is in use by another process '
+            'such as TES4Edit.') + '\n' + _('Please close any program '
+            'that is accessing %(patch_name)s, and provide Administrator '
+            'Privileges if prompted to do so.') + '\n\n' +
+            _('Try again?')) % {'patch_name': patch_name.s},
+                           _('Bash Patch - Save Error'))
 
     def _cretry(self, patch_name):
         return balt.askYes(self, (
-            _(u'Bash encountered an error when renaming %s to %s.') + u'\n\n' +
-            _(u'The file is in use by another process such as TES4Edit.') +
-            u'\n' + _(u'Please close the other program that is accessing %s.')
-            + u'\n\n' + _(u'Try again?')) % (
+            _('Bash encountered an error when renaming %s to %s.') + '\n\n' +
+            _('The file is in use by another process such as TES4Edit.') +
+            '\n' + _('Please close the other program that is accessing %s.')
+            + '\n\n' + _('Try again?')) % (
                                patch_name.temp.s, patch_name.s, patch_name.s),
-                           _(u'Bash Patch - Save Error'))
+                           _('Bash Patch - Save Error'))
 
     def __config(self):
         config = {'ImportedMods': set()}
@@ -363,27 +363,27 @@ class PatchDialog(balt.Dialog):
                      isCBash=self.doCBash, win=self.parent,
                      outDir=bass.dirs['patches'])
 
-    __old_key = GPath(u'Saved Bashed Patch Configuration')
-    __new_key = u'Saved Bashed Patch Configuration (%s)'
+    __old_key = GPath('Saved Bashed Patch Configuration')
+    __new_key = 'Saved Bashed Patch Configuration (%s)'
     def ImportConfig(self):
         """Import the configuration from a user selected dat file."""
-        config_dat = self.patchInfo.name + _(u'_Configuration.dat')
+        config_dat = self.patchInfo.name + _('_Configuration.dat')
         textDir = bass.dirs['patches']
         textDir.makedirs()
         #--File dialog
         textPath = balt.askOpen(self.parent,
-                                _(u'Import Bashed Patch configuration from:'),
-                                textDir, config_dat, u'*.dat', mustExist=True)
+                                _('Import Bashed Patch configuration from:'),
+                                textDir, config_dat, '*.dat', mustExist=True)
         if not textPath: return
         table = bolt.Table(bolt.PickleDict(textPath))
         # try the current Bashed Patch mode.
         patchConfigs = table.getItem(
-            GPath(self.__new_key % ([u'Python', u'CBash'][self.doCBash])),
+            GPath(self.__new_key % (['Python', 'CBash'][self.doCBash])),
             'bash.patch.configs', {})
         convert = False
         if not patchConfigs: # try the non-current Bashed Patch mode
             patchConfigs = table.getItem(
-                GPath(self.__new_key % ([u'CBash', u'Python'][self.doCBash])),
+                GPath(self.__new_key % (['CBash', 'Python'][self.doCBash])),
                 'bash.patch.configs', {})
             convert = bool(patchConfigs)
         if not patchConfigs: # try the old format
@@ -391,8 +391,8 @@ class PatchDialog(balt.Dialog):
                                          {})
             convert = configIsCBash(patchConfigs) != self.doCBash
         if not patchConfigs:
-            balt.showWarning(_(u'No patch config data found in %s') % textPath,
-                             _(u'Import Config'))
+            balt.showWarning(_('No patch config data found in %s') % textPath,
+                             _('Import Config'))
             return
         if convert:
             patchConfigs = self.UpdateConfig(patchConfigs)
@@ -408,12 +408,12 @@ class PatchDialog(balt.Dialog):
 
     def UpdateConfig(self, patchConfigs):
         if not balt.askYes(self.parent, _(
-            u"Wrye Bash detects that the selected file was saved in Bash's "
-            u"%s mode, do you want Wrye Bash to attempt to adjust the "
-            u"configuration on import to work with %s mode (Good chance "
-            u"there will be a few mistakes)? (Otherwise this import will "
-            u"have no effect.)") % ([u'CBash', u'Python'][self.doCBash],
-                                    [u'Python', u'CBash'][self.doCBash])):
+            "Wrye Bash detects that the selected file was saved in Bash's "
+            "%s mode, do you want Wrye Bash to attempt to adjust the "
+            "configuration on import to work with %s mode (Good chance "
+            "there will be a few mistakes)? (Otherwise this import will "
+            "have no effect.)") % (['CBash', 'Python'][self.doCBash],
+                                    ['Python', 'CBash'][self.doCBash])):
             return
         return self.ConvertConfig(patchConfigs)
 
@@ -497,8 +497,8 @@ class PatchDialog(balt.Dialog):
             pass # will be set to defaultTipText
         if 0 <= mouseItem < len(self.patchers):
             patcherClass = self.patchers[mouseItem].__class__
-            tip = patcherClass.tip or re.sub(u'' r'\..*', u'.',
-                            patcherClass.text.split(u'\n')[0], flags=re.U)
+            tip = patcherClass.tip or re.sub('' r'\..*', '.',
+                            patcherClass.text.split('\n')[0], flags=re.U)
             self.gTipText.SetLabel(tip)
         else:
             self.gTipText.SetLabel(self.defaultTipText)

@@ -38,7 +38,7 @@ def _readNetString(open_file):
         strLen = unpack_short(open_file)
         strLen = strLen & 0x7f | (strLen >> 1) & 0xff80
         if strLen > 0x7FFF:
-            raise NotImplementedError(u'String too long to convert.')
+            raise NotImplementedError('String too long to convert.')
     return open_file.read(strLen)
 
 def _writeNetString(open_file, string):
@@ -47,7 +47,7 @@ def _writeNetString(open_file, string):
     if strLen < 128:
         open_file.write(struct_pack('b', strLen))
     elif strLen > 0x7FFF: #--Actually probably fails earlier.
-        raise NotImplementedError(u'String too long to convert.')
+        raise NotImplementedError('String too long to convert.')
     else:
         strLen =  0x80 | strLen & 0x7f | (strLen & 0xff80) << 1
         open_file.write(struct_pack('b', strLen))
@@ -58,7 +58,7 @@ failedOmods = set()
 def extractOmodsNeeded(installers_paths=()):
     """Return true if .omod files are present, requiring extraction."""
     for inst_path in installers_paths:
-        if inst_path.cext == u'.omod' and inst_path not in failedOmods:
+        if inst_path.cext == '.omod' and inst_path not in failedOmods:
             return True
     return False
 
@@ -115,21 +115,21 @@ class OmodFile:
         """Return a list of the files and their uncompressed sizes, and the total uncompressed size of an archive"""
         # Get contents of archive
         filesizes = collections.OrderedDict()
-        reFileSize = re.compile(u'' r'[0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2}.{6}\s+([0-9]+)\s+[0-9]+\s+(.+?)$', re.U)
+        reFileSize = re.compile('' r'[0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2}.{6}\s+([0-9]+)\s+[0-9]+\s+(.+?)$', re.U)
 
         with self.omod_path.unicodeSafe() as tempOmod:
-            cmd7z = [archives.exe7z, u'l', u'-r', u'-sccUTF-8', tempOmod.s]
+            cmd7z = [archives.exe7z, 'l', '-r', '-sccUTF-8', tempOmod.s]
             with subprocess.Popen(cmd7z, stdout=PIPE, stdin=PIPE, startupinfo=startupinfo).stdout as ins:
                 for line in ins:
-                    line = unicode(line,'utf8')
+                    line = str(line,'utf8')
                     maFileSize = reFileSize.match(line)
                     if maFileSize: #also matches the last line with total sizes
                         size = int(maFileSize.group(1))
-                        name = maFileSize.group(2).strip().strip(u'\r')
+                        name = maFileSize.group(2).strip().strip('\r')
                         filesizes[name] = size
         # drop the last line entry
-        del filesizes[filesizes.keys()[-1]]
-        return filesizes, sum(filesizes.itervalues())
+        del filesizes[list(filesizes.keys())[-1]]
+        return filesizes, sum(filesizes.values())
 
     def extractToProject(self,outDir,progress=None):
         """Extract the contents of the omod to a project, with omod conversion data"""
@@ -142,46 +142,46 @@ class OmodFile:
             sizes,total = self.getOmodContents()
 
             # Extract the files
-            reExtracting = re.compile(u'- (.+)', re.U)
-            progress(0, self.omod_path.stail + u'\n' + _(u'Extracting...'))
+            reExtracting = re.compile('- (.+)', re.U)
+            progress(0, self.omod_path.stail + '\n' + _('Extracting...'))
 
             subprogress = bolt.SubProgress(progress, 0, 0.4)
             current = 0
             with self.omod_path.unicodeSafe() as tempOmod:
-                cmd7z = [archives.exe7z, u'e', u'-r', u'-sccUTF-8', tempOmod.s, u'-o%s' % extractDir.s, u'-bb1']
+                cmd7z = [archives.exe7z, 'e', '-r', '-sccUTF-8', tempOmod.s, '-o%s' % extractDir.s, '-bb1']
                 with subprocess.Popen(cmd7z, stdout=PIPE, stdin=PIPE, startupinfo=startupinfo).stdout as ins:
                     for line in ins:
-                        line = unicode(line,'utf8')
+                        line = str(line,'utf8')
                         maExtracting = reExtracting.match(line)
                         if maExtracting:
-                            name = maExtracting.group(1).strip().strip(u'\r')
+                            name = maExtracting.group(1).strip().strip('\r')
                             size = sizes[name]
-                            subprogress(float(current) / total, self.omod_path.stail + u'\n' + _(u'Extracting...') + u'\n' + name)
+                            subprogress(float(current) / total, self.omod_path.stail + '\n' + _('Extracting...') + '\n' + name)
                             current += size
 
             # Get compression type
-            progress(0.4, self.omod_path.stail + u'\n' + _(u'Reading config'))
-            self.readConfig(extractDir.join(u'config'))
+            progress(0.4, self.omod_path.stail + '\n' + _('Reading config'))
+            self.readConfig(extractDir.join('config'))
 
             # Collect OMOD conversion data
-            ocdDir = stageDir.join(u'omod conversion data')
-            progress(0.46, self.omod_path.stail + u'\n' + _(u'Creating omod conversion data') + u'\ninfo.txt')
-            self.writeInfo(ocdDir.join(u'info.txt'), self.omod_path.stail, extractDir.join(u'readme').exists(), extractDir.join(u'script').exists())
-            progress(0.47, self.omod_path.stail + u'\n' + _(u'Creating omod conversion data') + u'\nscript')
-            if extractDir.join(u'script').exists():
-                with open(extractDir.join(u'script').s, 'rb') as ins:
-                    with ocdDir.join(u'script.txt').open('w') as output:
+            ocdDir = stageDir.join('omod conversion data')
+            progress(0.46, self.omod_path.stail + '\n' + _('Creating omod conversion data') + '\ninfo.txt')
+            self.writeInfo(ocdDir.join('info.txt'), self.omod_path.stail, extractDir.join('readme').exists(), extractDir.join('script').exists())
+            progress(0.47, self.omod_path.stail + '\n' + _('Creating omod conversion data') + '\nscript')
+            if extractDir.join('script').exists():
+                with open(extractDir.join('script').s, 'rb') as ins:
+                    with ocdDir.join('script.txt').open('w') as output:
                         output.write(_readNetString(ins))
-            progress(0.48, self.omod_path.stail + u'\n' + _(u'Creating omod conversion data') + u'\nreadme.rtf')
-            if extractDir.join(u'readme').exists():
-                with open(extractDir.join(u'readme').s, 'rb') as ins:
-                    with ocdDir.join(u'readme.rtf').open('w') as output:
+            progress(0.48, self.omod_path.stail + '\n' + _('Creating omod conversion data') + '\nreadme.rtf')
+            if extractDir.join('readme').exists():
+                with open(extractDir.join('readme').s, 'rb') as ins:
+                    with ocdDir.join('readme.rtf').open('w') as output:
                         output.write(_readNetString(ins))
-            progress(0.49, self.omod_path.stail + u'\n' + _(u'Creating omod conversion data') + u'\nscreenshot')
-            if extractDir.join(u'image').exists():
-                extractDir.join(u'image').moveTo(ocdDir.join(u'screenshot'))
-            progress(0.5, self.omod_path.stail + u'\n' + _(u'Creating omod conversion data') + u'\nconfig')
-            extractDir.join(u'config').moveTo(ocdDir.join(u'config'))
+            progress(0.49, self.omod_path.stail + '\n' + _('Creating omod conversion data') + '\nscreenshot')
+            if extractDir.join('image').exists():
+                extractDir.join('image').moveTo(ocdDir.join('screenshot'))
+            progress(0.5, self.omod_path.stail + '\n' + _('Creating omod conversion data') + '\nconfig')
+            extractDir.join('config').moveTo(ocdDir.join('config'))
 
             # Extract the files
             if self.compType == 0:
@@ -193,13 +193,13 @@ class OmodFile:
             dataSize = sizes.get('data',0)
             subprogress = bolt.SubProgress(progress, 0.5, 1)
             with stageDir.unicodeSafe() as tempOut:
-                if extractDir.join(u'plugins.crc').exists() and extractDir.join(u'plugins').exists():
+                if extractDir.join('plugins.crc').exists() and extractDir.join('plugins').exists():
                     pluginProgress = bolt.SubProgress(subprogress, 0, float(pluginSize)/(pluginSize+dataSize))
-                    extract(extractDir.join(u'plugins.crc'),extractDir.join(u'plugins'),tempOut,pluginProgress)
-                if extractDir.join(u'data.crc').exists() and extractDir.join(u'data').exists():
+                    extract(extractDir.join('plugins.crc'),extractDir.join('plugins'),tempOut,pluginProgress)
+                if extractDir.join('data.crc').exists() and extractDir.join('data').exists():
                     dataProgress = bolt.SubProgress(subprogress, subprogress.state, 1)
-                    extract(extractDir.join(u'data.crc'),extractDir.join(u'data'),tempOut,dataProgress)
-                progress(1, self.omod_path.stail + u'\n' + _(u'Extracted'))
+                    extract(extractDir.join('data.crc'),extractDir.join('data'),tempOut,dataProgress)
+                progress(1, self.omod_path.stail + '\n' + _('Extracted'))
 
             # Move files to final directory
             env.shellMove(stageDir, outDir.head, parent=None,
@@ -218,26 +218,26 @@ class OmodFile:
         if len(fileNames) == 0: return
 
         # Extracted data stream is saved as a file named 'a'
-        progress(0, self.omod_path.tail + u'\n' + _(u'Unpacking %s') % dataPath.stail)
-        cmd = [archives.exe7z, u'e', u'-r', u'-sccUTF-8', dataPath.s, u'-o%s' % outPath.s]
+        progress(0, self.omod_path.tail + '\n' + _('Unpacking %s') % dataPath.stail)
+        cmd = [archives.exe7z, 'e', '-r', '-sccUTF-8', dataPath.s, '-o%s' % outPath.s]
         subprocess.call(cmd, startupinfo=startupinfo)
 
         # Split the uncompress stream into files
-        progress(0.7, self.omod_path.stail + u'\n' + _(u'Unpacking %s') % dataPath.stail)
-        self.splitStream(outPath.join(u'a'), outPath, fileNames, sizes,
+        progress(0.7, self.omod_path.stail + '\n' + _('Unpacking %s') % dataPath.stail)
+        self.splitStream(outPath.join('a'), outPath, fileNames, sizes,
                          bolt.SubProgress(progress,0.7,1.0,len(fileNames))
                          )
         progress(1)
 
         # Clean up
-        outPath.join(u'a').remove()
+        outPath.join('a').remove()
 
     def splitStream(self, streamPath, outDir, fileNames, sizes, progress):
         # Split the uncompressed stream into files
-        progress(0, self.omod_path.stail + u'\n' + _(u'Unpacking %s') % streamPath.stail)
+        progress(0, self.omod_path.stail + '\n' + _('Unpacking %s') % streamPath.stail)
         with streamPath.open('rb') as file:
             for i,name in enumerate(fileNames):
-                progress(i, self.omod_path.stail + u'\n' + _(u'Unpacking %s') % streamPath.stail + u'\n' + name)
+                progress(i, self.omod_path.stail + '\n' + _('Unpacking %s') % streamPath.stail + '\n' + name)
                 outFile = outDir.join(name)
                 with outFile.open('wb') as output:
                     output.write(file.read(sizes[i]))
@@ -250,10 +250,10 @@ class OmodFile:
 
         # Extract data stream to an uncompressed stream
         subprogress = bolt.SubProgress(progress,0,0.3,full=dataPath.size)
-        subprogress(0, self.omod_path.stail + u'\n' + _(u'Unpacking %s') % dataPath.stail)
+        subprogress(0, self.omod_path.stail + '\n' + _('Unpacking %s') % dataPath.stail)
         with dataPath.open('rb') as ins:
             done = 0
-            with open(outPath.join(dataPath.sbody+u'.tmp').s, 'wb') as output:
+            with open(outPath.join(dataPath.sbody+'.tmp').s, 'wb') as output:
                 # Decoder properties
                 output.write(ins.read(5))
                 done += 5
@@ -274,19 +274,19 @@ class OmodFile:
 
         # Now decompress
         progress(0.3)
-        cmd = [bass.dirs['compiled'].join(u'lzma').s,u'd',outPath.join(dataPath.sbody+u'.tmp').s, outPath.join(dataPath.sbody+u'.uncomp').s]
+        cmd = [bass.dirs['compiled'].join('lzma').s,'d',outPath.join(dataPath.sbody+'.tmp').s, outPath.join(dataPath.sbody+'.uncomp').s]
         subprocess.call(cmd,startupinfo=startupinfo)
         progress(0.8)
 
         # Split the uncompressed stream into files
-        self.splitStream(outPath.join(dataPath.sbody+u'.uncomp'), outPath, fileNames, sizes,
+        self.splitStream(outPath.join(dataPath.sbody+'.uncomp'), outPath, fileNames, sizes,
                          bolt.SubProgress(progress,0.8,1.0,full=len(fileNames))
                          )
         progress(1)
 
         # Clean up temp files
-        outPath.join(dataPath.sbody+u'.uncomp').remove()
-        outPath.join(dataPath.sbody+u'.tmp').remove()
+        outPath.join(dataPath.sbody+'.uncomp').remove()
+        outPath.join(dataPath.sbody+'.tmp').remove()
 
     @staticmethod
     def getFile_CrcSizes(crc_file_path):
@@ -307,16 +307,16 @@ class OmodConfig:
         self.vMajor = 0
         self.vMinor = 1
         self.vBuild = 0
-        self.author = u''
-        self.email = u''
-        self.website = u''
-        self.abstract = u''
+        self.author = ''
+        self.email = ''
+        self.website = ''
+        self.abstract = ''
 
     @staticmethod
     def getOmodConfig(name):
         """Get obmm config file for project."""
         config = OmodConfig(name)
-        configPath = bass.dirs['installers'].join(name,u'omod conversion data',u'config')
+        configPath = bass.dirs['installers'].join(name,'omod conversion data','config')
         if configPath.exists():
             with open(configPath.s,'rb') as ins:
                 ins.read(1) #--Skip first four bytes
@@ -334,7 +334,7 @@ class OmodConfig:
     @staticmethod
     def writeOmodConfig(name, config):
         """Write obmm config file for project."""
-        configPath = bass.dirs['installers'].join(name,u'omod conversion data',u'config')
+        configPath = bass.dirs['installers'].join(name,'omod conversion data','config')
         configPath.head.makedirs()
         with open(configPath.temp.s,'wb') as out:
             out.write(struct_pack('B', 4))

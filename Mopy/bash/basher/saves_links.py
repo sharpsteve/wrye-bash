@@ -25,7 +25,7 @@
 """Menu items for the main and item menus of the saves tab - their window
 attribute points to BashFrame.saveList singleton."""
 
-import StringIO
+import io
 import re
 import shutil
 from . import BashFrame
@@ -54,13 +54,13 @@ def _win_join(saves_subdir):
     """Join base (default) save dir with subdir using the windows path
     separator. Needed as we want to write this separator to the game ini
     file."""
-    return u'\\'.join([bush.game.save_prefix, saves_subdir])
+    return '\\'.join([bush.game.save_prefix, saves_subdir])
 
 class Saves_ProfilesData(balt.ListEditorData):
     """Data capsule for save profiles editing dialog."""
     def __init__(self,parent):
         """Initialize."""
-        self.baseSaves = bass.dirs['saveBase'].join(u'Saves')
+        self.baseSaves = bass.dirs['saveBase'].join('Saves')
         #--GUI
         balt.ListEditorData.__init__(self,parent)
         self.showAdd    = True
@@ -82,7 +82,7 @@ class Saves_ProfilesData(balt.ListEditorData):
         """Returns string info on specified item."""
         profileSaves = _win_join(item)
         return bosh.saveInfos.profiles.getItem(profileSaves, 'info',
-                                               _(u'About %s:') % item)
+                                               _('About %s:') % item)
     def setInfo(self,item,text):
         """Sets string info on specified item."""
         profileSaves = _win_join(item)
@@ -90,20 +90,20 @@ class Saves_ProfilesData(balt.ListEditorData):
 
     def add(self):
         """Adds a new profile."""
-        newName = balt.askText(self.parent, _(u"Enter profile name:"))
+        newName = balt.askText(self.parent, _("Enter profile name:"))
         if not newName: return False
         if newName in self.getItemList():
-            balt.showError(self.parent,_(u'Name must be unique.'))
+            balt.showError(self.parent,_('Name must be unique.'))
             return False
         if len(newName) == 0 or len(newName) > 64:
             balt.showError(self.parent,
-                _(u'Name must be between 1 and 64 characters long.'))
+                _('Name must be between 1 and 64 characters long.'))
             return False
         try:
             newName.encode('cp1252')
         except UnicodeEncodeError:
             balt.showError(self.parent,
-                _(u'Name must be encodable in Windows Codepage 1252 (Western European), due to limitations of %(gameIni)s.') % {'gameIni':bush.game.iniFiles[0]})
+                _('Name must be encodable in Windows Codepage 1252 (Western European), due to limitations of %(gameIni)s.') % {'gameIni':bush.game.iniFiles[0]})
             return False
         self.baseSaves.join(newName).makedirs()
         newSaves = _win_join(newName)
@@ -116,11 +116,11 @@ class Saves_ProfilesData(balt.ListEditorData):
         lowerNames = [name.lower() for name in self.getItemList()]
         #--Error checks
         if newName.lower() in lowerNames:
-            balt.showError(self,_(u'Name must be unique.'))
+            balt.showError(self,_('Name must be unique.'))
             return False
         if len(newName) == 0 or len(newName) > 64:
             balt.showError(self.parent,
-                _(u'Name must be between 1 and 64 characters long.'))
+                _('Name must be between 1 and 64 characters long.'))
             return False
         #--Rename
         oldDir, newDir = (self.baseSaves.join(subdir) for subdir in
@@ -138,19 +138,19 @@ class Saves_ProfilesData(balt.ListEditorData):
         profileSaves = _win_join(profile)
         #--Can't remove active or Default directory.
         if bosh.saveInfos.localSave == profileSaves:
-            balt.showError(self.parent,_(u'Active profile cannot be removed.'))
+            balt.showError(self.parent,_('Active profile cannot be removed.'))
             return False
         #--Get file count. If > zero, verify with user.
         profileDir = bass.dirs['saveBase'].join(profileSaves)
         files = [save for save in profileDir.list() if
                  bosh.SaveInfos.rightFileType(save)]
         if files:
-            message = _(u'Delete profile %s and the %d save files it contains?') % (profile,len(files))
-            if not balt.askYes(self.parent,message,_(u'Delete Profile')):
+            message = _('Delete profile %s and the %d save files it contains?') % (profile,len(files))
+            if not balt.askYes(self.parent,message,_('Delete Profile')):
                 return False
         #--Remove directory
-        if GPath(bush.game.fsName).join(u'Saves').s not in profileDir.s:
-            raise BoltError(u'Sanity check failed: No "%s\\Saves" in %s.' % (bush.game.fsName,profileDir.s))
+        if GPath(bush.game.fsName).join('Saves').s not in profileDir.s:
+            raise BoltError('Sanity check failed: No "%s\\Saves" in %s.' % (bush.game.fsName,profileDir.s))
         shutil.rmtree(profileDir.s) #--DO NOT SCREW THIS UP!!!
         bosh.saveInfos.profiles.delRow(profileSaves)
         return True
@@ -161,7 +161,7 @@ class Saves_Profiles(ChoiceLink):
     local = None
     # relative path to save base dir as in My Games/Oblivion
     _my_games = bass.dirs['saveBase'].s[
-                bass.dirs['saveBase'].cs.find(u'my games'):]
+                bass.dirs['saveBase'].cs.find('my games'):]
     _my_games = GPath(_my_games)
 
     @property
@@ -171,7 +171,7 @@ class Saves_Profiles(ChoiceLink):
         @property
         def menu_help(self):
             profile_dir = Saves_Profiles._my_games.join(self._text)
-            return _(u'Set profile to %s (%s)') % (self._text, profile_dir)
+            return _('Set profile to %s (%s)') % (self._text, profile_dir)
         @property
         def relativePath(self): return _win_join(self._text)
         def _check(self): return Saves_Profiles.local == self.relativePath
@@ -192,24 +192,24 @@ class Saves_Profiles(ChoiceLink):
     choiceLinkType = _ProfileLink
 
     class _Default(_ProfileLink):
-        _text = _(u'Default')
+        _text = _('Default')
 
         @property
         def menu_help(self):
             profile_dir = Saves_Profiles._my_games.join(bush.game.save_prefix)
-            return _(u'Set profile to the default (%s)' % profile_dir)
+            return _('Set profile to the default (%s)' % profile_dir)
 
         @property
         def relativePath(self): return bush.game.save_prefix
 
     class _Edit(ItemLink):
-        _text = _(u"Edit Profiles...")
-        _help = _(u'Show save profiles editing dialog')
+        _text = _("Edit Profiles...")
+        _help = _('Show save profiles editing dialog')
 
         def Execute(self):
             """Show save profiles editing dialog."""
             data = Saves_ProfilesData(self.window)
-            balt.ListEditor.Display(self.window, _(u'Save Profiles'), data)
+            balt.ListEditor.Display(self.window, _('Save Profiles'), data)
 
     extraItems = [_Edit(), SeparatorLink(), _Default()]
 
@@ -220,8 +220,8 @@ class Saves_Profiles(ChoiceLink):
 #------------------------------------------------------------------------------
 class Save_LoadMasters(OneItemLink):
     """Sets the active mods to the save game's masters."""
-    _text = _(u'Load Masters')
-    _help = _(u"Set the active mods to the save game's masters")
+    _text = _('Load Masters')
+    _help = _("Set the active mods to the save game's masters")
 
     def Execute(self):
         errorMessage = bosh.modInfos.lo_activate_exact(
@@ -233,19 +233,19 @@ class Save_LoadMasters(OneItemLink):
 #------------------------------------------------------------------------------
 class Save_ImportFace(OneItemLink):
     """Imports a face from another save."""
-    _text = _(u'Import Face...')
-    _help = _(u'Import a face from another save')
+    _text = _('Import Face...')
+    _help = _('Import a face from another save')
 
     @balt.conversation
     def Execute(self):
         #--Select source face file
         srcDir = self._selected_info.dir
-        exts = u';*'.join(bush.game.espm_extensions | {
-            bush.game.ess.ext, bush.game.ess.ext[-1] + u'r'})
-        wildcard = _(u'%s Files') % bush.game.displayName + \
-                   u' (*' + exts + u')|*' + exts
+        exts = ';*'.join(bush.game.espm_extensions | {
+            bush.game.ess.ext, bush.game.ess.ext[-1] + 'r'})
+        wildcard = _('%s Files') % bush.game.displayName + \
+                   ' (*' + exts + ')|*' + exts
         #--File dialog
-        srcPath = self._askOpen(title=_(u'Face Source:'), defaultDir=srcDir,
+        srcPath = self._askOpen(title=_('Face Source:'), defaultDir=srcDir,
                                 wildcard=wildcard, mustExist=True)
         if not srcPath: return
         if bosh.SaveInfos.rightFileType(srcPath):
@@ -272,7 +272,7 @@ class Save_ImportFace(OneItemLink):
         #--No faces to import?
         mod = srcPath.tail.s
         if not srcFaces:
-            self._showOk(_(u'No player (PC) faces found in %s.') % mod, mod)
+            self._showOk(_('No player (PC) faces found in %s.') % mod, mod)
             return
         #--Dialog
         ImportFaceDialog.Display(self.window, mod, fileInfo, srcFaces)
@@ -280,15 +280,15 @@ class Save_ImportFace(OneItemLink):
 #------------------------------------------------------------------------------
 class Save_RenamePlayer(ItemLink):
     """Renames the Player character in a save game."""
-    _text = _(u'Rename Player...')
-    _help = _(u'Rename the Player character in a save game')
+    _text = _('Rename Player...')
+    _help = _('Rename the Player character in a save game')
 
     def Execute(self):
         # get new player name - must not be empty
         saveInfo = bosh.saveInfos[self.selected[0]]
         newName = self._askText(
-            _(u"Enter new player name. E.g. Conan the Bold"),
-            title=_(u"Rename player"), default=saveInfo.header.pcName)
+            _("Enter new player name. E.g. Conan the Bold"),
+            title=_("Rename player"), default=saveInfo.header.pcName)
         if not newName: return
         for save in self.iselected_infos():
             savedPlayer = bosh._saves.Save_NPCEdits(save)
@@ -299,13 +299,13 @@ class Save_RenamePlayer(ItemLink):
 #------------------------------------------------------------------------------
 class Save_ExportScreenshot(OneItemLink):
     """Exports the saved screenshot from a save game."""
-    _text = _(u'Export Screenshot...')
-    _help = _(u'Export the saved screenshot from a save game')
+    _text = _('Export Screenshot...')
+    _help = _('Export the saved screenshot from a save game')
 
     def Execute(self):
-        imagePath = balt.askSave(Link.Frame, _(u'Save Screenshot as:'),
+        imagePath = balt.askSave(Link.Frame, _('Save Screenshot as:'),
             bass.dirs['patches'].s,
-            _(u'Screenshot %s.jpg') % self._selected_item.s, u'*.jpg')
+            _('Screenshot %s.jpg') % self._selected_item.s, '*.jpg')
         if not imagePath: return
         width, height, image_data = self._selected_info.header.image
         image = Image.GetImage(image_data, height, width)
@@ -314,9 +314,9 @@ class Save_ExportScreenshot(OneItemLink):
 #------------------------------------------------------------------------------
 class Save_DiffMasters(EnabledLink):
     """Shows how saves masters differ from active mod list."""
-    _text = _(u'Diff Masters...')
-    _help = _(u"Show how the masters of a save differ from active mod list or"
-             u" another save")
+    _text = _('Diff Masters...')
+    _help = _("Show how the masters of a save differ from active mod list or"
+             " another save")
 
     def _enable(self): return len(self.selected) in (1,2)
 
@@ -327,7 +327,7 @@ class Save_DiffMasters(EnabledLink):
         oldInfo = self.window.data_store[oldName]
         oldMasters = set(oldInfo.masterNames)
         if len(self.selected) == 1:
-            newName = GPath(_(u'Active Masters'))
+            newName = GPath(_('Active Masters'))
             newMasters = set(load_order.cached_active_tuple())
         else:
             newName = oldNew[1]
@@ -336,31 +336,31 @@ class Save_DiffMasters(EnabledLink):
         missing = oldMasters - newMasters
         added = newMasters - oldMasters
         if not missing and not added:
-            message = _(u'Masters are the same.')
-            self._showInfo(message, title=_(u'Diff Masters'))
+            message = _('Masters are the same.')
+            self._showInfo(message, title=_('Diff Masters'))
         else:
-            message = u''
+            message = ''
             if missing:
-                message += u'=== '+_(u'Removed Masters')+u' (%s):\n* ' % oldName.s
-                message += u'\n* '.join(x.s for x in load_order.get_ordered(missing))
-                if added: message += u'\n\n'
+                message += '=== '+_('Removed Masters')+' (%s):\n* ' % oldName.s
+                message += '\n* '.join(x.s for x in load_order.get_ordered(missing))
+                if added: message += '\n\n'
             if added:
-                message += u'=== '+_(u'Added Masters')+u' (%s):\n* ' % newName.s
-                message += u'\n* '.join(x.s for x in load_order.get_ordered(added))
-            self._showWryeLog(message, title=_(u'Diff Masters'))
+                message += '=== '+_('Added Masters')+' (%s):\n* ' % newName.s
+                message += '\n* '.join(x.s for x in load_order.get_ordered(added))
+            self._showWryeLog(message, title=_('Diff Masters'))
 
 #------------------------------------------------------------------------------
 class Save_Rename(UIList_Rename):
     """Renames Save File."""
-    _help = _(u'Rename Save File')
+    _help = _('Rename Save File')
 
 #------------------------------------------------------------------------------
 class Save_Renumber(EnabledLink):
     """Renumbers a whole lot of save files."""
-    _text = _(u'Re-number Save(s)...')
-    _help = _(u'Renumber a whole lot of save files') + u'.  ' + _(
-        u'Savename must be "Save <some number><optional text>"')
-    _re_numbered_save = re.compile(u'' r'^(save )(\d*)(.*)', re.I | re.U)
+    _text = _('Re-number Save(s)...')
+    _help = _('Renumber a whole lot of save files') + '.  ' + _(
+        'Savename must be "Save <some number><optional text>"')
+    _re_numbered_save = re.compile('' r'^(save )(\d*)(.*)', re.I | re.U)
 
     def _enable(self):
         self._matches = []
@@ -371,15 +371,15 @@ class Save_Renumber(EnabledLink):
 
     def Execute(self):
         newNumber = self._askNumber(
-            _(u"Enter new number to start numbering the selected saves at."),
-            prompt=_(u'Save Number'), title=_(u'Re-number Saves'), value=1,
+            _("Enter new number to start numbering the selected saves at."),
+            prompt=_('Save Number'), title=_('Re-number Saves'), value=1,
             min=1, max=10000)
         if not newNumber: return
         to_select = []
         for name, maPattern in self._matches:
             maPattern = maPattern.groups()
             if not maPattern[1]: continue
-            newFileName = u"%s%d%s" % (maPattern[0],newNumber,maPattern[2])
+            newFileName = "%s%d%s" % (maPattern[0],newNumber,maPattern[2])
             if newFileName != name.s:
                 new_file_path = GPath(newFileName)
                 try:
@@ -428,25 +428,25 @@ class Save_EditCreatedData(balt.ListEditorData):
 
     def getInfo(self,item):
         """Returns string info on specified item."""
-        buff = StringIO.StringIO()
+        buff = io.StringIO()
         name,records = self.name_nameRecords[item]
         record = records[0]
         #--Armor, clothing, weapons
         if record.recType == 'ARMO':
-            buff.write(_(u'Armor')+u'\n'+_(u'Flags: '))
-            buff.write(u', '.join(record.flags.getTrueAttrs())+u'\n')
+            buff.write(_('Armor')+'\n'+_('Flags: '))
+            buff.write(', '.join(record.flags.getTrueAttrs())+'\n')
             for attr in ('strength','value','weight'):
-                buff.write(u'%s: %s\n' % (attr,getattr(record,attr)))
+                buff.write('%s: %s\n' % (attr,getattr(record,attr)))
         elif record.recType == 'CLOT':
-            buff.write(_(u'Clothing')+u'\n'+_(u'Flags: '))
-            buff.write(u', '.join(record.flags.getTrueAttrs())+u'\n')
+            buff.write(_('Clothing')+'\n'+_('Flags: '))
+            buff.write(', '.join(record.flags.getTrueAttrs())+'\n')
         elif record.recType == 'WEAP':
-            buff.write(bush.game.weaponTypes[record.weaponType]+u'\n')
+            buff.write(bush.game.weaponTypes[record.weaponType]+'\n')
             for attr in ('damage','value','speed','reach','weight'):
-                buff.write(u'%s: %s\n' % (attr,getattr(record,attr)))
+                buff.write('%s: %s\n' % (attr,getattr(record,attr)))
         #--Enchanted? Switch record to enchantment.
         if hasattr(record,'enchantment') and record.enchantment in self.enchantments:
-            buff.write(u'\n'+_(u'Enchantment:')+u'\n')
+            buff.write('\n'+_('Enchantment:')+'\n')
             record = self.enchantments[record.enchantment].getTypeCopy()
         #--Magic effects
         if record.recType in ('ALCH','SPEL','ENCH'):
@@ -462,10 +462,10 @@ class Save_EditCreatedData(balt.ListEditorData):
         if len(newName) == 0:
             return False
         elif len(newName) > 128:
-            balt.showError(self.parent,_(u'Name is too long.'))
+            balt.showError(self.parent,_('Name is too long.'))
             return False
         elif newName in self.name_nameRecords:
-            balt.showError(self.parent,_(u'Name is already used.'))
+            balt.showError(self.parent,_('Name is already used.'))
             return False
         #--Rename
         self.name_nameRecords[newName] = self.name_nameRecords.pop(oldName)
@@ -475,11 +475,11 @@ class Save_EditCreatedData(balt.ListEditorData):
     def save(self):
         """Handles save button."""
         if not self.changed:
-            balt.showOk(self.parent,_(u'No changes made.'))
+            balt.showOk(self.parent,_('No changes made.'))
         else:
             self.changed = False #--Allows graceful effort if close fails.
             count = 0
-            for newName,(oldName,records) in self.name_nameRecords.items():
+            for newName,(oldName,records) in list(self.name_nameRecords.items()):
                 if newName == oldName: continue
                 for record in records:
                     record.full = newName
@@ -487,18 +487,18 @@ class Save_EditCreatedData(balt.ListEditorData):
                     record.getSize()
                 count += 1
             self.saveFile.safeSave()
-            balt.showOk(self.parent, _(u'Names modified: %d.') % count,self.saveFile.fileInfo.name.s)
+            balt.showOk(self.parent, _('Names modified: %d.') % count,self.saveFile.fileInfo.name.s)
 
 #------------------------------------------------------------------------------
 class Save_EditCreated(OneItemLink):
     """Allows user to rename custom items (spells, enchantments, etc)."""
-    menuNames = {'ENCH':_(u'Rename Enchanted...'),
-                 'SPEL':_(u'Rename Spells...'),
-                 'ALCH':_(u'Rename Potions...')
+    menuNames = {'ENCH':_('Rename Enchanted...'),
+                 'SPEL':_('Rename Spells...'),
+                 'ALCH':_('Rename Potions...')
                  }
     rec_types = {'ENCH': {'ARMO', 'CLOT', 'WEAP'}, 'SPEL': {'SPEL'},
                  'ALCH': {'ALCH'}}
-    _help = _(u'Allow user to rename custom items (spells, enchantments, etc)')
+    _help = _('Allow user to rename custom items (spells, enchantments, etc)')
 
     def __init__(self, save_rec_type):
         if save_rec_type not in Save_EditCreated.menuNames:
@@ -509,14 +509,14 @@ class Save_EditCreated(OneItemLink):
 
     def Execute(self):
         #--Get SaveFile
-        with balt.Progress(_(u"Loading...")) as progress:
+        with balt.Progress(_("Loading...")) as progress:
             saveFile = bosh._saves.SaveFile(self._selected_info)
             saveFile.load(progress)
         #--No custom items?
         types_set = Save_EditCreated.rec_types[self.save_rec_type]
         records = [rec for rec in saveFile.created if rec.recType in types_set]
         if not records:
-            self._showOk(_(u'No items to edit.'))
+            self._showOk(_('No items to edit.'))
             return
         #--Open editor dialog
         data = Save_EditCreatedData(self.window,saveFile,types_set)
@@ -528,7 +528,7 @@ class Save_EditPCSpellsData(balt.ListEditorData):
     def __init__(self,parent,saveInfo):
         """Initialize."""
         self.saveSpells = bosh._saves.SaveSpells(saveInfo)
-        with balt.Progress(_(u'Loading Masters')) as progress:
+        with balt.Progress(_('Loading Masters')) as progress:
             self.saveSpells.load(bosh.modInfos, progress)
         self.player_spells = self.saveSpells.getPlayerSpells()
         self.removed = set()
@@ -541,7 +541,7 @@ class Save_EditPCSpellsData(balt.ListEditorData):
 
     def getItemList(self):
         """Returns load list keys in alpha order."""
-        return sorted(self.player_spells.keys(), key=lambda a: a.lower())
+        return sorted(list(self.player_spells.keys()), key=lambda a: a.lower())
 
     def getInfo(self,item):
         """Returns string info on specified item."""
@@ -563,26 +563,26 @@ class Save_EditPCSpellsData(balt.ListEditorData):
 #------------------------------------------------------------------------------
 class Save_EditPCSpells(OneItemLink):
     """Save spell list editing dialog."""
-    _text = _(u'Delete Spells...')
-    _help = _(u'Delete unused spells from your spell list in the selected save.'
-             u' Warning: This cannot be undone')
+    _text = _('Delete Spells...')
+    _help = _('Delete unused spells from your spell list in the selected save.'
+             ' Warning: This cannot be undone')
 
     def Execute(self):
         pc_spell_data = Save_EditPCSpellsData(self.window, self._selected_info)
-        balt.ListEditor.Display(self.window, _(u'Player Spells'),pc_spell_data)
+        balt.ListEditor.Display(self.window, _('Player Spells'),pc_spell_data)
 
 #------------------------------------------------------------------------------
 class Save_EditCreatedEnchantmentCosts(OneItemLink):
     """Dialogue and Menu for setting number of uses for Cast When Used Enchantments."""
-    _text = _(u'Set Number of Uses for Weapon Enchantments...')
-    _help = _(u'Set number of uses for Cast When Used Enchantments')
+    _text = _('Set Number of Uses for Weapon Enchantments...')
+    _help = _('Set number of uses for Cast When Used Enchantments')
 
     def Execute(self):
         dialog = self._askNumber(
-            _(u'Enter the number of uses you desire per recharge for all '
-              u'custom made enchantments.') + u'\n' + _(
-                u'(Enter 0 for unlimited uses)'), prompt=_(u'Uses'),
-            title=_(u'Number of Uses'), value=50, min=0, max=10000)
+            _('Enter the number of uses you desire per recharge for all '
+              'custom made enchantments.') + '\n' + _(
+                '(Enter 0 for unlimited uses)'), prompt=_('Uses'),
+            title=_('Number of Uses'), value=50, min=0, max=10000)
         if not dialog: return
         Enchantments = bosh._saves.SaveEnchantments(self._selected_info)
         Enchantments.load()
@@ -596,8 +596,8 @@ class Save_Move(ChoiceLink):
     def __init__(self, copyMode=False):
         super(Save_Move, self).__init__()
         self.copyMode = copyMode
-        self._help_str = _(u'Copy save(s) to %s') if copyMode else _(
-            u'Move save(s) to %s')
+        self._help_str = _('Copy save(s) to %s') if copyMode else _(
+            'Move save(s) to %s')
 
     @property
     def _choices(self): return [x.s for x in initialization.getLocalSaveDirs()]
@@ -607,12 +607,12 @@ class Save_Move(ChoiceLink):
         Save_Move.local = bosh.saveInfos.localSave
         _self = self
         class _Default(EnabledLink):
-            _text = _(u'Default')
+            _text = _('Default')
             _help = _self._help_str % bass.dirs['saveBase'].join(
                 bush.game.save_prefix)
             def _enable(self):
                 return Save_Move.local != bush.game.save_prefix
-            def Execute(self): _self.MoveFiles(_(u'Default'))
+            def Execute(self): _self.MoveFiles(_('Default'))
         class _SaveProfileLink(EnabledLink):
             @property
             def menu_help(self):
@@ -625,11 +625,11 @@ class Save_Move(ChoiceLink):
         self.extraItems = [_Default()]
 
     def MoveFiles(self,profile):
-        destDir = bass.dirs['saveBase'].join(u'Saves')
-        if profile != _(u'Default'):
+        destDir = bass.dirs['saveBase'].join('Saves')
+        if profile != _('Default'):
             destDir = destDir.join(profile)
         if destDir == bosh.saveInfos.store_dir:
-            self._showError(_(u"You can't move saves to the current profile!"))
+            self._showError(_("You can't move saves to the current profile!"))
             return
         try:
             count = self._move_saves(destDir, profile)
@@ -638,9 +638,9 @@ class Save_Move(ChoiceLink):
                 moved = bosh.saveInfos.delete_refresh(self.selected, None,
                                                       check_existence=True)
                 self.window.RefreshUI(to_del=moved)
-        msg = (_(u'%d files copied to %s.') if self.copyMode else _(
-            u'%d files moved to %s.')) % (count, profile)
-        self._showInfo(msg, title=_(u'Copy File'))
+        msg = (_('%d files copied to %s.') if self.copyMode else _(
+            '%d files moved to %s.')) % (count, profile)
+        self._showInfo(msg, title=_('Copy File'))
 
     def _move_saves(self, destDir, profile):
         savesTable = bosh.saveInfos.table
@@ -650,10 +650,10 @@ class Save_Move(ChoiceLink):
         ask = True
         for fileName in self.selected:
             if ask and destDir.join(fileName).exists():
-                message = (_(u'A file named %s already exists in %s. Overwrite it?')
+                message = (_('A file named %s already exists in %s. Overwrite it?')
                     % (fileName.s,profile))
                 result = self._askContinueShortTerm(message,
-                                                    title=_(u'Move File'))
+                                                    title=_('Move File'))
                 #if result is true just do the job but ask next time if applicable as well
                 if not result: continue
                 elif result == 2: ask = False #so don't warn for rest of operation
@@ -673,8 +673,8 @@ class Save_Move(ChoiceLink):
 class Save_RepairAbomb(OneItemLink):
     """Repairs animation slowing by resetting counter(?) at end of TesClass
     data."""
-    _text = _(u'Repair Abomb')
-    _help = _(u'Repair animation slowing')
+    _text = _('Repair Abomb')
+    _help = _('Repair animation slowing')
 
     def Execute(self):
         #--File Info
@@ -687,56 +687,56 @@ class Save_RepairAbomb(OneItemLink):
         progress = 100*abombFloat/struct_unpack('f', struct_pack('I',0x49000000))[0]
         newCounter = 0x41000000
         if abombCounter <= newCounter:
-            self._showOk(_(u'Abomb counter is too low to reset.'))
+            self._showOk(_('Abomb counter is too low to reset.'))
             return
-        message = (_(u"Reset Abomb counter? (Current progress: %.0f%%.)")
-                   + u'\n\n' +
-                   _(u"Note: Abomb animation slowing won't occur until progress is near 100%%.")
+        message = (_("Reset Abomb counter? (Current progress: %.0f%%.)")
+                   + '\n\n' +
+                   _("Note: Abomb animation slowing won't occur until progress is near 100%%.")
                    ) % progress
-        if self._askYes(message, _(u'Repair Abomb'), default=False):
+        if self._askYes(message, _('Repair Abomb'), default=False):
             saveFile.setAbomb(newCounter)
             saveFile.safeSave()
-            self._showOk(_(u'Abomb counter reset.'))
+            self._showOk(_('Abomb counter reset.'))
 
 #------------------------------------------------------------------------------
 class Save_RepairHair(OneItemLink):
     """Repairs hair that has been zeroed due to removal of a hair mod."""
-    _text = _(u'Repair Hair')
-    _help = _(u'Repair hair that has been zeroed due to removal of a hair mod.')
+    _text = _('Repair Hair')
+    _help = _('Repair hair that has been zeroed due to removal of a hair mod.')
 
     def Execute(self):
         #--File Info
         if bosh.faces.PCFaces.save_repairHair(self._selected_info):
-            self._showOk(_(u'Hair repaired.'))
+            self._showOk(_('Hair repaired.'))
         else:
-            self._showOk(_(u'No repair necessary.'), self._selected_item.s)
+            self._showOk(_('No repair necessary.'), self._selected_item.s)
 
 #------------------------------------------------------------------------------
 class Save_ReweighPotions(OneItemLink):
     """Changes weight of all player potions to specified value."""
-    _text = _(u'Reweigh Potions...')
-    _help = _(u'Change weight of all player potions to specified value')
+    _text = _('Reweigh Potions...')
+    _help = _('Change weight of all player potions to specified value')
 
     def Execute(self):
         #--Query value
-        default = u'%0.2f' % (bass.settings.get(
+        default = '%0.2f' % (bass.settings.get(
             'bash.reweighPotions.newWeight', 0.2),)
-        newWeight = self._askText(_(u"Set weight of all player potions to..."),
-                                  title=_(u"Reweigh Potions"), default=default)
+        newWeight = self._askText(_("Set weight of all player potions to..."),
+                                  title=_("Reweigh Potions"), default=default)
         if not newWeight: return
         try:
             newWeight = float(newWeight)
             if newWeight < 0 or newWeight > 100: raise ValueError
         except ValueError:
-            self._showOk(_(u'Invalid weight: %s') % newWeight)
+            self._showOk(_('Invalid weight: %s') % newWeight)
             return
         bass.settings['bash.reweighPotions.newWeight'] = newWeight
         #--Do it
-        with balt.Progress(_(u"Reweigh Potions")) as progress:
+        with balt.Progress(_("Reweigh Potions")) as progress:
             saveFile = bosh._saves.SaveFile(self._selected_info)
             saveFile.load(SubProgress(progress,0,0.5))
             count = 0
-            progress(0.5,_(u"Processing."))
+            progress(0.5,_("Processing."))
             for index,record in enumerate(saveFile.created):
                 if record.recType == 'ALCH':
                     record = record.getTypeCopy()
@@ -747,25 +747,25 @@ class Save_ReweighPotions(OneItemLink):
             if count:
                 saveFile.safeSave(SubProgress(progress,0.6,1.0))
                 progress.Destroy()
-                self._showOk(_(u'Potions reweighed: %d.') % count,
+                self._showOk(_('Potions reweighed: %d.') % count,
                              self._selected_item.s)
             else:
                 progress.Destroy()
-                self._showOk(_(u'No potions to reweigh!'),
+                self._showOk(_('No potions to reweigh!'),
                              self._selected_item.s)
 
 #------------------------------------------------------------------------------
 class Save_Stats(OneItemLink):
     """Show savefile statistics."""
-    _text = _(u'Statistics')
-    _help = _(u'Show savefile statistics')
+    _text = _('Statistics')
+    _help = _('Show savefile statistics')
 
     def Execute(self):
         saveFile = bosh._saves.SaveFile(self._selected_info)
-        with balt.Progress(_(u"Statistics")) as progress:
+        with balt.Progress(_("Statistics")) as progress:
             saveFile.load(SubProgress(progress,0,0.9))
-            log = bolt.LogFile(StringIO.StringIO())
-            progress(0.9,_(u"Calculating statistics."))
+            log = bolt.LogFile(io.StringIO())
+            progress(0.9,_("Calculating statistics."))
             saveFile.logStats(log)
             progress.Destroy()
             text = log.out.getvalue()
@@ -774,8 +774,8 @@ class Save_Stats(OneItemLink):
 #------------------------------------------------------------------------------
 class Save_StatObse(AppendableLink, OneItemLink):
     """Dump .obse records."""
-    _text = _(u'Dump %s Contents') % bush.game.se.cosave_ext.lower()
-    _help = _(u'Dumps contents of associated %s cosave into a log.') % \
+    _text = _('Dump %s Contents') % bush.game.se.cosave_ext.lower()
+    _help = _('Dumps contents of associated %s cosave into a log.') % \
             bush.game.se.se_abbrev
 
     def _append(self, window): return bool(bush.game.se.se_abbrev)
@@ -786,7 +786,7 @@ class Save_StatObse(AppendableLink, OneItemLink):
 
     def Execute(self):
         with balt.BusyCursor():
-            log = bolt.LogFile(StringIO.StringIO())
+            log = bolt.LogFile(io.StringIO())
             cosave = self._selected_info.get_xse_cosave()
             if cosave is not None:
                 cosave.dump_to_log(log, self._selected_info.header.masters)
@@ -799,8 +799,8 @@ class Save_StatObse(AppendableLink, OneItemLink):
 #------------------------------------------------------------------------------
 class Save_StatPluggy(AppendableLink, OneItemLink):
     """Dump Pluggy blocks from .pluggy files."""
-    _text = _(u'Dump .pluggy Contents')
-    _help = _(u'Dumps contents of associated Pluggy cosave into a log.')
+    _text = _('Dump .pluggy Contents')
+    _help = _('Dumps contents of associated Pluggy cosave into a log.')
 
     def _append(self, window): return bush.game.has_standalone_pluggy
 
@@ -810,7 +810,7 @@ class Save_StatPluggy(AppendableLink, OneItemLink):
 
     def Execute(self):
         with balt.BusyCursor():
-            log = bolt.LogFile(StringIO.StringIO())
+            log = bolt.LogFile(io.StringIO())
             cosave = self._selected_info.get_pluggy_cosave()
             if cosave is not None:
                 cosave.dump_to_log(log, self._selected_info.header.masters)
@@ -823,58 +823,58 @@ class Save_StatPluggy(AppendableLink, OneItemLink):
 #------------------------------------------------------------------------------
 class Save_Unbloat(OneItemLink):
     """Unbloats savegame."""
-    _text = _(u'Remove Bloat...')
-    _help = _(u'Unbloat savegame. Experimental ! Back up your saves before'
-             u' using it on them')
+    _text = _('Remove Bloat...')
+    _help = _('Unbloat savegame. Experimental ! Back up your saves before'
+             ' using it on them')
 
     def Execute(self):
         #--File Info
-        with balt.Progress(_(u'Scanning for Bloat')) as progress:
+        with balt.Progress(_('Scanning for Bloat')) as progress:
             #--Scan and report
             saveFile = bosh._saves.SaveFile(self._selected_info)
             saveFile.load(SubProgress(progress,0,0.8))
             createdCounts,nullRefCount = saveFile.findBloating(SubProgress(progress,0.8,1.0))
         #--Dialog
         if not createdCounts and not nullRefCount:
-            self._showOk(_(u'No bloating found.'), self._selected_item.s)
+            self._showOk(_('No bloating found.'), self._selected_item.s)
             return
-        message = [_(u'Remove savegame bloating?')]
+        message = [_('Remove savegame bloating?')]
         if createdCounts:
             for (created_item_rec_type, name), count_ in sorted(
                     createdCounts.items()):
-                message.append(u'  %s %s: %s' % (
+                message.append('  %s %s: %s' % (
                     created_item_rec_type, name, formatInteger(count_)))
         if nullRefCount:
-            message.append(u'  ' + _(u'Null Ref Objects:') +
-                           u' %s' % formatInteger(nullRefCount))
-        message.extend([u'', _(
-            u'WARNING: This is a risky procedure that may corrupt your '
-            u'savegame!  Use only if necessary!')])
-        if not self._askYes(u'\n'.join(message), _(u'Remove bloating?')):
+            message.append('  ' + _('Null Ref Objects:') +
+                           ' %s' % formatInteger(nullRefCount))
+        message.extend(['', _(
+            'WARNING: This is a risky procedure that may corrupt your '
+            'savegame!  Use only if necessary!')])
+        if not self._askYes('\n'.join(message), _('Remove bloating?')):
             return
         #--Remove bloating
-        with balt.Progress(_(u'Removing Bloat')) as progress:
-            nums = saveFile.removeBloating(createdCounts.keys(),True,SubProgress(progress,0,0.9))
-            progress(0.9,_(u'Saving...'))
+        with balt.Progress(_('Removing Bloat')) as progress:
+            nums = saveFile.removeBloating(list(createdCounts.keys()),True,SubProgress(progress,0,0.9))
+            progress(0.9,_('Saving...'))
             saveFile.safeSave()
-        self._showOk((_(u'Uncreated Objects: %d') + u'\n' +
-                      _(u'Uncreated Refs: %d') + u'\n' +
-                      _(u'UnNulled Refs: %d')) % nums, self._selected_item.s)
+        self._showOk((_('Uncreated Objects: %d') + '\n' +
+                      _('Uncreated Refs: %d') + '\n' +
+                      _('UnNulled Refs: %d')) % nums, self._selected_item.s)
         self.window.RefreshUI(redraw=[self._selected_item])
 
 #------------------------------------------------------------------------------
 class Save_UpdateNPCLevels(EnabledLink):
     """Update NPC levels from active mods."""
-    _text = _(u'Update NPC Levels...')
-    _help = _(u'Update NPC levels from active mods')
+    _text = _('Update NPC Levels...')
+    _help = _('Update NPC levels from active mods')
 
     def _enable(self): return bool(load_order.cached_active_tuple())
 
     def Execute(self):
-        message = _(u'This will relevel the NPCs in the selected save game(s) according to the npc levels in the currently active mods.  This supersedes the older "Import NPC Levels" command.')
+        message = _('This will relevel the NPCs in the selected save game(s) according to the npc levels in the currently active mods.  This supersedes the older "Import NPC Levels" command.')
         if not self._askContinue(message, 'bash.updateNpcLevels.continue',
-                                 _(u'Update NPC Levels')): return
-        with balt.Progress(_(u'Update NPC Levels')) as progress:
+                                 _('Update NPC Levels')): return
+        with balt.Progress(_('Update NPC Levels')) as progress:
             #--Loop over active mods
             npc_info = {}
             loadFactory = parsers.LoadFactory(
@@ -883,13 +883,13 @@ class Save_UpdateNPCLevels(EnabledLink):
             subProgress = SubProgress(progress,0,0.4,len(ordered))
             modErrors = []
             for index,modName in enumerate(ordered):
-                subProgress(index,_(u'Scanning ') + modName.s)
+                subProgress(index,_('Scanning ') + modName.s)
                 modInfo = bosh.modInfos[modName]
                 modFile = parsers.ModFile(modInfo, loadFactory)
                 try:
                     modFile.load(True)
                 except ModError as x:
-                    modErrors.append(u'%s'%x)
+                    modErrors.append('%s'%x)
                     continue
                 if 'NPC_' not in modFile.tops: continue
                 #--Loop over mod NPCs
@@ -900,16 +900,16 @@ class Save_UpdateNPCLevels(EnabledLink):
                     npc_info[fid] = (npc.eid, npc.level, npc.calcMin, npc.calcMax, npc.flags.pcLevelOffset)
             #--Loop over savefiles
             subProgress = SubProgress(progress,0.4,1.0,len(self.selected))
-            message = _(u'NPCs Releveled:')
+            message = _('NPCs Releveled:')
             for index,(saveName,saveInfo) in enumerate(self.iselected_pairs()):
-                subProgress(index,_(u'Updating ') + saveName.s)
+                subProgress(index,_('Updating ') + saveName.s)
                 saveFile = bosh._saves.SaveFile(saveInfo)
                 saveFile.load()
                 records = saveFile.records
                 mapToOrdered = parsers.MasterMap(saveFile.masters, ordered)
                 releveledCount = 0
                 #--Loop over change records
-                for recNum in xrange(len(records)):
+                for recNum in range(len(records)):
                     (recId,recType,recFlags,version,data) = records[recNum]
                     orderedRecId = mapToOrdered(recId,None)
                     if recType != 35 or recId == 7 or orderedRecId not in npc_info: continue
@@ -931,11 +931,11 @@ class Save_UpdateNPCLevels(EnabledLink):
                         releveledCount += 1
                         saveFile.records[recNum] = npc.getTuple(recId,version)
                 #--Save changes?
-                subProgress(index+0.5,_(u'Updating ') + saveName.s)
+                subProgress(index+0.5,_('Updating ') + saveName.s)
                 if releveledCount:
                     saveFile.safeSave()
-                message += u'\n%d %s' % (releveledCount,saveName.s)
+                message += '\n%d %s' % (releveledCount,saveName.s)
         if modErrors:
-            message += u'\n\n'+_(u'Some mods had load errors and were skipped:')+u'\n* '
-            message += u'\n* '.join(modErrors)
-        self._showOk(message, _(u'Update NPC Levels'))
+            message += '\n\n'+_('Some mods had load errors and were skipped:')+'\n* '
+            message += '\n* '.join(modErrors)
+        self._showOk(message, _('Update NPC Levels'))

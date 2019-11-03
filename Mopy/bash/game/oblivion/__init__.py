@@ -28,24 +28,24 @@ from ... import brec
 from ...brec import MreGlob
 
 class OblivionGameInfo(GameInfo):
-    displayName = u'Oblivion'
-    fsName = u'Oblivion'
-    altName = u'Wrye Bash'
-    defaultIniFile = u'Oblivion_default.ini'
-    launch_exe = u'Oblivion.exe'
-    game_detect_file = [u'Oblivion.exe']
-    version_detect_file  = [u'Oblivion.exe']
-    masterFiles = [u'Oblivion.esm', u'Nehrim.esm']
-    iniFiles = [u'Oblivion.ini']
-    pklfile = u'bash\\db\\Oblivion_ids.pkl'
-    masterlist_dir = u'Oblivion'
-    regInstallKeys = (u'Bethesda Softworks\\Oblivion', u'Installed Path')
-    nexusUrl = u'https://www.nexusmods.com/oblivion/'
-    nexusName = u'TES Nexus'
+    displayName = 'Oblivion'
+    fsName = 'Oblivion'
+    altName = 'Wrye Bash'
+    defaultIniFile = 'Oblivion_default.ini'
+    launch_exe = 'Oblivion.exe'
+    game_detect_file = ['Oblivion.exe']
+    version_detect_file  = ['Oblivion.exe']
+    masterFiles = ['Oblivion.esm', 'Nehrim.esm']
+    iniFiles = ['Oblivion.ini']
+    pklfile = 'bash\\db\\Oblivion_ids.pkl'
+    masterlist_dir = 'Oblivion'
+    regInstallKeys = ('Bethesda Softworks\\Oblivion', 'Installed Path')
+    nexusUrl = 'https://www.nexusmods.com/oblivion/'
+    nexusName = 'TES Nexus'
     nexusKey = 'bash.installers.openTesNexus.continue'
 
-    patchURL = u'http://www.elderscrolls.com/downloads/updates_patches.htm'
-    patchTip = u'http://www.elderscrolls.com/'
+    patchURL = 'http://www.elderscrolls.com/downloads/updates_patches.htm'
+    patchTip = 'http://www.elderscrolls.com/'
 
     allow_reset_bsa_timestamps = True
     supports_mod_inis = False
@@ -54,70 +54,70 @@ class OblivionGameInfo(GameInfo):
     has_standalone_pluggy = True
 
     class cs(GameInfo.cs):
-        cs_abbrev = u'TESCS'
-        long_name = u'Construction Set'
-        exe = u'TESConstructionSet.exe'
-        se_args = u'-editor'
-        image_name = u'tescs%s.png'
+        cs_abbrev = 'TESCS'
+        long_name = 'Construction Set'
+        exe = 'TESConstructionSet.exe'
+        se_args = '-editor'
+        image_name = 'tescs%s.png'
 
     class se(GameInfo.se):
-        se_abbrev = u'OBSE'
-        long_name = u'Oblivion Script Extender'
-        exe = u'obse_loader.exe'
-        steam_exe = u'obse_1_2_416.dll'
-        plugin_dir = u'OBSE'
-        cosave_ext = u'.obse'
-        url = u'http://obse.silverlock.org/'
-        url_tip = u'http://obse.silverlock.org/'
+        se_abbrev = 'OBSE'
+        long_name = 'Oblivion Script Extender'
+        exe = 'obse_loader.exe'
+        steam_exe = 'obse_1_2_416.dll'
+        plugin_dir = 'OBSE'
+        cosave_ext = '.obse'
+        url = 'http://obse.silverlock.org/'
+        url_tip = 'http://obse.silverlock.org/'
 
     class ge(GameInfo.ge):
-        ge_abbrev = u'OBGE'
-        long_name = u'Oblivion Graphics Extender'
-        exe = [(u'obse', u'plugins', u'obge.dll'),
-               (u'obse', u'plugins', u'obgev2.dll'),
-               (u'obse', u'plugins', u'oblivionreloaded.dll'),
+        ge_abbrev = 'OBGE'
+        long_name = 'Oblivion Graphics Extender'
+        exe = [('obse', 'plugins', 'obge.dll'),
+               ('obse', 'plugins', 'obgev2.dll'),
+               ('obse', 'plugins', 'oblivionreloaded.dll'),
                ]
-        url = u'https://www.nexusmods.com/oblivion/mods/30054'
-        url_tip = u'https://www.nexusmods.com/oblivion'
+        url = 'https://www.nexusmods.com/oblivion/mods/30054'
+        url_tip = 'https://www.nexusmods.com/oblivion'
 
     class ess(GameInfo.ess):
         canEditMore = True
 
     # BAIN:
     dataDirs = GameInfo.dataDirs | {
-        u'distantlod',
-        u'facegen',
-        u'fonts',
-        u'menus',
-        u'shaders',
-        u'trees',
+        'distantlod',
+        'facegen',
+        'fonts',
+        'menus',
+        'shaders',
+        'trees',
     }
     dataDirsPlus = {
-        u'_tejon',
-        u'ini',
-        u'obse',
-        u'pluggy',
-        u'scripts',
-        u'streamline',
+        '_tejon',
+        'ini',
+        'obse',
+        'pluggy',
+        'scripts',
+        'streamline',
     }
     SkipBAINRefresh = {
-        u'tes4edit backups',
-        u'tes4edit cache',
-        u'bgsee',
-        u'conscribe logs',
+        'tes4edit backups',
+        'tes4edit cache',
+        'bgsee',
+        'conscribe logs',
     }
     wryeBashDataFiles = GameInfo.wryeBashDataFiles | {
-        u'ArchiveInvalidationInvalidated!.bsa'}
+        'ArchiveInvalidationInvalidated!.bsa'}
     ignoreDataFiles = {
-        u'OBSE\\Plugins\\Construction Set Extender.dll',
-        u'OBSE\\Plugins\\Construction Set Extender.ini'
+        'OBSE\\Plugins\\Construction Set Extender.dll',
+        'OBSE\\Plugins\\Construction Set Extender.ini'
     }
     ignoreDataFilePrefixes = {
-        u'Meshes\\Characters\\_Male\\specialanims\\0FemaleVariableWalk_'
+        'Meshes\\Characters\\_Male\\specialanims\\0FemaleVariableWalk_'
     }
     ignoreDataDirs = {
-        u'OBSE\\Plugins\\ComponentDLLs\\CSE',
-        u'LSData'
+        'OBSE\\Plugins\\ComponentDLLs\\CSE',
+        'LSData'
     }
 
     class esp(GameInfo.esp):
@@ -127,23 +127,23 @@ class OblivionGameInfo(GameInfo):
         validHeaderVersions = (0.8,1.0)
         stringsFiles = []
 
-    allTags = {u'Body-F', u'Body-M', u'Body-Size-M', u'Body-Size-F',
-               u'C.Climate', u'C.Light', u'C.Music', u'C.Name',
-               u'C.Owner', u'C.RecordFlags', u'C.Regions', u'C.Water',
-               u'Deactivate', u'Delev', u'Eyes', u'Factions', u'Relations',
-               u'Filter', u'Graphics', u'Hair', u'IIM', u'Invent', u'Names',
-               u'NoMerge', u'NpcFaces', u'R.Relations', u'Relev', u'Scripts',
-               u'ScriptContents', u'Sound', u'SpellStats', u'Stats',
-               u'Voice-F', u'Voice-M', u'R.Teeth', u'R.Mouth', u'R.Ears',
-               u'R.Head', u'R.Attributes-F', u'R.Attributes-M', u'R.Skills',
-               u'R.Description', u'R.AddSpells', u'R.ChangeSpells', u'Roads',
-               u'Actors.Anims', u'Actors.AIData', u'Actors.DeathItem',
-               u'Actors.AIPackages', u'Actors.AIPackagesForceAdd',
-               u'Actors.Stats', u'Actors.ACBS', u'NPC.Class',
-               u'Actors.CombatStyle', u'Creatures.Blood', u'Actors.Spells',
-               u'Actors.SpellsForceAdd', u'NPC.Race', u'Actors.Skeleton',
-               u'NpcFacesForceFullImport', u'MustBeActiveIfImported',
-               u'Npc.HairOnly', u'Npc.EyesOnly'}  # , 'ForceMerge'
+    allTags = {'Body-F', 'Body-M', 'Body-Size-M', 'Body-Size-F',
+               'C.Climate', 'C.Light', 'C.Music', 'C.Name',
+               'C.Owner', 'C.RecordFlags', 'C.Regions', 'C.Water',
+               'Deactivate', 'Delev', 'Eyes', 'Factions', 'Relations',
+               'Filter', 'Graphics', 'Hair', 'IIM', 'Invent', 'Names',
+               'NoMerge', 'NpcFaces', 'R.Relations', 'Relev', 'Scripts',
+               'ScriptContents', 'Sound', 'SpellStats', 'Stats',
+               'Voice-F', 'Voice-M', 'R.Teeth', 'R.Mouth', 'R.Ears',
+               'R.Head', 'R.Attributes-F', 'R.Attributes-M', 'R.Skills',
+               'R.Description', 'R.AddSpells', 'R.ChangeSpells', 'Roads',
+               'Actors.Anims', 'Actors.AIData', 'Actors.DeathItem',
+               'Actors.AIPackages', 'Actors.AIPackagesForceAdd',
+               'Actors.Stats', 'Actors.ACBS', 'NPC.Class',
+               'Actors.CombatStyle', 'Creatures.Blood', 'Actors.Spells',
+               'Actors.SpellsForceAdd', 'NPC.Race', 'Actors.Skeleton',
+               'NpcFacesForceFullImport', 'MustBeActiveIfImported',
+               'Npc.HairOnly', 'Npc.EyesOnly'}  # , 'ForceMerge'
 
     patchers = (
         'AliasesPatcher', 'AssortedTweaker', 'PatchMerger', 'AlchemicalCatalogs',
@@ -171,38 +171,38 @@ class OblivionGameInfo(GameInfo):
         )
 
     weaponTypes = (
-        _(u'Blade (1 Handed)'),
-        _(u'Blade (2 Handed)'),
-        _(u'Blunt (1 Handed)'),
-        _(u'Blunt (2 Handed)'),
-        _(u'Staff'),
-        _(u'Bow'),
+        _('Blade (1 Handed)'),
+        _('Blade (2 Handed)'),
+        _('Blunt (1 Handed)'),
+        _('Blunt (2 Handed)'),
+        _('Staff'),
+        _('Bow'),
         )
 
     raceNames = {
-        0x23fe9 : _(u'Argonian'),
-        0x224fc : _(u'Breton'),
-        0x191c1 : _(u'Dark Elf'),
-        0x19204 : _(u'High Elf'),
-        0x00907 : _(u'Imperial'),
-        0x22c37 : _(u'Khajiit'),
-        0x224fd : _(u'Nord'),
-        0x191c0 : _(u'Orc'),
-        0x00d43 : _(u'Redguard'),
-        0x00019 : _(u'Vampire'),
-        0x223c8 : _(u'Wood Elf'),
+        0x23fe9 : _('Argonian'),
+        0x224fc : _('Breton'),
+        0x191c1 : _('Dark Elf'),
+        0x19204 : _('High Elf'),
+        0x00907 : _('Imperial'),
+        0x22c37 : _('Khajiit'),
+        0x224fd : _('Nord'),
+        0x191c0 : _('Orc'),
+        0x00d43 : _('Redguard'),
+        0x00019 : _('Vampire'),
+        0x223c8 : _('Wood Elf'),
         }
     raceShortNames = {
-        0x23fe9 : u'Arg',
-        0x224fc : u'Bre',
-        0x191c1 : u'Dun',
-        0x19204 : u'Alt',
-        0x00907 : u'Imp',
-        0x22c37 : u'Kha',
-        0x224fd : u'Nor',
-        0x191c0 : u'Orc',
-        0x00d43 : u'Red',
-        0x223c8 : u'Bos',
+        0x23fe9 : 'Arg',
+        0x224fc : 'Bre',
+        0x191c1 : 'Dun',
+        0x19204 : 'Alt',
+        0x00907 : 'Imp',
+        0x22c37 : 'Kha',
+        0x224fd : 'Nor',
+        0x191c0 : 'Orc',
+        0x00d43 : 'Red',
+        0x223c8 : 'Bos',
         }
     raceHairMale = {
         0x23fe9 : 0x64f32, #--Arg

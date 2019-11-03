@@ -28,124 +28,124 @@ from ..balt import Image, ImageList, defPos
 
 # Color Descriptions ----------------------------------------------------------
 colorInfo = {
-    'default.text': (_(u'Default Text'),
-        _(u'This is the text color used for list items when no other is '
-        u'specified.  For example, an ESP that is not mergeable or ghosted, '
-        u'and has no other problems.'),
+    'default.text': (_('Default Text'),
+        _('This is the text color used for list items when no other is '
+        'specified.  For example, an ESP that is not mergeable or ghosted, '
+        'and has no other problems.'),
     ),
-    'default.bkgd': (_(u'Default Background'),
-        _(u'This is the text background color used for list items when no '
-          u'other is specified.  For example, an ESM that is not ghosted.'),
+    'default.bkgd': (_('Default Background'),
+        _('This is the text background color used for list items when no '
+          'other is specified.  For example, an ESM that is not ghosted.'),
     ),
-    'mods.text.esm': (_(u'ESM'),
-        _(u'Tabs: Mods, Saves') + u'\n\n' +
-        _(u'This is the text color used for ESMs in the Mods Tab, and in the '
-          u'Masters info on both the Mods Tab and Saves Tab.'),),
-    'mods.text.esl': (_(u'ESL'),
-        _(u'Tabs: Mods, Saves') + u'\n\n' +
-        _(u'This is the text color used for ESLs in the Mods Tab, and in the '
-          u'Masters info on both the Mods Tab and Saves Tab.'),),
-    'mods.text.eslm': (_(u'ESLM'),
-        _(u'Tabs: Mods, Saves') + u'\n\n' +
-        _(u'This is the text color used for ESLs with a master flag in the '
-          u'Mods Tab, and in the Masters info on both the Mods Tab and Saves '
-          u'Tab.'),),
-    'mods.text.noMerge': (_(u"'NoMerge' Plugin"),
-        _(u'Tabs: Mods') + u'\n\n' +
-        _(u"This is the text color used for a mergeable plugin that is "
-          u"tagged 'NoMerge'."),
+    'mods.text.esm': (_('ESM'),
+        _('Tabs: Mods, Saves') + '\n\n' +
+        _('This is the text color used for ESMs in the Mods Tab, and in the '
+          'Masters info on both the Mods Tab and Saves Tab.'),),
+    'mods.text.esl': (_('ESL'),
+        _('Tabs: Mods, Saves') + '\n\n' +
+        _('This is the text color used for ESLs in the Mods Tab, and in the '
+          'Masters info on both the Mods Tab and Saves Tab.'),),
+    'mods.text.eslm': (_('ESLM'),
+        _('Tabs: Mods, Saves') + '\n\n' +
+        _('This is the text color used for ESLs with a master flag in the '
+          'Mods Tab, and in the Masters info on both the Mods Tab and Saves '
+          'Tab.'),),
+    'mods.text.noMerge': (_("'NoMerge' Plugin"),
+        _('Tabs: Mods') + '\n\n' +
+        _("This is the text color used for a mergeable plugin that is "
+          "tagged 'NoMerge'."),
     ),
-    'mods.text.bashedPatch': (_(u"Bashed Patch"),
-        _(u'Tabs: Mods') + u'\n\n' +
-        _(u"This is the text color used for Bashed Patches."),
+    'mods.text.bashedPatch': (_("Bashed Patch"),
+        _('Tabs: Mods') + '\n\n' +
+        _("This is the text color used for Bashed Patches."),
     ),
-    'mods.bkgd.doubleTime.exists': (_(u'Inactive Time Conflict'),
-        _(u'Tabs: Mods') + u'\n\n' +
-        _(u'This is the background color used for a plugin with an inactive '
-          u'time conflict.  This means that two or more plugins have the same '
-          u'timestamp, but only one (or none) of them is active.'),
+    'mods.bkgd.doubleTime.exists': (_('Inactive Time Conflict'),
+        _('Tabs: Mods') + '\n\n' +
+        _('This is the background color used for a plugin with an inactive '
+          'time conflict.  This means that two or more plugins have the same '
+          'timestamp, but only one (or none) of them is active.'),
     ),
-    'mods.bkgd.doubleTime.load': (_(u'Active Time Conflict'),
-        _(u'Tabs: Mods') + u'\n\n' +
-        _(u'This is the background color used for a plugin with an active '
-          u'time conflict.  This means that two or more plugins with the same '
-          u'timestamp are active.'),
+    'mods.bkgd.doubleTime.load': (_('Active Time Conflict'),
+        _('Tabs: Mods') + '\n\n' +
+        _('This is the background color used for a plugin with an active '
+          'time conflict.  This means that two or more plugins with the same '
+          'timestamp are active.'),
     ),
-    'mods.bkgd.deactivate': (_(u"'Deactivate' Plugin"),
-        _(u'Tabs: Mods') + u'\n\n' +
-        _(u"This is the background color used for an active plugin that is "
-          u"tagged 'Deactivate'."),
+    'mods.bkgd.deactivate': (_("'Deactivate' Plugin"),
+        _('Tabs: Mods') + '\n\n' +
+        _("This is the background color used for an active plugin that is "
+          "tagged 'Deactivate'."),
     ),
-    'mods.bkgd.ghosted': (_(u'Ghosted Plugin'),
-        _(u'Tabs: Mods') + u'\n\n' +
-        _(u'This is the background color used for a ghosted plugin.'),
+    'mods.bkgd.ghosted': (_('Ghosted Plugin'),
+        _('Tabs: Mods') + '\n\n' +
+        _('This is the background color used for a ghosted plugin.'),
     ),
-    'ini.bkgd.invalid': (_(u'Invalid INI Tweak'),
-        _(u'Tabs: INI Edits') + u'\n\n' +
-        _(u'This is the background color used for a tweak file that is invalid'
-          u' for the currently selected target INI.'),
+    'ini.bkgd.invalid': (_('Invalid INI Tweak'),
+        _('Tabs: INI Edits') + '\n\n' +
+        _('This is the background color used for a tweak file that is invalid'
+          ' for the currently selected target INI.'),
     ),
-    'tweak.bkgd.invalid': (_(u'Invalid Tweak Line'),
-        _(u'Tabs: INI Edits') + u'\n\n' +
-        _(u'This is the background color used for a line in a tweak file that '
-          u'is invalid for the currently selected target INI.'),
+    'tweak.bkgd.invalid': (_('Invalid Tweak Line'),
+        _('Tabs: INI Edits') + '\n\n' +
+        _('This is the background color used for a line in a tweak file that '
+          'is invalid for the currently selected target INI.'),
     ),
-    'tweak.bkgd.mismatched': (_(u'Mismatched Tweak Line'),
-        _(u'Tabs: INI Edits') + u'\n\n' +
-        _(u'This is the background color used for a line in a tweak file that '
-          u'does not match what is set in the target INI.'),
+    'tweak.bkgd.mismatched': (_('Mismatched Tweak Line'),
+        _('Tabs: INI Edits') + '\n\n' +
+        _('This is the background color used for a line in a tweak file that '
+          'does not match what is set in the target INI.'),
     ),
-    'tweak.bkgd.matched': (_(u'Matched Tweak Line'),
-        _(u'Tabs: INI Edits') + u'\n\n' +
-        _(u'This is the background color used for a line in a tweak file that '
-          u'matches what is set in the target INI.'),
+    'tweak.bkgd.matched': (_('Matched Tweak Line'),
+        _('Tabs: INI Edits') + '\n\n' +
+        _('This is the background color used for a line in a tweak file that '
+          'matches what is set in the target INI.'),
     ),
-    'installers.text.complex': (_(u'Complex Installer'),
-        _(u'Tabs: Installers') + u'\n\n' +
-        _(u'This is the text color used for a complex BAIN package.'),
+    'installers.text.complex': (_('Complex Installer'),
+        _('Tabs: Installers') + '\n\n' +
+        _('This is the text color used for a complex BAIN package.'),
     ),
-    'installers.text.invalid': (_(u'Invalid'),
-        _(u'Tabs: Installers') + u'\n\n' +
-        _(u'This is the text color used for invalid packages.'),
+    'installers.text.invalid': (_('Invalid'),
+        _('Tabs: Installers') + '\n\n' +
+        _('This is the text color used for invalid packages.'),
     ),
-    'installers.text.marker': (_(u'Marker'),
-        _(u'Tabs: Installers') + u'\n\n' +
-        _(u'This is the text color used for Markers.'),
+    'installers.text.marker': (_('Marker'),
+        _('Tabs: Installers') + '\n\n' +
+        _('This is the text color used for Markers.'),
     ),
-    'installers.bkgd.skipped': (_(u'Skipped Files'),
-        _(u'Tabs: Installers') + u'\n\n' +
-        _(u'This is the background color used for a package with files that '
-          u'will not be installed by BAIN.  This means some files are selected'
-          u' to be installed, but due to your current Skip settings (for '
-          u'example, Skip DistantLOD), will not be installed.'),
+    'installers.bkgd.skipped': (_('Skipped Files'),
+        _('Tabs: Installers') + '\n\n' +
+        _('This is the background color used for a package with files that '
+          'will not be installed by BAIN.  This means some files are selected'
+          ' to be installed, but due to your current Skip settings (for '
+          'example, Skip DistantLOD), will not be installed.'),
     ),
-    'installers.bkgd.outOfOrder': (_(u'Installer Out of Order'),
-        _(u'Tabs: Installers') + u'\n\n' +
-        _(u'This is the background color used for an installer with files '
-          u'installed, that should be overridden by a package with a higher '
-          u'install order.  It can be repaired with an Anneal or Anneal All.'),
+    'installers.bkgd.outOfOrder': (_('Installer Out of Order'),
+        _('Tabs: Installers') + '\n\n' +
+        _('This is the background color used for an installer with files '
+          'installed, that should be overridden by a package with a higher '
+          'install order.  It can be repaired with an Anneal or Anneal All.'),
     ),
-    'installers.bkgd.dirty': (_(u'Dirty Installer'),
-        _(u'Tabs: Installers') + u'\n\n' +
-        _(u'This is the background color used for an installer that is '
-          u'configured in a "dirty" manner.  This means changes have been made'
-          u' to its configuration, and an Anneal or Install needs to be '
-          u'performed to make the install match what is configured.'),
+    'installers.bkgd.dirty': (_('Dirty Installer'),
+        _('Tabs: Installers') + '\n\n' +
+        _('This is the background color used for an installer that is '
+          'configured in a "dirty" manner.  This means changes have been made'
+          ' to its configuration, and an Anneal or Install needs to be '
+          'performed to make the install match what is configured.'),
     ),
-    'screens.bkgd.image': (_(u'Screenshot Background'),
-        _(u'Tabs: Saves, Screens') + u'\n\n' +
-        _(u'This is the background color used for images.'),
+    'screens.bkgd.image': (_('Screenshot Background'),
+        _('Tabs: Saves, Screens') + '\n\n' +
+        _('This is the background color used for images.'),
     ),
 }
 if bush.game.check_esl:
-    colorInfo['mods.text.mergeable'] = (_(u'ESL Capable plugin'),
-            _(u'Tabs: Mods') + u'\n\n' +
-            _(u'This is the text color used for ESL Capable plugins.'),
+    colorInfo['mods.text.mergeable'] = (_('ESL Capable plugin'),
+            _('Tabs: Mods') + '\n\n' +
+            _('This is the text color used for ESL Capable plugins.'),
         )
 else:
-    colorInfo['mods.text.mergeable'] = (_(u'Mergeable Plugin'),
-            _(u'Tabs: Mods') + u'\n\n' +
-            _(u'This is the text color used for mergeable plugins.'),
+    colorInfo['mods.text.mergeable'] = (_('Mergeable Plugin'),
+            _('Tabs: Mods') + '\n\n' +
+            _('This is the text color used for mergeable plugins.'),
         )
 
 #--Load config/defaults
@@ -201,50 +201,50 @@ settingDefaults = { ##: (178) belongs to bosh (or better to a settings package)
     #--Wrye Bash: Group and Rating
     'bash.mods.autoGhost': False,
     'bash.mods.groups': [
-        u'Root',
-        u'Library',
-        u'Cosmetic',
-        u'Clothing',
-        u'Weapon',
-        u'Tweak',
-        u'Overhaul',
-        u'Misc.',
-        u'Magic',
-        u'NPC',
-        u'Home',
-        u'Place',
-        u'Quest',
-        u'Last',
+        'Root',
+        'Library',
+        'Cosmetic',
+        'Clothing',
+        'Weapon',
+        'Tweak',
+        'Overhaul',
+        'Misc.',
+        'Magic',
+        'NPC',
+        'Home',
+        'Place',
+        'Quest',
+        'Last',
     ],
     'bash.mods.ratings': ['+','1','2','3','4','5','=','~'],
     #--Wrye Bash: Col (Sort) Names
     'bash.colNames': {
-        'Mod Status': _(u'Mod Status'),
-        'Author': _(u'Author'),
-        'Cell': _(u'Cell'),
-        'CRC':_(u'CRC'),
-        'Current Order': _(u'Current LO'),
-        'Date': _(u'Date'),
-        'Day': _(u'Day'),
-        'File': _(u'File'),
-        'Files': _(u'Files'),
-        'Group': _(u'Group'),
-        'Header': _(u'Header'),
-        'Installer':_(u'Installer'),
-        'Karma': _(u'Karma'),
-        'Load Order': _(u'Load Order'),
-        'Modified': _(u'Modified'),
-        'Name': _(u'Name'),
-        'Num': _(u'MI'),
-        'Order': _(u'Order'),
-        'Package': _(u'Package'),
-        'PlayTime':_(u'Hours'),
-        'Player': _(u'Player'),
-        'Rating': _(u'Rating'),
-        'Save Order': _(u'Save Order'),
-        'Size': _(u'Size'),
-        'Status': _(u'Status'),
-        'Subject': _(u'Subject'),
+        'Mod Status': _('Mod Status'),
+        'Author': _('Author'),
+        'Cell': _('Cell'),
+        'CRC':_('CRC'),
+        'Current Order': _('Current LO'),
+        'Date': _('Date'),
+        'Day': _('Day'),
+        'File': _('File'),
+        'Files': _('Files'),
+        'Group': _('Group'),
+        'Header': _('Header'),
+        'Installer':_('Installer'),
+        'Karma': _('Karma'),
+        'Load Order': _('Load Order'),
+        'Modified': _('Modified'),
+        'Name': _('Name'),
+        'Num': _('MI'),
+        'Order': _('Order'),
+        'Package': _('Package'),
+        'PlayTime':_('Hours'),
+        'Player': _('Player'),
+        'Rating': _('Rating'),
+        'Save Order': _('Save Order'),
+        'Size': _('Size'),
+        'Status': _('Status'),
+        'Subject': _('Subject'),
         },
     #--Wrye Bash: Masters
     'bash.masters.cols': ['File', 'Num', 'Current Order'],
@@ -337,8 +337,8 @@ settingDefaults = { ##: (178) belongs to bosh (or better to a settings package)
         },
     'bash.mods.renames': {},
     'bash.mods.scanDirty': False,
-    'bash.mods.export.skip': u'',
-    'bash.mods.export.deprefix': u'',
+    'bash.mods.export.skip': '',
+    'bash.mods.export.deprefix': '',
     'bash.mods.export.skipcomments': False,
     #--Wrye Bash: Saves
     'bash.saves.cols': ['File','Modified','Size','PlayTime','Player','Cell'],
@@ -408,80 +408,80 @@ def _png(name): return Image(imDirJn(name)) ##: not png necessarily, rename!
 
 #--Image lists
 karmacons = ImageList(16,16)
-karmacons.images.extend({
-    'karma+5': _png(u'checkbox_purple_inc.png'),
-    'karma+4': _png(u'checkbox_blue_inc.png'),
-    'karma+3': _png(u'checkbox_blue_inc.png'),
-    'karma+2': _png(u'checkbox_green_inc.png'),
-    'karma+1': _png(u'checkbox_green_inc.png'),
-    'karma+0': _png(u'checkbox_white_off.png'),
-    'karma-1': _png(u'checkbox_yellow_off.png'),
-    'karma-2': _png(u'checkbox_yellow_off.png'),
-    'karma-3': _png(u'checkbox_orange_off.png'),
-    'karma-4': _png(u'checkbox_orange_off.png'),
-    'karma-5': _png(u'checkbox_red_off.png'),
-    }.items())
+karmacons.images.extend(list({
+    'karma+5': _png('checkbox_purple_inc.png'),
+    'karma+4': _png('checkbox_blue_inc.png'),
+    'karma+3': _png('checkbox_blue_inc.png'),
+    'karma+2': _png('checkbox_green_inc.png'),
+    'karma+1': _png('checkbox_green_inc.png'),
+    'karma+0': _png('checkbox_white_off.png'),
+    'karma-1': _png('checkbox_yellow_off.png'),
+    'karma-2': _png('checkbox_yellow_off.png'),
+    'karma-3': _png('checkbox_orange_off.png'),
+    'karma-4': _png('checkbox_orange_off.png'),
+    'karma-5': _png('checkbox_red_off.png'),
+    }.items()))
 installercons = ImageList(16,16)
-installercons.images.extend({
+installercons.images.extend(list({
     #--Off/Archive
-    'off.green':  _png(u'checkbox_green_off.png'),
-    'off.grey':   _png(u'checkbox_grey_off.png'),
-    'off.red':    _png(u'checkbox_red_off.png'),
-    'off.white':  _png(u'checkbox_white_off.png'),
-    'off.orange': _png(u'checkbox_orange_off.png'),
-    'off.yellow': _png(u'checkbox_yellow_off.png'),
+    'off.green':  _png('checkbox_green_off.png'),
+    'off.grey':   _png('checkbox_grey_off.png'),
+    'off.red':    _png('checkbox_red_off.png'),
+    'off.white':  _png('checkbox_white_off.png'),
+    'off.orange': _png('checkbox_orange_off.png'),
+    'off.yellow': _png('checkbox_yellow_off.png'),
     #--Off/Archive - Wizard
-    'off.green.wiz':    _png(u'checkbox_green_off_wiz.png'),
+    'off.green.wiz':    _png('checkbox_green_off_wiz.png'),
     #grey
-    'off.red.wiz':      _png(u'checkbox_red_off_wiz.png'),
-    'off.white.wiz':    _png(u'checkbox_white_off_wiz.png'),
-    'off.orange.wiz':   _png(u'checkbox_orange_off_wiz.png'),
-    'off.yellow.wiz':   _png(u'checkbox_yellow_off_wiz.png'),
+    'off.red.wiz':      _png('checkbox_red_off_wiz.png'),
+    'off.white.wiz':    _png('checkbox_white_off_wiz.png'),
+    'off.orange.wiz':   _png('checkbox_orange_off_wiz.png'),
+    'off.yellow.wiz':   _png('checkbox_yellow_off_wiz.png'),
     #--On/Archive
-    'on.green':  _png(u'checkbox_green_inc.png'),
-    'on.grey':   _png(u'checkbox_grey_inc.png'),
-    'on.red':    _png(u'checkbox_red_inc.png'),
-    'on.white':  _png(u'checkbox_white_inc.png'),
-    'on.orange': _png(u'checkbox_orange_inc.png'),
-    'on.yellow': _png(u'checkbox_yellow_inc.png'),
+    'on.green':  _png('checkbox_green_inc.png'),
+    'on.grey':   _png('checkbox_grey_inc.png'),
+    'on.red':    _png('checkbox_red_inc.png'),
+    'on.white':  _png('checkbox_white_inc.png'),
+    'on.orange': _png('checkbox_orange_inc.png'),
+    'on.yellow': _png('checkbox_yellow_inc.png'),
     #--On/Archive - Wizard
-    'on.green.wiz':  _png(u'checkbox_green_inc_wiz.png'),
+    'on.green.wiz':  _png('checkbox_green_inc_wiz.png'),
     #grey
-    'on.red.wiz':    _png(u'checkbox_red_inc_wiz.png'),
-    'on.white.wiz':  _png(u'checkbox_white_inc_wiz.png'),
-    'on.orange.wiz': _png(u'checkbox_orange_inc_wiz.png'),
-    'on.yellow.wiz': _png(u'checkbox_yellow_inc_wiz.png'),
+    'on.red.wiz':    _png('checkbox_red_inc_wiz.png'),
+    'on.white.wiz':  _png('checkbox_white_inc_wiz.png'),
+    'on.orange.wiz': _png('checkbox_orange_inc_wiz.png'),
+    'on.yellow.wiz': _png('checkbox_yellow_inc_wiz.png'),
     #--Off/Directory
-    'off.green.dir':  _png(u'diamond_green_off.png'),
-    'off.grey.dir':   _png(u'diamond_grey_off.png'),
-    'off.red.dir':    _png(u'diamond_red_off.png'),
-    'off.white.dir':  _png(u'diamond_white_off.png'),
-    'off.orange.dir': _png(u'diamond_orange_off.png'),
-    'off.yellow.dir': _png(u'diamond_yellow_off.png'),
+    'off.green.dir':  _png('diamond_green_off.png'),
+    'off.grey.dir':   _png('diamond_grey_off.png'),
+    'off.red.dir':    _png('diamond_red_off.png'),
+    'off.white.dir':  _png('diamond_white_off.png'),
+    'off.orange.dir': _png('diamond_orange_off.png'),
+    'off.yellow.dir': _png('diamond_yellow_off.png'),
     #--Off/Directory - Wizard
-    'off.green.dir.wiz':  _png(u'diamond_green_off_wiz.png'),
+    'off.green.dir.wiz':  _png('diamond_green_off_wiz.png'),
     #grey
-    'off.red.dir.wiz':    _png(u'diamond_red_off_wiz.png'),
-    'off.white.dir.wiz':  _png(u'diamond_white_off_wiz.png'),
-    'off.orange.dir.wiz': _png(u'diamond_orange_off_wiz.png'),
-    'off.yellow.dir.wiz': _png(u'diamond_yellow_off_wiz.png'),
+    'off.red.dir.wiz':    _png('diamond_red_off_wiz.png'),
+    'off.white.dir.wiz':  _png('diamond_white_off_wiz.png'),
+    'off.orange.dir.wiz': _png('diamond_orange_off_wiz.png'),
+    'off.yellow.dir.wiz': _png('diamond_yellow_off_wiz.png'),
     #--On/Directory
-    'on.green.dir':  _png(u'diamond_green_inc.png'),
-    'on.grey.dir':   _png(u'diamond_grey_inc.png'),
-    'on.red.dir':    _png(u'diamond_red_inc.png'),
-    'on.white.dir':  _png(u'diamond_white_inc.png'),
-    'on.orange.dir': _png(u'diamond_orange_inc.png'),
-    'on.yellow.dir': _png(u'diamond_yellow_inc.png'),
+    'on.green.dir':  _png('diamond_green_inc.png'),
+    'on.grey.dir':   _png('diamond_grey_inc.png'),
+    'on.red.dir':    _png('diamond_red_inc.png'),
+    'on.white.dir':  _png('diamond_white_inc.png'),
+    'on.orange.dir': _png('diamond_orange_inc.png'),
+    'on.yellow.dir': _png('diamond_yellow_inc.png'),
     #--On/Directory - Wizard
-    'on.green.dir.wiz':  _png(u'diamond_green_inc_wiz.png'),
+    'on.green.dir.wiz':  _png('diamond_green_inc_wiz.png'),
     #grey
-    'on.red.dir.wiz':    _png(u'diamond_red_inc_wiz.png'),
-    'on.white.dir.wiz':  _png(u'diamond_white_off_wiz.png'),
-    'on.orange.dir.wiz': _png(u'diamond_orange_inc_wiz.png'),
-    'on.yellow.dir.wiz': _png(u'diamond_yellow_inc_wiz.png'),
+    'on.red.dir.wiz':    _png('diamond_red_inc_wiz.png'),
+    'on.white.dir.wiz':  _png('diamond_white_off_wiz.png'),
+    'on.orange.dir.wiz': _png('diamond_orange_inc_wiz.png'),
+    'on.yellow.dir.wiz': _png('diamond_yellow_inc_wiz.png'),
     #--Broken
-    'corrupt':   _png(u'red_x.png'),
-    }.items())
+    'corrupt':   _png('red_x.png'),
+    }.items()))
 
 #--Buttons
 def imageList(template):
@@ -489,116 +489,116 @@ def imageList(template):
 
 # TODO(65): game handling refactoring - some of the buttons are game specific
 toolbar_buttons = (
-        (u'ISOBL', imageList(u'tools/isobl%s.png'),
-        _(u"Launch InsanitySorrow's Oblivion Launcher")),
-        (u'ISRMG', imageList(u"tools/insanity'sreadmegenerator%s.png"),
-        _(u"Launch InsanitySorrow's Readme Generator")),
-        (u'ISRNG', imageList(u"tools/insanity'srng%s.png"),
-        _(u"Launch InsanitySorrow's Random Name Generator")),
-        (u'ISRNPCG', imageList(u'tools/randomnpc%s.png'),
-        _(u"Launch InsanitySorrow's Random NPC Generator")),
-        (u'OBFEL', imageList(u'tools/oblivionfaceexchangerlite%s.png'),
-        _(u"Oblivion Face Exchange Lite")),
-        (u'OBMLG', imageList(u'tools/modlistgenerator%s.png'),
-        _(u"Oblivion Mod List Generator")),
-        (u'BSACMD', imageList(u'tools/bsacommander%s.png'),
-        _(u"Launch BSA Commander")),
-        (u'Tabula', imageList(u'tools/tabula%s.png'),
-         _(u"Launch Tabula")),
-        (u'Tes4FilesPath', imageList(u'tools/tes4files%s.png'),
-        _(u"Launch TES4Files")),
+        ('ISOBL', imageList('tools/isobl%s.png'),
+        _("Launch InsanitySorrow's Oblivion Launcher")),
+        ('ISRMG', imageList("tools/insanity'sreadmegenerator%s.png"),
+        _("Launch InsanitySorrow's Readme Generator")),
+        ('ISRNG', imageList("tools/insanity'srng%s.png"),
+        _("Launch InsanitySorrow's Random Name Generator")),
+        ('ISRNPCG', imageList('tools/randomnpc%s.png'),
+        _("Launch InsanitySorrow's Random NPC Generator")),
+        ('OBFEL', imageList('tools/oblivionfaceexchangerlite%s.png'),
+        _("Oblivion Face Exchange Lite")),
+        ('OBMLG', imageList('tools/modlistgenerator%s.png'),
+        _("Oblivion Mod List Generator")),
+        ('BSACMD', imageList('tools/bsacommander%s.png'),
+        _("Launch BSA Commander")),
+        ('Tabula', imageList('tools/tabula%s.png'),
+         _("Launch Tabula")),
+        ('Tes4FilesPath', imageList('tools/tes4files%s.png'),
+        _("Launch TES4Files")),
 )
 
 modeling_tools_buttons = (
-    ('AutoCad', imageList(u'tools/autocad%s.png'), _(u"Launch AutoCad")),
-    ('BlenderPath', imageList(u'tools/blender%s.png'), _(u"Launch Blender")),
-    ('Dogwaffle', imageList(u'tools/dogwaffle%s.png'), _(u"Launch Dogwaffle")),
-    ('GmaxPath', imageList(u'tools/gmax%s.png'), _(u"Launch Gmax")),
-    ('MayaPath', imageList(u'tools/maya%s.png'), _(u"Launch Maya")),
-    ('MaxPath', imageList(u'tools/3dsmax%s.png'), _(u"Launch 3dsMax")),
-    ('Milkshape3D', imageList(u'tools/milkshape3d%s.png'),
-     _(u"Launch Milkshape 3D")),
-    ('Mudbox', imageList(u'tools/mudbox%s.png'), _(u"Launch Mudbox")),
-    ('Sculptris', imageList(u'tools/sculptris%s.png'), _(u"Launch Sculptris")),
-    ('SpeedTree', imageList(u'tools/speedtree%s.png'), _(u"Launch SpeedTree")),
-    ('Treed', imageList(u'tools/treed%s.png'), _(u"Launch Tree\[d\]")),
-    ('Wings3D', imageList(u'tools/wings3d%s.png'), _(u"Launch Wings 3D")),
+    ('AutoCad', imageList('tools/autocad%s.png'), _("Launch AutoCad")),
+    ('BlenderPath', imageList('tools/blender%s.png'), _("Launch Blender")),
+    ('Dogwaffle', imageList('tools/dogwaffle%s.png'), _("Launch Dogwaffle")),
+    ('GmaxPath', imageList('tools/gmax%s.png'), _("Launch Gmax")),
+    ('MayaPath', imageList('tools/maya%s.png'), _("Launch Maya")),
+    ('MaxPath', imageList('tools/3dsmax%s.png'), _("Launch 3dsMax")),
+    ('Milkshape3D', imageList('tools/milkshape3d%s.png'),
+     _("Launch Milkshape 3D")),
+    ('Mudbox', imageList('tools/mudbox%s.png'), _("Launch Mudbox")),
+    ('Sculptris', imageList('tools/sculptris%s.png'), _("Launch Sculptris")),
+    ('SpeedTree', imageList('tools/speedtree%s.png'), _("Launch SpeedTree")),
+    ('Treed', imageList('tools/treed%s.png'), _("Launch Tree\[d\]")),
+    ('Wings3D', imageList('tools/wings3d%s.png'), _("Launch Wings 3D")),
 )
 
 texture_tool_buttons = (
-    ('AniFX', imageList(u'tools/anifx%s.png'), _(u"Launch AniFX")),
-    ('ArtOfIllusion', imageList(u'tools/artofillusion%s.png'),
-     _(u"Launch Art Of Illusion")),
-    ('Artweaver', imageList(u'tools/artweaver%s.png'), _(u"Launch Artweaver")),
-    ('CrazyBump', imageList(u'tools/crazybump%s.png'), _(u"Launch CrazyBump")),
-    ('DDSConverter', imageList(u'tools/ddsconverter%s.png'),
-     _(u"Launch DDSConverter")),
-    ('DeepPaint', imageList(u'tools/deeppaint%s.png'), _(u"Launch DeepPaint")),
-    ('FastStone', imageList(u'tools/faststoneimageviewer%s.png'),
-     _(u"Launch FastStone Image Viewer")),
-    ('Genetica', imageList(u'tools/genetica%s.png'), _(u"Launch Genetica")),
-    ('GeneticaViewer', imageList(u'tools/geneticaviewer%s.png'),
-     _(u"Launch Genetica Viewer")),
-    ('GIMP', imageList(u'tools/gimp%s.png'), _(u"Launch GIMP")),
-    ('IcoFX', imageList(u'tools/icofx%s.png'), _(u"Launch IcoFX")),
-    ('Inkscape', imageList(u'tools/inkscape%s.png'), _(u"Launch Inkscape")),
-    ('IrfanView', imageList(u'tools/irfanview%s.png'), _(u"Launch IrfanView")),
-    ('Krita', imageList(u'tools/krita%s.png'), _(u"Launch Krita")),
-    ('MaPZone', imageList(u'tools/mapzone%s.png'), _(u"Launch MaPZone")),
-    ('MyPaint', imageList(u'tools/mypaint%s.png'), _(u"Launch MyPaint")),
-    ('NVIDIAMelody', imageList(u'tools/nvidiamelody%s.png'),
-     _(u"Launch Nvidia Melody")),
-    ('PaintNET', imageList(u'tools/paint.net%s.png'), _(u"Launch Paint.NET")),
-    ('PaintShopPhotoPro', imageList(u'tools/paintshopprox3%s.png'),
-     _(u"Launch PaintShop Photo Pro")),
-    ('PhotoshopPath', imageList(u'tools/photoshop%s.png'),
-     _(u"Launch Photoshop")),
-    ('PhotoScape', imageList(u'tools/photoscape%s.png'),
-     _(u"Launch PhotoScape")),
-    ('PhotoSEAM', imageList(u'tools/photoseam%s.png'), _(u"Launch PhotoSEAM")),
-    ('Photobie', imageList(u'tools/photobie%s.png'), _(u"Launch Photobie")),
-    ('PhotoFiltre', imageList(u'tools/photofiltre%s.png'),
-     _(u"Launch PhotoFiltre")),
-    ('PixelStudio', imageList(u'tools/pixelstudiopro%s.png'),
-     _(u"Launch Pixel Studio Pro")),
-    ('Pixia', imageList(u'tools/pixia%s.png'), _(u"Launch Pixia")),
-    ('TextureMaker', imageList(u'tools/texturemaker%s.png'),
-     _(u"Launch TextureMaker")),
-    ('TwistedBrush', imageList(u'tools/twistedbrush%s.png'),
-     _(u"Launch TwistedBrush")),
-    ('WTV', imageList(u'tools/wtv%s.png'),
-     _(u"Launch Windows Texture Viewer")),
-    ('xNormal', imageList(u'tools/xnormal%s.png'), _(u"Launch xNormal")),
-    ('XnView', imageList(u'tools/xnview%s.png'), _(u"Launch XnView")),
+    ('AniFX', imageList('tools/anifx%s.png'), _("Launch AniFX")),
+    ('ArtOfIllusion', imageList('tools/artofillusion%s.png'),
+     _("Launch Art Of Illusion")),
+    ('Artweaver', imageList('tools/artweaver%s.png'), _("Launch Artweaver")),
+    ('CrazyBump', imageList('tools/crazybump%s.png'), _("Launch CrazyBump")),
+    ('DDSConverter', imageList('tools/ddsconverter%s.png'),
+     _("Launch DDSConverter")),
+    ('DeepPaint', imageList('tools/deeppaint%s.png'), _("Launch DeepPaint")),
+    ('FastStone', imageList('tools/faststoneimageviewer%s.png'),
+     _("Launch FastStone Image Viewer")),
+    ('Genetica', imageList('tools/genetica%s.png'), _("Launch Genetica")),
+    ('GeneticaViewer', imageList('tools/geneticaviewer%s.png'),
+     _("Launch Genetica Viewer")),
+    ('GIMP', imageList('tools/gimp%s.png'), _("Launch GIMP")),
+    ('IcoFX', imageList('tools/icofx%s.png'), _("Launch IcoFX")),
+    ('Inkscape', imageList('tools/inkscape%s.png'), _("Launch Inkscape")),
+    ('IrfanView', imageList('tools/irfanview%s.png'), _("Launch IrfanView")),
+    ('Krita', imageList('tools/krita%s.png'), _("Launch Krita")),
+    ('MaPZone', imageList('tools/mapzone%s.png'), _("Launch MaPZone")),
+    ('MyPaint', imageList('tools/mypaint%s.png'), _("Launch MyPaint")),
+    ('NVIDIAMelody', imageList('tools/nvidiamelody%s.png'),
+     _("Launch Nvidia Melody")),
+    ('PaintNET', imageList('tools/paint.net%s.png'), _("Launch Paint.NET")),
+    ('PaintShopPhotoPro', imageList('tools/paintshopprox3%s.png'),
+     _("Launch PaintShop Photo Pro")),
+    ('PhotoshopPath', imageList('tools/photoshop%s.png'),
+     _("Launch Photoshop")),
+    ('PhotoScape', imageList('tools/photoscape%s.png'),
+     _("Launch PhotoScape")),
+    ('PhotoSEAM', imageList('tools/photoseam%s.png'), _("Launch PhotoSEAM")),
+    ('Photobie', imageList('tools/photobie%s.png'), _("Launch Photobie")),
+    ('PhotoFiltre', imageList('tools/photofiltre%s.png'),
+     _("Launch PhotoFiltre")),
+    ('PixelStudio', imageList('tools/pixelstudiopro%s.png'),
+     _("Launch Pixel Studio Pro")),
+    ('Pixia', imageList('tools/pixia%s.png'), _("Launch Pixia")),
+    ('TextureMaker', imageList('tools/texturemaker%s.png'),
+     _("Launch TextureMaker")),
+    ('TwistedBrush', imageList('tools/twistedbrush%s.png'),
+     _("Launch TwistedBrush")),
+    ('WTV', imageList('tools/wtv%s.png'),
+     _("Launch Windows Texture Viewer")),
+    ('xNormal', imageList('tools/xnormal%s.png'), _("Launch xNormal")),
+    ('XnView', imageList('tools/xnview%s.png'), _("Launch XnView")),
 )
 
 audio_tools = (
-    ('Audacity', imageList(u'tools/audacity%s.png'), _(u"Launch Audacity")),
+    ('Audacity', imageList('tools/audacity%s.png'), _("Launch Audacity")),
     ('ABCAmberAudioConverter',
-     imageList(u'tools/abcamberaudioconverter%s.png'),
-    _(u"Launch ABC Amber Audio Converter")),
-    ('Switch', imageList(u'tools/switch%s.png'), _(u"Launch Switch")),
+     imageList('tools/abcamberaudioconverter%s.png'),
+    _("Launch ABC Amber Audio Converter")),
+    ('Switch', imageList('tools/switch%s.png'), _("Launch Switch")),
 )
 
 misc_tools = (
-    ('Fraps', imageList(u'tools/fraps%s.png'), _(u"Launch Fraps")),
-    ('MAP', imageList(u'tools/interactivemapofcyrodiil%s.png'),
-        _(u"Interactive Map of Cyrodiil and Shivering Isles")),
-    ('LogitechKeyboard', imageList(u'tools/logitechkeyboard%s.png'),
-        _(u"Launch LogitechKeyboard")),
-    ('MediaMonkey', imageList(u'tools/mediamonkey%s.png'),
-        _(u"Launch MediaMonkey")),
-    ('NPP', imageList(u'tools/notepad++%s.png'), _(u"Launch Notepad++")),
-    ('Steam', imageList(u'steam%s.png'), _(u"Launch Steam")),
-    ('EVGAPrecision', imageList(u'tools/evgaprecision%s.png'),
-        _(u"Launch EVGA Precision")),
-    ('WinMerge', imageList(u'tools/winmerge%s.png'), _(u"Launch WinMerge")),
-    ('FreeMind', imageList(u'tools/freemind%s.png'), _(u"Launch FreeMind")),
-    ('Freeplane', imageList(u'tools/freeplane%s.png'), _(u"Launch Freeplane")),
-    ('FileZilla', imageList(u'tools/filezilla%s.png'), _(u"Launch FileZilla")),
-    ('EggTranslator', imageList(u'tools/eggtranslator%s.png'),
-        _(u"Launch Egg Translator")),
-    ('RADVideo', imageList(u'tools/radvideotools%s.png'),
-        _(u"Launch RAD Video Tools")),
-    ('WinSnap', imageList(u'tools/winsnap%s.png'), _(u"Launch WinSnap")),
+    ('Fraps', imageList('tools/fraps%s.png'), _("Launch Fraps")),
+    ('MAP', imageList('tools/interactivemapofcyrodiil%s.png'),
+        _("Interactive Map of Cyrodiil and Shivering Isles")),
+    ('LogitechKeyboard', imageList('tools/logitechkeyboard%s.png'),
+        _("Launch LogitechKeyboard")),
+    ('MediaMonkey', imageList('tools/mediamonkey%s.png'),
+        _("Launch MediaMonkey")),
+    ('NPP', imageList('tools/notepad++%s.png'), _("Launch Notepad++")),
+    ('Steam', imageList('steam%s.png'), _("Launch Steam")),
+    ('EVGAPrecision', imageList('tools/evgaprecision%s.png'),
+        _("Launch EVGA Precision")),
+    ('WinMerge', imageList('tools/winmerge%s.png'), _("Launch WinMerge")),
+    ('FreeMind', imageList('tools/freemind%s.png'), _("Launch FreeMind")),
+    ('Freeplane', imageList('tools/freeplane%s.png'), _("Launch Freeplane")),
+    ('FileZilla', imageList('tools/filezilla%s.png'), _("Launch FileZilla")),
+    ('EggTranslator', imageList('tools/eggtranslator%s.png'),
+        _("Launch Egg Translator")),
+    ('RADVideo', imageList('tools/radvideotools%s.png'),
+        _("Launch RAD Video Tools")),
+    ('WinSnap', imageList('tools/winsnap%s.png'), _("Launch WinSnap")),
 )

@@ -54,43 +54,43 @@ def InitStatusBar():
     def _init_tool_buttons(): # tooldirs must have been initialized
         return (((bass.tooldirs['OblivionBookCreatorPath'],
                   bass.inisettings['OblivionBookCreatorJavaArg']),
-                 imageList(u'tools/oblivionbookcreator%s.png'),
-                 _(u"Launch Oblivion Book Creator"),
-                 {'uid': u'OblivionBookCreator'}),
+                 imageList('tools/oblivionbookcreator%s.png'),
+                 _("Launch Oblivion Book Creator"),
+                 {'uid': 'OblivionBookCreator'}),
                 ((bass.tooldirs['Tes4GeckoPath'],
                   bass.inisettings['Tes4GeckoJavaArg']),
-                 imageList(u'tools/tes4gecko%s.png'),
-                 _(u"Launch Tes4Gecko"), {'uid': u'Tes4Gecko'}),
+                 imageList('tools/tes4gecko%s.png'),
+                 _("Launch Tes4Gecko"), {'uid': 'Tes4Gecko'}),
                 ((bass.tooldirs['Tes5GeckoPath']),
-                imageList(u'tools/tesvgecko%s.png'),
-                _(u"Launch TesVGecko"), {'uid': u'TesVGecko'}),
+                imageList('tools/tesvgecko%s.png'),
+                _("Launch TesVGecko"), {'uid': 'TesVGecko'}),
         )
     #--Bash Status/LinkBar
-    BashStatusBar.obseButton = obseButton = Obse_Button(uid=u'OBSE')
+    BashStatusBar.obseButton = obseButton = Obse_Button(uid='OBSE')
     BashStatusBar.buttons.append(obseButton)
-    BashStatusBar.laaButton = laaButton = LAA_Button(uid=u'LAA')
+    BashStatusBar.laaButton = laaButton = LAA_Button(uid='LAA')
     BashStatusBar.buttons.append(laaButton)
-    BashStatusBar.buttons.append(AutoQuit_Button(uid=u'AutoQuit'))
+    BashStatusBar.buttons.append(AutoQuit_Button(uid='AutoQuit'))
     BashStatusBar.buttons.append( # Game
         Game_Button(
             bass.dirs['app'].join(bush.game.launch_exe),
             bass.dirs['app'].join(*bush.game.version_detect_file),
-            imageList(u'%s%%s.png' % bush.game.fsName.lower()),
-            u' '.join((_(u"Launch"),bush.game.displayName)),
-            u' '.join((_(u"Launch"),bush.game.displayName,u'%(version)s'))))
+            imageList('%s%%s.png' % bush.game.fsName.lower()),
+            ' '.join((_("Launch"),bush.game.displayName)),
+            ' '.join((_("Launch"),bush.game.displayName,'%(version)s'))))
     BashStatusBar.buttons.append( #TESCS/CreationKit
         TESCS_Button(
             bass.dirs['app'].join(bush.game.cs.exe),
             imageList(bush.game.cs.image_name),
-            u' '.join((_(u"Launch"),bush.game.cs.cs_abbrev)),
-            u' '.join((_(u"Launch"),bush.game.cs.cs_abbrev,u'%(version)s')),
+            ' '.join((_("Launch"),bush.game.cs.cs_abbrev)),
+            ' '.join((_("Launch"),bush.game.cs.cs_abbrev,'%(version)s')),
             bush.game.cs.se_args,
-            uid=u'TESCS'))
+            uid='TESCS'))
     BashStatusBar.buttons.append( #OBMM
-        App_Button(bass.dirs['app'].join(u'OblivionModManager.exe'),
-                   imageList(u'obmm%s.png'),
-                   _(u"Launch OBMM"),
-                   uid=u'OBMM'))
+        App_Button(bass.dirs['app'].join('OblivionModManager.exe'),
+                   imageList('obmm%s.png'),
+                   _("Launch OBMM"),
+                   uid='OBMM'))
     from .constants import toolbar_buttons
     for tb in toolbar_buttons:
         BashStatusBar.buttons.append(Tooldir_Button(*tb))
@@ -98,79 +98,79 @@ def InitStatusBar():
         BashStatusBar.buttons.append(App_Button(*tb2[:-1], **tb2[-1]))
     BashStatusBar.buttons.append( #Tes4View
         App_Tes4View(
-            (bass.tooldirs['Tes4ViewPath'], u'-TES4'), #no cmd argument to force view mode
-            imageList(u'tools/tes4view%s.png'),
-            _(u"Launch TES4View"),
-            uid=u'TES4View'))
+            (bass.tooldirs['Tes4ViewPath'], '-TES4'), #no cmd argument to force view mode
+            imageList('tools/tes4view%s.png'),
+            _("Launch TES4View"),
+            uid='TES4View'))
     BashStatusBar.buttons.append( #Tes4Edit
-        App_Tes4View((bass.tooldirs['Tes4EditPath'], u'-TES4 -edit'),
-                     imageList(u'tools/tes4edit%s.png'),
-                     _(u"Launch TES4Edit"),
-                     uid=u'TES4Edit'))
+        App_Tes4View((bass.tooldirs['Tes4EditPath'], '-TES4 -edit'),
+                     imageList('tools/tes4edit%s.png'),
+                     _("Launch TES4Edit"),
+                     uid='TES4Edit'))
     BashStatusBar.buttons.append( #Tes5Edit
-        App_Tes4View((bass.tooldirs['Tes5EditPath'], u'-TES5 -edit'),
-                     imageList(u'tools/tes4edit%s.png'),
-                     _(u"Launch TES5Edit"),
-                     uid=u'TES5Edit'))
+        App_Tes4View((bass.tooldirs['Tes5EditPath'], '-TES5 -edit'),
+                     imageList('tools/tes4edit%s.png'),
+                     _("Launch TES5Edit"),
+                     uid='TES5Edit'))
     BashStatusBar.buttons.append( #EnderalEdit
-        App_Tes4View((bass.tooldirs['EnderalEditPath'], u'-Enderal -edit'),
-                     imageList(u'tools/tes4edit%s.png'),
-                     _(u"Launch EnderalEdit"),
-                     uid=u'EnderalEdit'))
+        App_Tes4View((bass.tooldirs['EnderalEditPath'], '-Enderal -edit'),
+                     imageList('tools/tes4edit%s.png'),
+                     _("Launch EnderalEdit"),
+                     uid='EnderalEdit'))
     BashStatusBar.buttons.append( #SSEEdit
-        App_Tes4View((bass.tooldirs['SSEEditPath'], u'-SSE -edit'),
-                     imageList(u'tools/tes4edit%s.png'),
-                     _(u"Launch SSEEdit"),
-                     uid=u'SSEEdit'))
+        App_Tes4View((bass.tooldirs['SSEEditPath'], '-SSE -edit'),
+                     imageList('tools/tes4edit%s.png'),
+                     _("Launch SSEEdit"),
+                     uid='SSEEdit'))
     BashStatusBar.buttons.append( #Fo4Edit
-        App_Tes4View((bass.tooldirs['Fo4EditPath'],u'-FO4 -edit'),
-                     imageList(u'tools/tes4edit%s.png'),
-                     _(u"Launch FO4Edit"),
-                     uid=u'FO4Edit'))
+        App_Tes4View((bass.tooldirs['Fo4EditPath'],'-FO4 -edit'),
+                     imageList('tools/tes4edit%s.png'),
+                     _("Launch FO4Edit"),
+                     uid='FO4Edit'))
     BashStatusBar.buttons.append( #Fo3Edit
-        App_Tes4View((bass.tooldirs['Fo3EditPath'],u'-FO3 -edit'),
-                     imageList(u'tools/tes4edit%s.png'),
-                     _(u"Launch FO3Edit"),
-                     uid=u'FO3Edit'))
+        App_Tes4View((bass.tooldirs['Fo3EditPath'],'-FO3 -edit'),
+                     imageList('tools/tes4edit%s.png'),
+                     _("Launch FO3Edit"),
+                     uid='FO3Edit'))
     BashStatusBar.buttons.append( #FnvEdit
-        App_Tes4View((bass.tooldirs['FnvEditPath'],u'-FNV -edit'),
-                     imageList(u'tools/tes4edit%s.png'),
-                     _(u"Launch FNVEdit"),
-                     uid=u'FNVEdit'))
+        App_Tes4View((bass.tooldirs['FnvEditPath'],'-FNV -edit'),
+                     imageList('tools/tes4edit%s.png'),
+                     _("Launch FNVEdit"),
+                     uid='FNVEdit'))
     BashStatusBar.buttons.append( #TesVGecko
         App_Button((bass.tooldirs['Tes5GeckoPath']),
-                   imageList(u'tools/tesvgecko%s.png'),
-                   _(u"Launch TesVGecko"),
-                   uid=u'TesVGecko'))
+                   imageList('tools/tesvgecko%s.png'),
+                   _("Launch TesVGecko"),
+                   uid='TesVGecko'))
     BashStatusBar.buttons.append( #Tes4Trans
-        App_Tes4View((bass.tooldirs['Tes4TransPath'], u'-TES4 -translate'),
-                     imageList(u'tools/tes4trans%s.png'),
-                     _(u"Launch TES4Trans"),
-                     uid=u'TES4Trans'))
+        App_Tes4View((bass.tooldirs['Tes4TransPath'], '-TES4 -translate'),
+                     imageList('tools/tes4trans%s.png'),
+                     _("Launch TES4Trans"),
+                     uid='TES4Trans'))
     BashStatusBar.buttons.append( #Tes4LODGen
-        App_Tes4View((bass.tooldirs['Tes4LodGenPath'], u'-TES4 -lodgen'),
-                    imageList(u'tools/tes4lodgen%s.png'),
-                    _(u"Launch Tes4LODGen"),
-                    uid=u'TES4LODGen'))
+        App_Tes4View((bass.tooldirs['Tes4LodGenPath'], '-TES4 -lodgen'),
+                    imageList('tools/tes4lodgen%s.png'),
+                    _("Launch Tes4LODGen"),
+                    uid='TES4LODGen'))
     BashStatusBar.buttons.append( #BOSS
         App_BOSS((bass.tooldirs['boss']),
-                imageList(u'boss%s.png'),
-                _(u"Launch BOSS"),
-                uid=u'BOSS'))
+                imageList('boss%s.png'),
+                _("Launch BOSS"),
+                uid='BOSS'))
     if bass.inisettings['ShowModelingToolLaunchers']:
         from .constants import modeling_tools_buttons
         for mb in modeling_tools_buttons:
             BashStatusBar.buttons.append(Tooldir_Button(*mb))
         BashStatusBar.buttons.append( #Softimage Mod Tool
-            App_Button((bass.tooldirs['SoftimageModTool'], u'-mod'),
-                       imageList(u'tools/softimagemodtool%s.png'),
-                       _(u"Launch Softimage Mod Tool"),
-                       uid=u'SoftimageModTool'))
+            App_Button((bass.tooldirs['SoftimageModTool'], '-mod'),
+                       imageList('tools/softimagemodtool%s.png'),
+                       _("Launch Softimage Mod Tool"),
+                       uid='SoftimageModTool'))
     if bass.inisettings['ShowModelingToolLaunchers'] \
             or bass.inisettings['ShowTextureToolLaunchers']:
         BashStatusBar.buttons.append( #Nifskope
-            Tooldir_Button('NifskopePath', imageList(u'tools/nifskope%s.png'),
-                _(u"Launch Nifskope")))
+            Tooldir_Button('NifskopePath', imageList('tools/nifskope%s.png'),
+                _("Launch Nifskope")))
     if bass.inisettings['ShowTextureToolLaunchers']:
         from .constants import texture_tool_buttons
         for tt in texture_tool_buttons:
@@ -182,8 +182,8 @@ def InitStatusBar():
     from .constants import misc_tools
     for mt in misc_tools: BashStatusBar.buttons.append(Tooldir_Button(*mt))
     #--Custom Apps
-    dirApps = bass.dirs['mopy'].join(u'Apps')
-    badIcons = [Image(bass.dirs['images'].join(u'error_cross_16.png'))] * 3
+    dirApps = bass.dirs['mopy'].join('Apps')
+    badIcons = [Image(bass.dirs['images'].join('error_cross_16.png'))] * 3
     def iconList(fileName):
         return [Image(fileName, Image.typesDict['ico'], x) for x in
                 (16, 24, 32)]
@@ -191,20 +191,20 @@ def InitStatusBar():
             BashStatusBar.buttons.append(
                 App_Button((pth, ()), icon, description, canHide=False))
     #--Final couple
-    BashStatusBar.buttons.append(App_DocBrowser(uid=u'DocBrowser'))
-    BashStatusBar.buttons.append(App_ModChecker(uid=u'ModChecker'))
-    BashStatusBar.buttons.append(App_Settings(uid=u'Settings',canHide=False))
-    BashStatusBar.buttons.append(App_Help(uid=u'Help',canHide=False))
+    BashStatusBar.buttons.append(App_DocBrowser(uid='DocBrowser'))
+    BashStatusBar.buttons.append(App_ModChecker(uid='ModChecker'))
+    BashStatusBar.buttons.append(App_Settings(uid='Settings',canHide=False))
+    BashStatusBar.buttons.append(App_Help(uid='Help',canHide=False))
     if bass.inisettings['ShowDevTools']:
-        BashStatusBar.buttons.append(App_Restart(uid=u'Restart'))
-        BashStatusBar.buttons.append(App_GenPickle(uid=u'Generate PKL File'))
+        BashStatusBar.buttons.append(App_Restart(uid='Restart'))
+        BashStatusBar.buttons.append(App_GenPickle(uid='Generate PKL File'))
 
 #------------------------------------------------------------------------------
 def InitMasterLinks():
     """Initialize master list menus."""
     #--MasterList: Column Links
     if True: #--Sort by
-        sortMenu = MenuLink(_(u"Sort by"))
+        sortMenu = MenuLink(_("Sort by"))
         sortMenu.links.append(Mods_EsmsFirst())
         sortMenu.links.append(Mods_SelectedFirst())
         sortMenu.links.append(SeparatorLink())
@@ -225,7 +225,7 @@ def InitInstallerLinks():
     #--Column links
     #--Sorting
     if True:
-        sortMenu = MenuLink(_(u"Sort by"))
+        sortMenu = MenuLink(_("Sort by"))
         sortMenu.links.append(Installers_SortActive())
         sortMenu.links.append(Installers_SortProjects())
         #InstallersList.mainMenu.append(Installers_SortStructure())
@@ -278,7 +278,7 @@ def InitInstallerLinks():
     InstallersList.mainMenu.append(Installers_RenameStrings())
     #--Item links
     if True: #--File Menu
-        fileMenu = MenuLink(_(u"File.."))
+        fileMenu = MenuLink(_("File.."))
         fileMenu.links.append(Installer_Open())
         fileMenu.links.append(Installer_Rename())
         fileMenu.links.append(Installer_Duplicate())
@@ -295,7 +295,7 @@ def InitInstallerLinks():
     InstallersList.itemMenu.append(Installer_Anneal())
     InstallersList.itemMenu.append(Installer_Install())
     if bEnableWizard:
-        wizardMenu = MenuLink(_(u"Wizard Installer.."))
+        wizardMenu = MenuLink(_("Wizard Installer.."))
         wizardMenu.links.append(Installer_Wizard(False))
         wizardMenu.links.append(Installer_Wizard(True))
         wizardMenu.links.append(Installer_EditWizard())
@@ -306,7 +306,7 @@ def InitInstallerLinks():
     InstallersList.itemMenu.append(
         Installer_Refresh(calculate_projects_crc=False))
     if True:  #--Package Menu
-        packageMenu = MenuLink(_(u"Package.."))
+        packageMenu = MenuLink(_("Package.."))
         packageMenu.links.append(Installer_OpenReadme())
         packageMenu.links.append(Installer_Move())
         packageMenu.links.append(Installer_Refresh())
@@ -357,7 +357,7 @@ def InitINILinks():
     """Initialize INI Edits tab menus."""
     #--Column Links
     if True: #--Sort by
-        sortMenu = MenuLink(_(u"Sort by"))
+        sortMenu = MenuLink(_("Sort by"))
         sortMenu.links.append(INI_SortValid())
         sortMenu.links.append(SeparatorLink())
         sortMenu.links.append(Files_SortBy('File'))
@@ -382,11 +382,11 @@ def InitModLinks():
     """Initialize Mods tab menus."""
     #--ModList: Column Links
     if True: #--Load
-        loadMenu = MenuLink(_(u'Load Order'))
+        loadMenu = MenuLink(_('Load Order'))
         loadMenu.links.append(Mods_LoadList())
         ModList.mainMenu.append(loadMenu)
     if True: #--Sort by
-        sortMenu = MenuLink(_(u"Sort by"))
+        sortMenu = MenuLink(_("Sort by"))
         sortMenu.links.append(Mods_EsmsFirst())
         sortMenu.links.append(Mods_SelectedFirst())
         sortMenu.links.append(SeparatorLink())
@@ -402,12 +402,12 @@ def InitModLinks():
         sortMenu.links.append(Files_SortBy('CRC'))
         sortMenu.links.append(Files_SortBy('Mod Status'))
         ModList.mainMenu.append(sortMenu)
-    if bush.game.fsName == u'Oblivion': #--Versions
-        versionsMenu = MenuLink(u"Oblivion.esm")
-        versionsMenu.links.append(Mods_OblivionVersion(u'1.1'))
-        versionsMenu.links.append(Mods_OblivionVersion(u'1.1b'))
-        versionsMenu.links.append(Mods_OblivionVersion(u'GOTY non-SI'))
-        versionsMenu.links.append(Mods_OblivionVersion(u'SI'))
+    if bush.game.fsName == 'Oblivion': #--Versions
+        versionsMenu = MenuLink("Oblivion.esm")
+        versionsMenu.links.append(Mods_OblivionVersion('1.1'))
+        versionsMenu.links.append(Mods_OblivionVersion('1.1b'))
+        versionsMenu.links.append(Mods_OblivionVersion('GOTY non-SI'))
+        versionsMenu.links.append(Mods_OblivionVersion('SI'))
         ModList.mainMenu.append(versionsMenu)
     #--Columns ----------------------------------
     ModList.mainMenu.append(SeparatorLink())
@@ -416,7 +416,7 @@ def InitModLinks():
     ModList.mainMenu.append(SeparatorLink())
     #--File Menu---------------------------------
     if True:
-        fileMenu = MenuLink(_(u'File'))
+        fileMenu = MenuLink(_('File'))
         if bush.game.esp.canBash:
             fileMenu.links.append(Mods_CreateBlankBashedPatch())
             fileMenu.links.append(Mods_CreateBlank())
@@ -439,7 +439,7 @@ def InitModLinks():
     if bass.inisettings['ShowDevTools']:
         ModList.itemMenu.append(Mod_FullLoad())
     if True: #--File
-        fileMenu = MenuLink(_(u"File"))
+        fileMenu = MenuLink(_("File"))
         if bush.game.esp.canBash:
             fileMenu.links.append(Mod_CreateDummyMasters())
             fileMenu.links.append(SeparatorLink())
@@ -456,11 +456,11 @@ def InitModLinks():
         fileMenu.links.append(File_RevertToSnapshot())
         ModList.itemMenu.append(fileMenu)
     if True: #--Groups
-        groupMenu = MenuLink(_(u"Groups"))
+        groupMenu = MenuLink(_("Groups"))
         groupMenu.links.append(Mod_Groups())
         ModList.itemMenu.append(groupMenu)
     if True: #--Ratings
-        ratingMenu = MenuLink(_(u"Rating"))
+        ratingMenu = MenuLink(_("Rating"))
         ratingMenu.links.append(Mod_Ratings())
         ModList.itemMenu.append(ratingMenu)
     #--------------------------------------------
@@ -491,16 +491,16 @@ def InitModLinks():
         #--Advanced
         ModList.itemMenu.append(SeparatorLink())
         if True: #--Export
-            exportMenu = MenuLink(_(u"Export"))
+            exportMenu = MenuLink(_("Export"))
             if CBashApi.Enabled:
                 exportMenu.links.append(CBash_Mod_CellBlockInfo_Export())
             exportMenu.links.append(Mod_EditorIds_Export())
             ## exportMenu.links.append(Mod_ItemData_Export())
-            if bush.game.fsName in (u'Enderal', u'Skyrim'):
+            if bush.game.fsName in ('Enderal', 'Skyrim'):
                 exportMenu.links.append(Mod_FullNames_Export())
                 exportMenu.links.append(Mod_Prices_Export())
                 exportMenu.links.append(Mod_Stats_Export())
-            elif bush.game.fsName == u'FalloutNV':
+            elif bush.game.fsName == 'FalloutNV':
                 # exportMenu.links.append(Mod_Factions_Export())
                 exportMenu.links.append(Mod_FullNames_Export())
                 exportMenu.links.append(Mod_Prices_Export())
@@ -509,12 +509,12 @@ def InitModLinks():
                 # exportMenu.links.append(Mod_Scripts_Export())
                 # exportMenu.links.append(Mod_SpellRecords_Export())
                 exportMenu.links.append(Mod_Stats_Export())
-            elif bush.game.fsName == u'Fallout3':
+            elif bush.game.fsName == 'Fallout3':
                 exportMenu.links.append(Mod_FullNames_Export())
                 exportMenu.links.append(Mod_Prices_Export())
                 exportMenu.links.append(Mod_Stats_Export())
                 exportMenu.links.append(Mod_FactionRelations_Export())
-            elif bush.game.fsName == u'Oblivion':
+            elif bush.game.fsName == 'Oblivion':
                 exportMenu.links.append(Mod_Factions_Export())
                 exportMenu.links.append(Mod_FullNames_Export())
                 exportMenu.links.append(Mod_ActorLevels_Export())
@@ -528,14 +528,14 @@ def InitModLinks():
                 exportMenu.links.append(Mod_Stats_Export())
             ModList.itemMenu.append(exportMenu)
         if True: #--Import
-            importMenu = MenuLink(_(u"Import"))
+            importMenu = MenuLink(_("Import"))
             importMenu.links.append(Mod_EditorIds_Import())
             ## importMenu.links.append(Mod_ItemData_Import())
-            if bush.game.fsName in (u'Enderal', u'Skyrim'):
+            if bush.game.fsName in ('Enderal', 'Skyrim'):
                 importMenu.links.append(Mod_FullNames_Import())
                 importMenu.links.append(Mod_Prices_Import())
                 importMenu.links.append(Mod_Stats_Import())
-            elif bush.game.fsName == u'FalloutNV':
+            elif bush.game.fsName == 'FalloutNV':
                 importMenu.links.append(Mod_FullNames_Import())
                 importMenu.links.append(Mod_Prices_Import())
                 importMenu.links.append(Mod_FactionRelations_Import())
@@ -545,12 +545,12 @@ def InitModLinks():
                 # importMenu.links.append(SeparatorLink())
                 # importMenu.links.append(Mod_Face_Import())
                 # importMenu.links.append(Mod_Fids_Replace())
-            elif bush.game.fsName == u'Fallout3':
+            elif bush.game.fsName == 'Fallout3':
                 importMenu.links.append(Mod_FullNames_Import())
                 importMenu.links.append(Mod_Prices_Import())
                 importMenu.links.append(Mod_Stats_Import())
                 importMenu.links.append(Mod_FactionRelations_Import())
-            elif bush.game.fsName == u'Oblivion':
+            elif bush.game.fsName == 'Oblivion':
                 importMenu.links.append(Mod_Factions_Import())
                 importMenu.links.append(Mod_FullNames_Import())
                 importMenu.links.append(Mod_ActorLevels_Import())
@@ -567,7 +567,7 @@ def InitModLinks():
                 importMenu.links.append(Mod_Fids_Replace())
             ModList.itemMenu.append(importMenu)
         if True: #--Cleaning
-            cleanMenu = MenuLink(_(u"Mod Cleaning"))
+            cleanMenu = MenuLink(_("Mod Cleaning"))
             cleanMenu.links.append(Mod_SkipDirtyCheck())
             cleanMenu.links.append(SeparatorLink())
             cleanMenu.links.append(Mod_ScanDirty())
@@ -579,13 +579,13 @@ def InitModLinks():
         # every record in the file.
         # ModList.itemMenu.append(Mod_AddMaster())
         ModList.itemMenu.append(Mod_CopyToEsmp())
-        if bush.game.fsName == u'Oblivion':
+        if bush.game.fsName == 'Oblivion':
             ModList.itemMenu.append(Mod_DecompileAll())
         ModList.itemMenu.append(Mod_FlipEsm())
         if bush.game.check_esl:
             ModList.itemMenu.append(Mod_FlipEsl())
         ModList.itemMenu.append(Mod_FlipMasters())
-        if bush.game.fsName == u'Oblivion':
+        if bush.game.fsName == 'Oblivion':
             ModList.itemMenu.append(Mod_SetVersion())
 #    if bosh.inisettings['showadvanced'] == 1:
 #        advmenu = MenuLink(_(u"Advanced Scripts"))
@@ -597,7 +597,7 @@ def InitSaveLinks():
     """Initialize save tab menus."""
     #--SaveList: Column Links
     if True: #--Sort
-        sortMenu = MenuLink(_(u"Sort by"))
+        sortMenu = MenuLink(_("Sort by"))
         sortMenu.links.append(Files_SortBy('File'))
         sortMenu.links.append(Files_SortBy('Cell'))
         sortMenu.links.append(Files_SortBy('PlayTime'))
@@ -605,15 +605,15 @@ def InitSaveLinks():
         sortMenu.links.append(Files_SortBy('Player'))
         sortMenu.links.append(Files_SortBy('Status'))
         SaveList.mainMenu.append(sortMenu)
-    if bush.game.fsName == u'Oblivion': #--Versions
-        versionsMenu = MenuLink(u"Oblivion.esm")
-        versionsMenu.links.append(Mods_OblivionVersion(u'1.1',setProfile=True))
-        versionsMenu.links.append(Mods_OblivionVersion(u'1.1b',setProfile=True))
-        versionsMenu.links.append(Mods_OblivionVersion(u'GOTY non-SI',setProfile=True))
-        versionsMenu.links.append(Mods_OblivionVersion(u'SI',setProfile=True))
+    if bush.game.fsName == 'Oblivion': #--Versions
+        versionsMenu = MenuLink("Oblivion.esm")
+        versionsMenu.links.append(Mods_OblivionVersion('1.1',setProfile=True))
+        versionsMenu.links.append(Mods_OblivionVersion('1.1b',setProfile=True))
+        versionsMenu.links.append(Mods_OblivionVersion('GOTY non-SI',setProfile=True))
+        versionsMenu.links.append(Mods_OblivionVersion('SI',setProfile=True))
         SaveList.mainMenu.append(versionsMenu)
     if True: #--Save Profiles
-        subDirMenu = MenuLink(_(u"Profile"))
+        subDirMenu = MenuLink(_("Profile"))
         subDirMenu.links.append(Saves_Profiles())
         SaveList.mainMenu.append(subDirMenu)
     #--Columns --------------------------------
@@ -625,7 +625,7 @@ def InitSaveLinks():
     SaveList.mainMenu.append(Files_Unhide('save'))
     #--SaveList: Item Links
     if True: #--File
-        fileMenu = MenuLink(_(u"File")) #>>
+        fileMenu = MenuLink(_("File")) #>>
         fileMenu.links.append(File_Backup())
         fileMenu.links.append(File_Duplicate())
         #fileMenu.links.append(File_Snapshot())
@@ -639,11 +639,11 @@ def InitSaveLinks():
         #fileMenu.links.append(File_RevertToSnapshot())
         SaveList.itemMenu.append(fileMenu)
     if True: #--Move to Profile
-        moveMenu = MenuLink(_(u"Move To"))
+        moveMenu = MenuLink(_("Move To"))
         moveMenu.links.append(Save_Move())
         SaveList.itemMenu.append(moveMenu)
     if True: #--Copy to Profile
-        copyMenu = MenuLink(_(u"Copy To"))
+        copyMenu = MenuLink(_("Copy To"))
         copyMenu.links.append(Save_Move(True))
         SaveList.itemMenu.append(copyMenu)
     #--------------------------------------------
@@ -682,7 +682,7 @@ def InitBSALinks():
     """Initialize BSA tab menus."""
     #--BSAList: Column Links
     if True: #--Sort
-        sortMenu = MenuLink(_(u"Sort by"))
+        sortMenu = MenuLink(_("Sort by"))
         sortMenu.links.append(Files_SortBy('File'))
         sortMenu.links.append(Files_SortBy('Modified'))
         sortMenu.links.append(Files_SortBy('Size'))
@@ -691,7 +691,7 @@ def InitBSALinks():
     BSAList.mainMenu.append(UIList_OpenStore())
     #--BSAList: Item Links
     if True: #--File
-        fileMenu = MenuLink(_(u"File")) #>>
+        fileMenu = MenuLink(_("File")) #>>
         fileMenu.links.append(File_Backup())
         fileMenu.links.append(File_Duplicate())
         fileMenu.links.append(SeparatorLink())
@@ -712,7 +712,7 @@ def InitScreenLinks():
     ScreensList.mainMenu.append(Screens_NextScreenShot())
     #--JPEG Quality
     if True:
-        qualityMenu = MenuLink(_(u'JPEG Quality'))
+        qualityMenu = MenuLink(_('JPEG Quality'))
         for i in range(100,80,-5):
             qualityMenu.links.append(Screen_JpgQuality(i))
         qualityMenu.links.append(Screen_JpgQualityCustom())
@@ -724,12 +724,12 @@ def InitScreenLinks():
     ScreensList.itemMenu.append(balt.UIList_Delete())
     ScreensList.itemMenu.append(SeparatorLink())
     if True: #--Convert
-        convertMenu = MenuLink(_(u'Convert'))
+        convertMenu = MenuLink(_('Convert'))
         image_type = Image.typesDict
-        convertMenu.links.append(Screen_ConvertTo(u'jpg', image_type['jpg']))
-        convertMenu.links.append(Screen_ConvertTo(u'png', image_type['png']))
-        convertMenu.links.append(Screen_ConvertTo(u'bmp', image_type['bmp']))
-        convertMenu.links.append(Screen_ConvertTo(u'tif', image_type['tif']))
+        convertMenu.links.append(Screen_ConvertTo('jpg', image_type['jpg']))
+        convertMenu.links.append(Screen_ConvertTo('png', image_type['png']))
+        convertMenu.links.append(Screen_ConvertTo('bmp', image_type['bmp']))
+        convertMenu.links.append(Screen_ConvertTo('tif', image_type['tif']))
         ScreensList.itemMenu.append(convertMenu)
 
 #------------------------------------------------------------------------------
@@ -763,14 +763,14 @@ def InitSettingsLinks():
     SettingsMenu.append(SeparatorLink())
     SettingsMenu.append(Settings_Colors())
     if True:
-        tabsMenu = BashNotebook.tabLinks(MenuLink(_(u'Tabs')))
+        tabsMenu = BashNotebook.tabLinks(MenuLink(_('Tabs')))
         SettingsMenu.append(tabsMenu)
     #--StatusBar
     if True:
-        sbMenu = MenuLink(_(u'Status bar'))
+        sbMenu = MenuLink(_('Status bar'))
         #--Icon size
         if True:
-            sizeMenu = MenuLink(_(u'Icon size'))
+            sizeMenu = MenuLink(_('Icon size'))
             for size in (16,24,32):
                 sizeMenu.links.append(Settings_IconSize(size))
             sbMenu.links.append(sizeMenu)

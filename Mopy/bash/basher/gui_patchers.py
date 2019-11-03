@@ -33,7 +33,7 @@ from ..balt import fill, StaticText, vSizer, checkBox, Button, hsbSizer, \
 from ..bolt import GPath
 from ..patcher import patch_files
 
-reCsvExt = re.compile(u'' r'\.csv$', re.I | re.U)
+reCsvExt = re.compile('' r'\.csv$', re.I | re.U)
 
 class _PatcherPanel(object):
     """Basic patcher panel with no options."""
@@ -112,24 +112,24 @@ class _PatcherPanel(object):
         conf = config[className]
         if not conf.get('isEnabled',False): return
         # Active
-        log.setHeader(u'== ' + humanName)
-        clip.write(u'\n')
-        clip.write(u'== ' + humanName + u'\n')
+        log.setHeader('== ' + humanName)
+        clip.write('\n')
+        clip.write('== ' + humanName + '\n')
         self._log_config(conf, config, clip, log)
 
     def _log_config(self, conf, config, clip, log):
         items = conf.get('configItems', [])
         if len(items) == 0:
-            log(u' ')
+            log(' ')
         for item in conf.get('configItems', []):
             checks = conf.get('configChecks', {})
             checked = checks.get(item, False)
             if checked:
-                log(u'* __%s__' % item)
-                clip.write(u' ** %s\n' % item)
+                log('* __%s__' % item)
+                clip.write(' ** %s\n' % item)
             else:
-                log(u'. ~~%s~~' % item)
-                clip.write(u'    %s\n' % item)
+                log('. ~~%s~~' % item)
+                clip.write('    %s\n' % item)
 
     def import_config(self, patchConfigs, set_first_load=False, default=False):
         self.SetIsFirstLoad(set_first_load)
@@ -168,14 +168,14 @@ class _AliasesPatcherPanel(_PatcherPanel):
 
     def SetAliasText(self):
         """Sets alias text according to current aliases."""
-        self.gAliases.SetValue(u'\n'.join([
-            u'%s >> %s' % (key.s,value.s) for key,value in sorted(self.aliases.items())]))
+        self.gAliases.SetValue('\n'.join([
+            '%s >> %s' % (key.s,value.s) for key,value in sorted(self.aliases.items())]))
 
     def OnEditAliases(self):
         aliases_text = self.gAliases.GetValue()
         self.aliases.clear()
-        for line in aliases_text.split(u'\n'):
-            fields = map(string.strip,line.split(u'>>'))
+        for line in aliases_text.split('\n'):
+            fields = list(map(string.strip,line.split('>>')))
             if len(fields) != 2 or not fields[0] or not fields[1]: continue
             self.aliases[GPath(fields[0])] = GPath(fields[1])
         self.SetAliasText()
@@ -186,8 +186,8 @@ class _AliasesPatcherPanel(_PatcherPanel):
         config = super(_AliasesPatcherPanel, self).getConfig(configs)
         #--Update old configs to use Paths instead of strings.
         self.aliases = dict(# map(GPath, item) gives a list (item is a tuple)
-            map(GPath, item) for item in
-            config.get('aliases', self.__class__.default_aliases).iteritems())
+            list(map(GPath, item)) for item in
+            config.get('aliases', self.__class__.default_aliases).items())
         return config
 
     def saveConfig(self, configs):
@@ -199,19 +199,19 @@ class _AliasesPatcherPanel(_PatcherPanel):
 
     def _log_config(self, conf, config, clip, log):
         aliases = conf.get('aliases', {})
-        for mod, alias in aliases.iteritems():
-            log(u'* __%s__ >> %s' % (mod.s, alias.s))
-            clip.write(u'  %s >> %s\n' % (mod.s, alias.s))
+        for mod, alias in aliases.items():
+            log('* __%s__ >> %s' % (mod.s, alias.s))
+            clip.write('  %s >> %s\n' % (mod.s, alias.s))
 
 #------------------------------------------------------------------------------
 class _ListPatcherPanel(_PatcherPanel):
     """Patcher panel with option to select source elements."""
-    listLabel = _(u'Source Mods/Files')
+    listLabel = _('Source Mods/Files')
     forceAuto = True
     forceItemCheck = False #--Force configChecked to True for all items
     canAutoItemCheck = True #--GUI: Whether new items are checked by default
     #--Compiled re used by getAutoItems
-    autoRe = re.compile(u'^UNDEFINED$', re.I | re.U)
+    autoRe = re.compile('^UNDEFINED$', re.I | re.U)
     # ADDITIONAL CONFIG DEFAULTS FOR LIST PATCHER
     default_autoIsChecked = True
     default_configItems   = []
@@ -235,11 +235,11 @@ class _ListPatcherPanel(_PatcherPanel):
             gManualSizer = None
             self.SetItems(self.getAutoItems())
         else:
-            self.gAuto = checkBox(gConfigPanel, _(u'Automatic'),
+            self.gAuto = checkBox(gConfigPanel, _('Automatic'),
                                   onCheck=self.OnAutomatic,
                                   checked=self.autoIsChecked)
-            self.gAdd = Button(gConfigPanel, _(u'Add'), onButClick=self.OnAdd)
-            self.gRemove = Button(gConfigPanel, _(u'Remove'),
+            self.gAdd = Button(gConfigPanel, _('Add'), onButClick=self.OnAdd)
+            self.gRemove = Button(gConfigPanel, _('Remove'),
                                   onButClick=self.OnRemove)
             self.OnAutomatic()
             gManualSizer = (vSizer(
@@ -260,9 +260,9 @@ class _ListPatcherPanel(_PatcherPanel):
 
     def _get_select_sizer(self):
         if not self.selectCommands: return None
-        self.gSelectAll = Button(self.gConfigPanel, _(u'Select All'),
+        self.gSelectAll = Button(self.gConfigPanel, _('Select All'),
                                  onButClick=self.SelectAll)
-        self.gDeselectAll = Button(self.gConfigPanel, _(u'Deselect All'),
+        self.gDeselectAll = Button(self.gConfigPanel, _('Deselect All'),
                                    onButClick=self.DeselectAll)
         return (vSizer(
             vspace(12), self.gSelectAll, vspace(4), self.gDeselectAll),
@@ -285,7 +285,7 @@ class _ListPatcherPanel(_PatcherPanel):
                     patcherOn = True
                 self.configChecks[item] = True
             else:
-                effectiveDefaultItemCheck = defaultItemCheck and not itemLabel.endswith(u'.csv')
+                effectiveDefaultItemCheck = defaultItemCheck and not itemLabel.endswith('.csv')
                 if self.configChecks.get(item) is None:
                     if effectiveDefaultItemCheck:
                         patcherOn = True
@@ -327,8 +327,8 @@ class _ListPatcherPanel(_PatcherPanel):
         srcDir = bosh.modInfos.store_dir
         wildcard = bosh.modInfos.plugin_wildcard()
         #--File dialog
-        title = _(u'Get ')+self.__class__.listLabel
-        srcPaths = balt.askOpenMulti(self.gConfigPanel,title,srcDir, u'', wildcard)
+        title = _('Get ')+self.__class__.listLabel
+        srcPaths = balt.askOpenMulti(self.gConfigPanel,title,srcDir, '', wildcard)
         if not srcPaths: return
         #--Get new items
         for srcPath in srcPaths:
@@ -401,10 +401,10 @@ class _ListPatcherPanel(_PatcherPanel):
         config = super(_ListPatcherPanel, self).saveConfig(configs)
         listSet = set(self.configItems)
         self.configChecks = config['configChecks'] = dict(
-            [(key, value) for key, value in self.configChecks.iteritems() if
+            [(key, value) for key, value in self.configChecks.items() if
              key in listSet])
         self.configChoices = config['configChoices'] = dict(
-            [(key, value) for key, value in self.configChoices.iteritems() if
+            [(key, value) for key, value in self.configChoices.items() if
              key in listSet])
         config['configItems'] = self.configItems
         config['autoIsChecked'] = self.autoIsChecked
@@ -412,13 +412,13 @@ class _ListPatcherPanel(_PatcherPanel):
 
     def getItemLabel(self,item):
         """Returns label for item to be used in list"""
-        return u'%s' % item # Path or basestring - YAK
+        return '%s' % item # Path or basestring - YAK
 
     def getAutoItems(self):
         """Returns list of items to be used for automatic configuration."""
         autoItems = self._get_auto_mods()
         reFile = re.compile(
-            u'_(' + (u'|'.join(self.__class__.autoKey)) + r')\.csv$', re.U)
+            '_(' + ('|'.join(self.__class__.autoKey)) + r')\.csv$', re.U)
         for fileName in sorted(self.patches_set):
             if reFile.search(fileName.s):
                 autoItems.append(fileName)
@@ -477,7 +477,7 @@ class _ChoiceMenuMixin(object):
 #------------------------------------------------------------------------------
 class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     """Patcher panel with list of checkable, configurable tweaks."""
-    tweak_label = _(u"Tweaks")
+    tweak_label = _("Tweaks")
     _right_click_list = 'gTweakList'
 
     def GetConfigPanel(self,parent,gConfigSizer,gTipText):
@@ -508,9 +508,9 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     def _get_tweak_select_sizer(self, ):
         if self.selectCommands:
             self.gTweakSelectAll = Button(self.gConfigPanel,
-                _(u'Select All'), onButClick=self.TweakSelectAll)
+                _('Select All'), onButClick=self.TweakSelectAll)
             self.gTweakDeselectAll = Button(self.gConfigPanel,
-                _(u'Deselect All'), onButClick=self.TweakDeselectAll)
+                _('Deselect All'), onButClick=self.TweakDeselectAll)
             gTweakSelectSizer = (vSizer(
                  vspace(12), self.gTweakSelectAll,
                  vspace(4), self.gTweakDeselectAll,
@@ -522,7 +522,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
 
     @staticmethod
     def _label(label, value): # edit label text with value
-        formatStr = u' %s' if isinstance(value, basestring) else u' %4.2f '
+        formatStr = ' %s' if isinstance(value, str) else ' %4.2f '
         return label + formatStr % value
 
     def SetTweaks(self):
@@ -532,7 +532,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         patcherBold = False
         for index,tweak in enumerate(self.tweaks):
             label = tweak.getListLabel()
-            if tweak.choiceLabels and tweak.choiceLabels[tweak.chosen].startswith(u'Custom'):
+            if tweak.choiceLabels and tweak.choiceLabels[tweak.chosen].startswith('Custom'):
                 label = self._label(label, tweak.choiceValues[tweak.chosen][0])
             self.gTweakList.Insert(label,index)
             self.gTweakList.Check(index,tweak.isEnabled)
@@ -560,7 +560,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     def OnMouse(self, event):
         """Check mouse motion to detect right click event."""
         if event.Leaving():
-            self.gTipText.SetLabel(u'')
+            self.gTipText.SetLabel('')
             self.mouse_pos = None
             event.Skip()
         elif event.Moving():
@@ -574,7 +574,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
                 if tip:
                     self.gTipText.SetLabel(tip)
                 else:
-                    self.gTipText.SetLabel(u'')
+                    self.gTipText.SetLabel('')
             event.Skip()
         else:
             super(_TweakPatcherPanel, self).OnMouse(event)
@@ -602,9 +602,9 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         class _ValueLinkCustom(_ValueLink):
             def Execute(self): _self.tweak_custom_choice(self.index,tweakIndex)
         for index,label in enumerate(choiceLabels):
-            if label == u'----':
+            if label == '----':
                 links.append(SeparatorLink())
-            elif label.startswith(_(u'Custom')):
+            elif label.startswith(_('Custom')):
                 label = self._label(label, tweak.choiceValues[index][0])
                 links.append(_ValueLinkCustom(label, index))
             else:
@@ -619,12 +619,12 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         self.gTweakList.Check(tweakIndex, True) # wx.EVT_CHECKLISTBOX is NOT
         self.TweakOnListCheck() # fired so this line is needed (?)
 
-    _msg = _(u'Enter the desired custom tweak value.') + u'\n' + _(
-        u'Due to an inability to get decimal numbers from the wxPython '
-        u'prompt please enter an extra zero after your choice if it is not '
-        u'meant to be a decimal.') + u'\n' + _(
-        u'If you are trying to enter a decimal multiply it by 10, '
-        u'for example for 0.3 enter 3 instead.')
+    _msg = _('Enter the desired custom tweak value.') + '\n' + _(
+        'Due to an inability to get decimal numbers from the wxPython '
+        'prompt please enter an extra zero after your choice if it is not '
+        'meant to be a decimal.') + '\n' + _(
+        'If you are trying to enter a decimal multiply it by 10, '
+        'for example for 0.3 enter 3 instead.')
 
     def tweak_custom_choice(self, index, tweakIndex):
         """Handle choice menu selection."""
@@ -632,30 +632,30 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         value = []
         for i, v in enumerate(tweak.choiceValues[index]):
             if isinstance(v,float):
-                label = self._msg + u'\n' + tweak.key[i]
+                label = self._msg + '\n' + tweak.key[i]
                 new = balt.askNumber(
-                    self.gConfigPanel, label, prompt=_(u'Value'),
-                    title=tweak.label + _(u' ~ Custom Tweak Value'),
+                    self.gConfigPanel, label, prompt=_('Value'),
+                    title=tweak.label + _(' ~ Custom Tweak Value'),
                     value=tweak.choiceValues[index][i], min=-10000, max=10000)
                 if new is None: #user hit cancel
                     return
                 value.append(float(new)/10)
             elif isinstance(v,int):
-                label = _(u'Enter the desired custom tweak value.') + u'\n' + \
+                label = _('Enter the desired custom tweak value.') + '\n' + \
                         tweak.key[i]
                 new = balt.askNumber(
-                    self.gConfigPanel, label, prompt=_(u'Value'),
-                    title=tweak.label + _(u' ~ Custom Tweak Value'),
+                    self.gConfigPanel, label, prompt=_('Value'),
+                    title=tweak.label + _(' ~ Custom Tweak Value'),
                     value=tweak.choiceValues[index][i], min=-10000, max=10000)
                 if new is None: #user hit cancel
                     return
                 value.append(new)
-            elif isinstance(v,basestring):
-                label = _(u'Enter the desired custom tweak text.') + u'\n' + \
+            elif isinstance(v,str):
+                label = _('Enter the desired custom tweak text.') + '\n' + \
                         tweak.key[i]
                 new = balt.askText(
                     self.gConfigPanel, label,
-                    title=tweak.label + _(u' ~ Custom Tweak Text'),
+                    title=tweak.label + _(' ~ Custom Tweak Text'),
                     default=tweak.choiceValues[index][i], strip=False) ##: strip ?
                 if new is None: #user hit cancel
                     return
@@ -715,15 +715,15 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         self.getConfig(config) # will set self.tweaks and load their config
         for tweak in self.tweaks:
             if tweak.key in conf:
-                enabled, value = conf.get(tweak.key, (False, u''))
-                label = tweak.getListLabel().replace(u'[[', u'[').replace(
-                    u']]', u']')
+                enabled, value = conf.get(tweak.key, (False, ''))
+                label = tweak.getListLabel().replace('[[', '[').replace(
+                    ']]', ']')
                 if enabled:
-                    log(u'* __%s__' % label)
-                    clip.write(u' ** %s\n' % label)
+                    log('* __%s__' % label)
+                    clip.write(' ** %s\n' % label)
                 else:
-                    log(u'. ~~%s~~' % label)
-                    clip.write(u'    %s\n' % label)
+                    log('. ~~%s~~' % label)
+                    clip.write('    %s\n' % label)
 
     def _import_config(self, default=False):
         super(_TweakPatcherPanel, self)._import_config(default)
@@ -732,15 +732,15 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
                 self.gTweakList.Check(index, tweakie.isEnabled)
                 self.gTweakList.SetString(index, tweakie.getListLabel())
             except KeyError: pass # no such key don't spam the log
-            except: bolt.deprint(_(u'Error importing Bashed patch '
-                u'configuration. Item %s skipped.') % tweakie, traceback=True)
+            except: bolt.deprint(_('Error importing Bashed patch '
+                'configuration. Item %s skipped.') % tweakie, traceback=True)
 
 #------------------------------------------------------------------------------
 class _DoublePatcherPanel(_TweakPatcherPanel, _ListPatcherPanel):
     """Only used in Race Patcher which features a double panel (source mods
     and tweaks)."""
-    listLabel = _(u'Race Mods')
-    tweak_label = _(u'Race Tweaks')
+    listLabel = _('Race Mods')
+    tweak_label = _('Race Tweaks')
     # CONFIG DEFAULTS
     default_isEnabled = True # isActive will be set to True in initPatchFile
 
@@ -758,16 +758,16 @@ class _DoublePatcherPanel(_TweakPatcherPanel, _ListPatcherPanel):
 
     def _log_config(self, conf, config, clip, log):
         _ListPatcherPanel._log_config(self, conf, config, clip, log)
-        log.setHeader(u'== ' + self.tweak_label)
-        clip.write(u'\n')
-        clip.write(u'== ' + self.tweak_label + u'\n')
+        log.setHeader('== ' + self.tweak_label)
+        clip.write('\n')
+        clip.write('== ' + self.tweak_label + '\n')
         _TweakPatcherPanel._log_config(self, conf, config, clip, log)
 
 #------------------------------------------------------------------------------
 class _ImporterPatcherPanel(_ListPatcherPanel):
 
     #--Config Phase -----------------------------------------------------------
-    autoRe = re.compile(u'^UNDEFINED$', re.I | re.U) # overridden by
+    autoRe = re.compile('^UNDEFINED$', re.I | re.U) # overridden by
     # NamesPatcher, NpcFacePatcher, and not used by ImportInventory,
     # ImportRelations, ImportFactions
     def saveConfig(self, configs):
@@ -775,18 +775,18 @@ class _ImporterPatcherPanel(_ListPatcherPanel):
         config = super(_ImporterPatcherPanel, self).saveConfig(configs)
         if self.isEnabled:
             importedMods = [item for item,value in
-                            self.configChecks.iteritems() if
+                            self.configChecks.items() if
                             value and bosh.ModInfos.rightFileType(item)]
             configs['ImportedMods'].update(importedMods)
         return config
 
 class _ListsMergerPanel(_ChoiceMenuMixin, _ListPatcherPanel):
-    listLabel = _(u'Override Delev/Relev Tags')
+    listLabel = _('Override Delev/Relev Tags')
 
     #--Config Phase -----------------------------------------------------------
     forceAuto = False
     forceItemCheck = True #--Force configChecked to True for all items
-    choiceMenu = (u'Auto', u'----', u'Delev', u'Relev')
+    choiceMenu = ('Auto', '----', 'Delev', 'Relev')
     # CONFIG DEFAULTS
     default_isEnabled = True
     selectCommands = False
@@ -794,20 +794,20 @@ class _ListsMergerPanel(_ChoiceMenuMixin, _ListPatcherPanel):
     def _get_set_choice(self, item):
         """Get default config choice."""
         config_choice = self.configChoices.get(item)
-        if not isinstance(config_choice,set): config_choice = {u'Auto'}
-        if u'Auto' in config_choice:
+        if not isinstance(config_choice,set): config_choice = {'Auto'}
+        if 'Auto' in config_choice:
             if item in bosh.modInfos:
                 bashTags = bosh.modInfos[item].getBashTags()
-                config_choice = {u'Auto'} | (self.autoKey & bashTags)
+                config_choice = {'Auto'} | (self.autoKey & bashTags)
         self.configChoices[item] = config_choice
         return config_choice
 
     def getItemLabel(self,item):
         """Returns label for item to be used in list"""
-        choice = map(itemgetter(0),self.configChoices.get(item,tuple()))
-        item  = u'%s' % item # Path or basestring - YAK
+        choice = list(map(itemgetter(0),self.configChoices.get(item,tuple())))
+        item  = '%s' % item # Path or basestring - YAK
         if choice:
-            return u'%s [%s]' % (item,u''.join(sorted(choice)))
+            return '%s [%s]' % (item,''.join(sorted(choice)))
         else:
             return item
 
@@ -852,14 +852,14 @@ class _ListsMergerPanel(_ChoiceMenuMixin, _ListPatcherPanel):
             choice = self.choiceMenu[dex]
             choiceSet = self.configChoices[item]
             choiceSet ^= {choice}
-            if choice != u'Auto':
-                choiceSet.discard(u'Auto')
-            elif u'Auto' in self.configChoices[item]:
+            if choice != 'Auto':
+                choiceSet.discard('Auto')
+            elif 'Auto' in self.configChoices[item]:
                 self._get_set_choice(item)
             self.gList.SetString(itemIndex, self.getItemLabel(item))
         links = Links()
         for index,label in enumerate(self.choiceMenu):
-            if label == u'----':
+            if label == '----':
                 links.append(SeparatorLink())
             else:
                 links.append(_OnItemChoice(label, index))
@@ -869,8 +869,8 @@ class _ListsMergerPanel(_ChoiceMenuMixin, _ListPatcherPanel):
     def _log_config(self, conf, config, clip, log):
         self.configChoices = conf.get('configChoices', {})
         for item in conf.get('configItems', []):
-            log(u'. __%s__' % self.getItemLabel(item))
-            clip.write(u'    %s\n' % self.getItemLabel(item))
+            log('. __%s__' % self.getItemLabel(item))
+            clip.write('    %s\n' % self.getItemLabel(item))
 
     def _import_config(self, default=False): # TODO(ut):non default not handled
         if default:
@@ -879,14 +879,14 @@ class _ListsMergerPanel(_ChoiceMenuMixin, _ListPatcherPanel):
     def mass_select(self, select=True): self.isEnabled = select
 
 class _MergerPanel(_ListPatcherPanel):
-    listLabel = _(u'Mergeable Mods')
+    listLabel = _('Mergeable Mods')
 
     def getAutoItems(self):
         """Returns list of items to be used for automatic configuration."""
         mods_prior_to_patch = load_order.cached_lower_loading_espms(
             patch_files.executing_patch)
         return [mod for mod in mods_prior_to_patch if (
-            mod in bosh.modInfos.mergeable and u'NoMerge' not in bosh.modInfos[
+            mod in bosh.modInfos.mergeable and 'NoMerge' not in bosh.modInfos[
                 mod].getBashTags())]
 
 class _GmstTweakerPanel(_TweakPatcherPanel):
@@ -1041,9 +1041,9 @@ class ListsMerger(special.ListsMerger, _ListsMergerPanel): pass
 class CBash_ListsMerger(special.CBash_ListsMerger, _ListsMergerPanel): pass
 
 class FidListsMerger(special.FidListsMerger, _ListsMergerPanel):
-    listLabel = _(u"Override Deflst Tags")
+    listLabel = _("Override Deflst Tags")
     forceItemCheck = False #--Force configChecked to True for all items
-    choiceMenu = (u'Auto', u'----', u'Deflst')
+    choiceMenu = ('Auto', '----', 'Deflst')
     # CONFIG DEFAULTS
     default_isEnabled = False
 
@@ -1062,11 +1062,11 @@ from .patcher_dialog import PBash_gui_patchers, CBash_gui_patchers, \
 from importlib import import_module
 gamePatcher = import_module('.patcher', ##: move in bush.py !
                        package=bush.game_mod.__name__)
-for patcher_name, typeInfo in gamePatcher.gameSpecificPatchers.items():
+for patcher_name, typeInfo in list(gamePatcher.gameSpecificPatchers.items()):
     globals()[patcher_name] = type(patcher_name, (typeInfo.clazz, _PatcherPanel), {})
     if typeInfo.twinPatcher:
         otherPatcherDict[patcher_name] = typeInfo.twinPatcher
-for patcher_name, typeInfo in gamePatcher.gameSpecificListPatchers.items():
+for patcher_name, typeInfo in list(gamePatcher.gameSpecificListPatchers.items()):
     globals()[patcher_name] = type(patcher_name, (typeInfo.clazz, _ListPatcherPanel), {})
     if typeInfo.twinPatcher:
         otherPatcherDict[patcher_name] = typeInfo.twinPatcher

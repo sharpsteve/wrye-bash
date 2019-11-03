@@ -29,7 +29,7 @@ and environment issues - do not modify or imitate (ut)."""
 # no imports
 
 language = None
-AppVersion = u"307" # must represent a valid float
+AppVersion = "307" # must represent a valid float
 
 #--Null strings (for default empty byte arrays)
 null1 = '\x00'
@@ -81,20 +81,20 @@ def rmTempDir():
     try:
         _tempDir.rmtree(safety=_tempDir.stail)
     except OSError:
-        from bolt import deprint
-        deprint(u'Failed to remove %s' % _tempDir, traceback=True)
+        from .bolt import deprint
+        deprint('Failed to remove %s' % _tempDir, traceback=True)
     _tempDir = None
 
 def newTempDir():
     """Generate a new temporary directory name, set it as the current Temp
     Dir."""
     global _tempDir
-    from bolt import Path
+    from .bolt import Path
     _tempDir = Path.tempDir()
     return _tempDir
 
 # logic for getting the path from the ini - get(section, key, default), duh
-def get_ini_option(ini_parser, option_key, section_key=u'General'):
+def get_ini_option(ini_parser, option_key, section_key='General'):
     if not ini_parser or not ini_parser.has_option(section_key, option_key):
         return None
     return ini_parser.get(section_key, option_key)

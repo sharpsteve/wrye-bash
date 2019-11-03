@@ -31,23 +31,23 @@ from operator import attrgetter, itemgetter
 from collections import defaultdict
 import re
 # Internal
-import bolt
-import brec
-import bush # for game
-import bosh # for modInfos
-import env
-import load_order
-from balt import Progress
-from bolt import GPath, decode, deprint, CsvReader, csvFormat, SubProgress, \
+from . import bolt
+from . import brec
+from . import bush # for game
+from . import bosh # for modInfos
+from . import env
+from . import load_order
+from .balt import Progress
+from .bolt import GPath, decode, deprint, CsvReader, csvFormat, SubProgress, \
     struct_pack, struct_unpack
-from bass import dirs, inisettings
-from brec import MreRecord, MelObject, _coerce, genFid, ModReader, ModWriter, \
+from .bass import dirs, inisettings
+from .brec import MreRecord, MelObject, _coerce, genFid, ModReader, ModWriter, \
     RecordHeader
-from cint import ObCollection, FormID, aggregateTypes, validTypes, \
+from .cint import ObCollection, FormID, aggregateTypes, validTypes, \
     MGEFCode, ActorValue, ValidateList, pickupables, ExtractExportList, \
     ValidateDict, IUNICODE, getattr_deep, setattr_deep
-from exception import ArgumentError, MasterMapError, ModError, StateError
-from record_groups import MobDials, MobICells, MobWorlds, MobObjects, MobBase
+from .exception import ArgumentError, MasterMapError, ModError, StateError
+from .record_groups import MobDials, MobICells, MobWorlds, MobObjects, MobBase
 
 class ActorFactions:
     """Factions for npcs and creatures with functions for
@@ -138,7 +138,7 @@ class ActorFactions:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 8 or fields[3][:2] != u'0x': continue
+                if len(fields) < 8 or fields[3][:2] != '0x': continue
                 type_,aed,amod,aobj,fed,fmod,fobj,rank = fields[:9]
                 amod = GPath(amod)
                 fmod = GPath(fmod)
@@ -150,27 +150,27 @@ class ActorFactions:
                 factiondict = dict(factions or [])
                 factiondict.update({fid:rank})
                 id_factions[aid] = [(fid,rank) for fid,rank in
-                                    factiondict.iteritems()]
+                                    factiondict.items()]
 
     def writeToText(self,textPath):
         """Exports faction data to specified text file."""
         type_id_factions,id_eid = self.type_id_factions,self.id_eid
-        headFormat = u'"%s","%s","%s","%s","%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
+        headFormat = '"%s","%s","%s","%s","%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Type'),_(u'Actor Eid'),_(u'Actor Mod'),_(u'Actor Object'),
-                _(u'Faction Eid'),_(u'Faction Mod'),_(u'Faction Object'),
-                _(u'Rank')))
+                _('Type'),_('Actor Eid'),_('Actor Mod'),_('Actor Object'),
+                _('Faction Eid'),_('Faction Mod'),_('Faction Object'),
+                _('Rank')))
             for type_ in sorted(type_id_factions):
                 id_factions = type_id_factions[type_]
                 for id_ in sorted(id_factions,
                                   key=lambda x:id_eid.get(x).lower()):
-                    actorEid = id_eid.get(id_,u'Unknown')
+                    actorEid = id_eid.get(id_,'Unknown')
                     for faction,rank in sorted(id_factions[id_],
                                                key=lambda x:id_eid.get(
                                                        x[0]).lower()):
-                        factionEid = id_eid.get(faction,u'Unknown')
+                        factionEid = id_eid.get(faction,'Unknown')
                         out.write(rowFormat % (
                             type_,actorEid,id_[0].s,id_[1],factionEid,
                             faction[0].s,faction[1],rank))
@@ -200,7 +200,7 @@ class CBash_ActorFactions:
                     fid_eid[record.fid] = record.eid
                 if modFile != importFile: continue
                 types = dict((('CREA', modFile.CREA),('NPC_', modFile.NPC_)))
-                for group,block in types.iteritems():
+                for group,block in types.items():
                     fid_factions = group_fid_factions[group]
                     for record in block:
                         fid = record.fid
@@ -219,7 +219,7 @@ class CBash_ActorFactions:
             Current.load()
             changed = defaultdict(int) # {'CREA':0,'NPC_':0}
             types = dict((('CREA', modFile.CREA),('NPC_', modFile.NPC_)))
-            for group,block in types.iteritems():
+            for group,block in types.items():
                 fid_factions = group_fid_factions.get(group,None)
                 if fid_factions is not None:
                     fid_factions = FormID.FilterValidDict(fid_factions,modFile,
@@ -255,11 +255,11 @@ class CBash_ActorFactions:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 8 or fields[3][:2] != u'0x': continue
+                if len(fields) < 8 or fields[3][:2] != '0x': continue
                 group,aed,amod,aobj,fed,fmod,fobj,rank = fields[:9]
-                group = _coerce(group,unicode)
-                amod = GPath(_coerce(amod,unicode))
-                fmod = GPath(_coerce(fmod,unicode))
+                group = _coerce(group,str)
+                amod = GPath(_coerce(amod,str))
+                fmod = GPath(_coerce(fmod,str))
                 aid = FormID(aliases.get(amod,amod),_coerce(aobj[2:],int,16))
                 fid = FormID(aliases.get(fmod,fmod),_coerce(fobj[2:],int,16))
                 rank = _coerce(rank, int)
@@ -268,25 +268,25 @@ class CBash_ActorFactions:
                 factiondict = dict(factions or [])
                 factiondict.update({fid:rank})
                 fid_factions[aid] = [(fid,rank) for fid,rank in
-                                     factiondict.iteritems()]
+                                     factiondict.items()]
 
     def writeToText(self,textPath):
         """Exports faction data to specified text file."""
         group_fid_factions,fid_eid = self.group_fid_factions, self.fid_eid
-        headFormat = u'"%s","%s","%s","%s","%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
+        headFormat = '"%s","%s","%s","%s","%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Type'),_(u'Actor Eid'),_(u'Actor Mod'),_(u'Actor Object'),
-                _(u'Faction Eid'),_(u'Faction Mod'),_(u'Faction Object'),
-                _(u'Rank')))
+                _('Type'),_('Actor Eid'),_('Actor Mod'),_('Actor Object'),
+                _('Faction Eid'),_('Faction Mod'),_('Faction Object'),
+                _('Rank')))
             for group in sorted(group_fid_factions):
                 fid_factions = group_fid_factions[group]
                 for fid in sorted(fid_factions,key = lambda x: fid_eid.get(x)):
-                    actorEid = fid_eid.get(fid,u'Unknown')
+                    actorEid = fid_eid.get(fid,'Unknown')
                     for faction,rank in sorted(fid_factions[fid],
                                                key=lambda x:fid_eid.get(x[0])):
-                        factionEid = fid_eid.get(faction,u'Unknown')
+                        factionEid = fid_eid.get(faction,'Unknown')
                         out.write(rowFormat % (
                             group,actorEid,fid[0].s,fid[1],factionEid,
                             faction[0].s,faction[1],rank))
@@ -325,7 +325,7 @@ class ActorLevels:
         mapper = modFile.getLongMapper()
         changed = 0
         id_levels = mod_id_levels.get(modInfo.name,
-                                      mod_id_levels.get(GPath(u'Unknown'),
+                                      mod_id_levels.get(GPath('Unknown'),
                                                         None))
         if id_levels:
             for record in modFile.NPC_.records:
@@ -349,25 +349,25 @@ class ActorLevels:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if fields[0][:2] == u'0x': #old format
+                if fields[0][:2] == '0x': #old format
                     fid,eid,offset,calcMin,calcMax = fields[:5]
-                    source = GPath(u'Unknown')
+                    source = GPath('Unknown')
                     fidObject = _coerce(fid[4:], int, 16)
                     fid = (GPath(bush.game.masterFiles[0]), fidObject)
-                    eid = _coerce(eid, unicode)
+                    eid = _coerce(eid, str)
                     offset = _coerce(offset, int)
                     calcMin = _coerce(calcMin, int)
                     calcMax = _coerce(calcMax, int)
                 else:
-                    if len(fields) < 7 or fields[3][:2] != u'0x': continue
+                    if len(fields) < 7 or fields[3][:2] != '0x': continue
                     source,eid,fidMod,fidObject,offset,calcMin,calcMax = \
                         fields[:7]
-                    source = _coerce(source, unicode)
-                    if source.lower() in (u'none', bush.game.masterFiles[0].lower()): continue
+                    source = _coerce(source, str)
+                    if source.lower() in ('none', bush.game.masterFiles[0].lower()): continue
                     source = GPath(source)
-                    eid = _coerce(eid, unicode)
-                    fidMod = GPath(_coerce(fidMod, unicode))
-                    if fidMod.s.lower() == u'none': continue
+                    eid = _coerce(eid, str)
+                    fidMod = GPath(_coerce(fidMod, str))
+                    if fidMod.s.lower() == 'none': continue
                     fidObject = _coerce(fidObject[2:], int, 16)
                     if fidObject is None: continue
                     fid = (aliases.get(fidMod,fidMod),fidObject)
@@ -380,17 +380,17 @@ class ActorLevels:
     def writeToText(self,textPath):
         """Export NPC level data to specified text file."""
         mod_id_levels = self.mod_id_levels
-        headFormat = u'"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
-                     u'"%s"\n'
-        rowFormat = u'"%s","%s","%s","0x%06X","%d","%d","%d"'
-        extendedRowFormat = u',"%d","%d","%d","%d"\n'
-        blankExtendedRow = u',,,,\n'
+        headFormat = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
+                     '"%s"\n'
+        rowFormat = '"%s","%s","%s","0x%06X","%d","%d","%d"'
+        extendedRowFormat = ',"%d","%d","%d","%d"\n'
+        blankExtendedRow = ',,,,\n'
         with textPath.open('w',encoding='utf') as out:
             out.write(headFormat % (
-                _(u'Source Mod'),_(u'Actor Eid'),_(u'Actor Mod'),
-                _(u'Actor Object'),_(u'Offset'),_(u'CalcMin'),_(u'CalcMax'),
-                _(u'Old IsPCLevelOffset'),_(u'Old Offset'),_(u'Old CalcMin'),
-                _(u'Old CalcMax')))
+                _('Source Mod'),_('Actor Eid'),_('Actor Mod'),
+                _('Actor Object'),_('Offset'),_('CalcMin'),_('CalcMax'),
+                _('Old IsPCLevelOffset'),_('Old Offset'),_('Old CalcMin'),
+                _('Old CalcMax')))
             #Sorted based on mod, then editor ID
             obId_levels = mod_id_levels[GPath(bush.game.masterFiles[0])]
             for mod in sorted(mod_id_levels):
@@ -426,7 +426,7 @@ class CBash_ActorLevels:
         """Imports actor level data from the specified mod and its masters."""
         mod_fid_levels, gotLevels = self.mod_fid_levels, self.gotLevels
         with ObCollection(ModsPath=dirs['mods'].s) as Current:
-            Current.addMod(u'Oblivion.esm', Saveable=False)
+            Current.addMod('Oblivion.esm', Saveable=False)
             Current.addMod(modInfo.getPath().stail, Saveable=False)
             Current.load()
             for modFile in Current.LoadOrderMods:
@@ -448,7 +448,7 @@ class CBash_ActorLevels:
             Current.load()
             changed = 0
             fid_levels = mod_fid_levels.get(modFile.GName,mod_fid_levels.get(
-                GPath(u'Unknown'),None))
+                GPath('Unknown'),None))
             if fid_levels:
                 for record in modFile.NPC_:
                     fid = record.fid
@@ -469,25 +469,25 @@ class CBash_ActorLevels:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if fields[0][:2] == u'0x': #old format
+                if fields[0][:2] == '0x': #old format
                     fid,eid,offset,calcMin,calcMax = fields[:5]
-                    source = GPath(u'Unknown')
+                    source = GPath('Unknown')
                     fidObject = _coerce(fid[4:], int, 16)
-                    fid = FormID(GPath(u'Oblivion.esm'), fidObject)
-                    eid = _coerce(eid, unicode, AllowNone=True)
+                    fid = FormID(GPath('Oblivion.esm'), fidObject)
+                    eid = _coerce(eid, str, AllowNone=True)
                     offset = _coerce(offset, int)
                     calcMin = _coerce(calcMin, int)
                     calcMax = _coerce(calcMax, int)
                 else:
-                    if len(fields) < 7 or fields[3][:2] != u'0x': continue
+                    if len(fields) < 7 or fields[3][:2] != '0x': continue
                     source,eid,fidMod,fidObject,offset,calcMin,calcMax = \
                         fields[:7]
-                    source = _coerce(source, unicode)
-                    if source.lower() in (u'none', u'oblivion.esm'): continue
+                    source = _coerce(source, str)
+                    if source.lower() in ('none', 'oblivion.esm'): continue
                     source = GPath(source)
-                    eid = _coerce(eid, unicode, AllowNone=True)
-                    fidMod = GPath(_coerce(fidMod, unicode))
-                    if fidMod.s.lower() == u'none': continue
+                    eid = _coerce(eid, str, AllowNone=True)
+                    fidMod = GPath(_coerce(fidMod, str))
+                    if fidMod.s.lower() == 'none': continue
                     fidObject = _coerce(fidObject[2:], int, 16)
                     if fidObject is None: continue
                     fid = FormID(aliases.get(fidMod,fidMod),fidObject)
@@ -500,21 +500,21 @@ class CBash_ActorLevels:
     def writeToText(self,textPath):
         """Export NPC level data to specified text file."""
         mod_fid_levels = self.mod_fid_levels
-        headFormat = u'"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
-                     u'"%s"\n'
-        rowFormat = u'"%s","%s","%s","0x%06X","%d","%d","%d"'
-        extendedRowFormat = u',"%d","%d","%d","%d"\n'
-        blankExtendedRow = u',,,,\n'
+        headFormat = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
+                     '"%s"\n'
+        rowFormat = '"%s","%s","%s","0x%06X","%d","%d","%d"'
+        extendedRowFormat = ',"%d","%d","%d","%d"\n'
+        blankExtendedRow = ',,,,\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Source Mod'),_(u'Actor Eid'),_(u'Actor Mod'),
-                _(u'Actor Object'),_(u'Offset'),_(u'CalcMin'),_(u'CalcMax'),
-                _(u'Old IsPCLevelOffset'),_(u'Old Offset'),_(u'Old CalcMin'),
-                _(u'Old CalcMax')))
+                _('Source Mod'),_('Actor Eid'),_('Actor Mod'),
+                _('Actor Object'),_('Offset'),_('CalcMin'),_('CalcMax'),
+                _('Old IsPCLevelOffset'),_('Old Offset'),_('Old CalcMin'),
+                _('Old CalcMax')))
             #Sorted based on mod, then editor ID
-            obfid_levels = mod_fid_levels[GPath(u'Oblivion.esm')]
+            obfid_levels = mod_fid_levels[GPath('Oblivion.esm')]
             for mod in sorted(mod_fid_levels):
-                if mod.s.lower() == u'oblivion.esm': continue
+                if mod.s.lower() == 'oblivion.esm': continue
                 fid_levels = mod_fid_levels[mod]
                 for fid in sorted(fid_levels,
                                   key=lambda k:(k[0].s,fid_levels[k][0])):
@@ -619,7 +619,7 @@ class EditorIds:
                 # len(script.eid))) # unused - bug ?
                 script.scriptText = newText
                 script.setChanged()
-                changed.append((_(u"Script"),script.eid))
+                changed.append((_("Script"),script.eid))
         #--Quest Scripts
         for quest in sorted(modFile.QUST.records,key=attrgetter('eid')):
             questChanged = False
@@ -632,7 +632,7 @@ class EditorIds:
                         entry.scriptText = newScript
                         questChanged = True
             if questChanged:
-                changed.append((_(u"Quest"),quest.eid))
+                changed.append((_("Quest"),quest.eid))
                 quest.setChanged()
         #--Done
         return changed
@@ -642,15 +642,15 @@ class EditorIds:
         type_id_eid = self.type_id_eid
         aliases = self.aliases
         with CsvReader(textPath) as ins:
-            reValidEid = re.compile(u'^[a-zA-Z0-9]+$')
-            reGoodEid = re.compile(u'^[a-zA-Z]')
+            reValidEid = re.compile('^[a-zA-Z0-9]+$')
+            reGoodEid = re.compile('^[a-zA-Z]')
             for fields in ins:
-                if len(fields) < 4 or fields[2][:2] != u'0x': continue
+                if len(fields) < 4 or fields[2][:2] != '0x': continue
                 group,mod,objectIndex,eid = fields[:4]
-                group = _coerce(group,unicode)
-                mod = GPath(_coerce(mod,unicode))
+                group = _coerce(group,str)
+                mod = GPath(_coerce(mod,str))
                 longid = (aliases.get(mod,mod),_coerce(objectIndex[2:],int,16))
-                eid = _coerce(eid,unicode, AllowNone=True)
+                eid = _coerce(eid,str, AllowNone=True)
                 if not reValidEid.match(eid):
                     if badEidsList is not None:
                         badEidsList.append(eid)
@@ -662,16 +662,16 @@ class EditorIds:
                 id_eid[longid] = eid
                 #--Explicit old to new def? (Used for script updating.)
                 if len(fields) > 4:
-                    self.old_new[_coerce(fields[4], unicode).lower()] = eid
+                    self.old_new[_coerce(fields[4], str).lower()] = eid
 
     def writeToText(self,textPath):
         """Exports eids to specified text file."""
         type_id_eid = self.type_id_eid
-        headFormat = u'"%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","0x%06X","%s"\n'
+        headFormat = '"%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","0x%06X","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id')))
+                _('Type'),_('Mod Name'),_('ObjectIndex'),_('Editor Id')))
             for type_ in sorted(type_id_eid):
                 id_eid = type_id_eid[type_]
                 for id_ in sorted(id_eid,key = lambda a: id_eid[a].lower()):
@@ -711,7 +711,7 @@ class CBash_EditorIds:
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
             changed = []
-            for group,block in modFile.aggregates.iteritems():
+            for group,block in modFile.aggregates.items():
                 fid_eid = group_fid_eid.get(group[:4],None)
                 if not fid_eid: continue
                 for record in block:
@@ -723,7 +723,7 @@ class CBash_EditorIds:
                         if record.eid == newEid: #Can silently fail if a
                             # record keyed by editorID (GMST,MGEF) already has
                             # the value
-                            changed.append((oldEid or u'',newEid or u''))
+                            changed.append((oldEid or '',newEid or ''))
             #--Update scripts
             old_new = dict(self.old_new)
             old_new.update(
@@ -751,7 +751,7 @@ class CBash_EditorIds:
             newText = reWord.sub(subWord,script.scriptText)
             if newText != script.scriptText:
                 script.scriptText = newText
-                changed.append((_(u"Script"),script.eid))
+                changed.append((_("Script"),script.eid))
         #--Quest Scripts
         for quest in sorted(modFile.QUST,key=attrgetter('eid')):
             questChanged = False
@@ -764,7 +764,7 @@ class CBash_EditorIds:
                         entry.scriptText = newScript
                         questChanged = True
             if questChanged:
-                changed.append((_(u"Quest"),quest.eid))
+                changed.append((_("Quest"),quest.eid))
         #--Done
         return changed
 
@@ -773,17 +773,17 @@ class CBash_EditorIds:
         group_fid_eid = self.group_fid_eid
         aliases = self.aliases
         with CsvReader(textPath) as ins:
-            reValidEid = re.compile(u'^[a-zA-Z0-9]+$')
-            reGoodEid = re.compile(u'^[a-zA-Z]')
+            reValidEid = re.compile('^[a-zA-Z0-9]+$')
+            reGoodEid = re.compile('^[a-zA-Z]')
             for fields in ins:
-                if len(fields) < 4 or fields[2][:2] != u'0x': continue
+                if len(fields) < 4 or fields[2][:2] != '0x': continue
                 group,mod,objectIndex,eid = fields[:4]
-                group = _coerce(group,unicode)[:4]
+                group = _coerce(group,str)[:4]
                 if group not in validTypes: continue
-                mod = GPath(_coerce(mod,unicode))
+                mod = GPath(_coerce(mod,str))
                 longid = FormID(aliases.get(mod,mod),
                                 _coerce(objectIndex[2:],int,16))
-                eid = _coerce(eid,unicode, AllowNone=True)
+                eid = _coerce(eid,str, AllowNone=True)
                 if not reValidEid.match(eid):
                     if badEidsList is not None:
                         badEidsList.append(eid)
@@ -795,16 +795,16 @@ class CBash_EditorIds:
                 fid_eid[longid] = eid
                 #--Explicit old to new def? (Used for script updating.)
                 if len(fields) > 4:
-                    self.old_new[_coerce(fields[4], unicode).lower()] = eid
+                    self.old_new[_coerce(fields[4], str).lower()] = eid
 
     def writeToText(self,textPath):
         """Exports eids to specified text file."""
         group_fid_eid = self.group_fid_eid
-        headFormat = u'"%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","0x%06X","%s"\n'
+        headFormat = '"%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","0x%06X","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id')))
+                _('Type'),_('Mod Name'),_('ObjectIndex'),_('Editor Id')))
             for group in sorted(group_fid_eid):
                 fid_eid = group_fid_eid[group]
                 for fid in sorted(fid_eid,key = lambda a: fid_eid[a]):
@@ -859,10 +859,10 @@ class FactionRelations:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 7 or fields[2][:2] != u'0x': continue
+                if len(fields) < 7 or fields[2][:2] != '0x': continue
                 med,mmod,mobj,oed,omod,oobj,disp = fields[:9]
-                mmod = _coerce(mmod, unicode)
-                omod = _coerce(omod, unicode)
+                mmod = _coerce(mmod, str)
+                omod = _coerce(omod, str)
                 mid = (GPath(aliases.get(mmod,mmod)),_coerce(mobj[2:],int,16))
                 oid = (GPath(aliases.get(omod,omod)),_coerce(oobj[2:],int,16))
                 disp = _coerce(disp, int)
@@ -913,19 +913,19 @@ class FactionRelations:
     def writeToText(self,textPath):
         """Exports faction relations to specified text file."""
         id_relations,id_eid = self.id_relations, self.id_eid
-        headFormat = u'"%s","%s","%s","%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
+        headFormat = '"%s","%s","%s","%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Main Eid'),_(u'Main Mod'),_(u'Main Object'),
-                _(u'Other Eid'),_(u'Other Mod'),_(u'Other Object'),_(u'Disp')))
+                _('Main Eid'),_('Main Mod'),_('Main Object'),
+                _('Other Eid'),_('Other Mod'),_('Other Object'),_('Disp')))
             for main in sorted(id_relations,
                                key=lambda x:id_eid.get(x).lower()):
-                mainEid = id_eid.get(main,u'Unknown')
+                mainEid = id_eid.get(main,'Unknown')
                 for other,disp in sorted(id_relations[main],
                                          key=lambda x:id_eid.get(
                                                  x[0]).lower()):
-                    otherEid = id_eid.get(other,u'Unknown')
+                    otherEid = id_eid.get(other,'Unknown')
                     out.write(rowFormat % (
                         mainEid,main[0].s,main[1],otherEid,other[0].s,other[1],
                         disp))
@@ -970,10 +970,10 @@ class CBash_FactionRelations:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 7 or fields[2][:2] != u'0x': continue
+                if len(fields) < 7 or fields[2][:2] != '0x': continue
                 med,mmod,mobj,oed,omod,oobj,disp = fields[:9]
-                mmod = _coerce(mmod,unicode)
-                omod = _coerce(omod,unicode)
+                mmod = _coerce(mmod,str)
+                omod = _coerce(omod,str)
                 mid = FormID(GPath(aliases.get(mmod,mmod)),
                              _coerce(mobj[2:],int,16))
                 oid = FormID(GPath(aliases.get(omod,omod)),
@@ -997,7 +997,7 @@ class CBash_FactionRelations:
                 newRelations = set([(faction,mod) for faction,mod in
                                     FormID.FilterValidDict(faction_mod,modFile,
                                                            True,
-                                                           False).iteritems()])
+                                                           False).items()])
                 curRelations = set(
                     [(faction,mod) for faction,mod in record.relations_list if
                      faction.ValidateFormID(modFile)])
@@ -1020,18 +1020,18 @@ class CBash_FactionRelations:
     def writeToText(self,textPath):
         """Exports faction relations to specified text file."""
         fid_faction_mod,fid_eid = self.fid_faction_mod, self.fid_eid
-        headFormat = u'"%s","%s","%s","%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
+        headFormat = '"%s","%s","%s","%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","0x%06X","%s","%s","0x%06X","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Main Eid'),_(u'Main Mod'),_(u'Main Object'),
-                _(u'Other Eid'),_(u'Other Mod'),_(u'Other Object'),_(u'Disp')))
+                _('Main Eid'),_('Main Mod'),_('Main Object'),
+                _('Other Eid'),_('Other Mod'),_('Other Object'),_('Disp')))
             for main in sorted(fid_faction_mod, key=lambda x: fid_eid.get(x)):
-                mainEid = fid_eid.get(main,u'Unknown')
+                mainEid = fid_eid.get(main,'Unknown')
                 faction_mod = fid_faction_mod[main]
-                for other,disp in sorted(faction_mod.items(),
+                for other,disp in sorted(list(faction_mod.items()),
                                          key=lambda x:fid_eid.get(x[0])):
-                    otherEid = fid_eid.get(other,u'Unknown')
+                    otherEid = fid_eid.get(other,'Unknown')
                     out.write(rowFormat % (
                         mainEid,main[0].s,main[1],otherEid,other[0].s,other[1],
                         disp))
@@ -1053,14 +1053,14 @@ class FidReplacer:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 7 or fields[2][:2] != u'0x'\
-                        or fields[6][:2] != u'0x': continue
+                if len(fields) < 7 or fields[2][:2] != '0x'\
+                        or fields[6][:2] != '0x': continue
                 oldMod,oldObj,oldEid,newEid,newMod,newObj = fields[1:7]
-                oldMod = _coerce(oldMod, unicode)
-                oldEid = _coerce(oldEid, unicode, AllowNone=True)
-                newEid = _coerce(newEid, unicode, AllowNone=True)
-                newMod = _coerce(newMod, unicode)
-                oldMod,newMod = map(GPath,(oldMod,newMod))
+                oldMod = _coerce(oldMod, str)
+                oldEid = _coerce(oldEid, str, AllowNone=True)
+                newEid = _coerce(newEid, str, AllowNone=True)
+                newMod = _coerce(newMod, str)
+                oldMod,newMod = list(map(GPath,(oldMod,newMod)))
                 oldId = (
                     GPath(aliases.get(oldMod,oldMod)),_coerce(oldObj,int,16))
                 newId = (
@@ -1084,13 +1084,13 @@ class FidReplacer:
         short.update((newId,mapper(newId)) for newId in self.new_eid if
                      newId[0] in masters)
         old_eid = dict(
-            (short[oldId],eid) for oldId,eid in self.old_eid.iteritems() if
+            (short[oldId],eid) for oldId,eid in self.old_eid.items() if
             oldId in short)
         new_eid = dict(
-            (short[newId],eid) for newId,eid in self.new_eid.iteritems() if
+            (short[newId],eid) for newId,eid in self.new_eid.items() if
             newId in short)
         old_new = dict((short[oldId],short[newId]) for oldId,newId in
-                       self.old_new.iteritems() if
+                       self.old_new.items() if
                        (oldId in short and newId in short))
         if not old_new: return False
         #--Swapper function
@@ -1113,7 +1113,7 @@ class FidReplacer:
         if not old_count: return False
         modFile.safeSave()
         entries = [(count,old_eid[oldId],new_eid[old_new[oldId]]) for
-                   oldId,count in old_count.iteritems()]
+                   oldId,count in old_count.items()]
         entries.sort(key=itemgetter(1))
         return '\n'.join(['%3d %s >> %s' % entry for entry in entries])
 
@@ -1132,14 +1132,14 @@ class CBash_FidReplacer:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 7 or fields[2][:2] != u'0x'\
-                        or fields[6][:2] != u'0x': continue
+                if len(fields) < 7 or fields[2][:2] != '0x'\
+                        or fields[6][:2] != '0x': continue
                 oldMod,oldObj,oldEid,newEid,newMod,newObj = fields[1:7]
-                oldMod = _coerce(oldMod, unicode)
-                oldEid = _coerce(oldEid, unicode)
-                newEid = _coerce(newEid, unicode, AllowNone=True)
-                newMod = _coerce(newMod, unicode, AllowNone=True)
-                oldMod,newMod = map(GPath,(oldMod,newMod))
+                oldMod = _coerce(oldMod, str)
+                oldEid = _coerce(oldEid, str)
+                newEid = _coerce(newEid, str, AllowNone=True)
+                newMod = _coerce(newMod, str, AllowNone=True)
+                oldMod,newMod = list(map(GPath,(oldMod,newMod)))
                 oldId = FormID(GPath(aliases.get(oldMod,oldMod)),
                                _coerce(oldObj,int,16))
                 newId = FormID(GPath(aliases.get(newMod,newMod)),
@@ -1152,8 +1152,8 @@ class CBash_FidReplacer:
         """Updates specified mod file."""
         old_new,old_eid,new_eid = self.old_new,self.old_eid,self.new_eid
         #Filter the fid replacements to only include existing mods
-        existing = bosh.modInfos.keys()
-        old_new = dict((oldId,newId) for oldId,newId in old_new.iteritems() if
+        existing = list(bosh.modInfos.keys())
+        old_new = dict((oldId,newId) for oldId,newId in old_new.items() if
                        oldId[0] in existing and newId[0] in existing)
         if not old_new: return False
         # old_count = {} # unused - was meant to be used ?
@@ -1169,9 +1169,9 @@ class CBash_FidReplacer:
             modFile.save()
             entries = [(count,old_eid[oldId],new_eid[newId]) for
                        count,oldId,newId in
-                       zip(counts,old_new.keys(),old_new.values())]
+                       zip(counts,list(old_new.keys()),list(old_new.values()))]
             entries.sort(key=itemgetter(1))
-            return u'\n'.join([u'%3d %s >> %s' % entry for entry in entries])
+            return '\n'.join(['%3d %s >> %s' % entry for entry in entries])
 
 #------------------------------------------------------------------------------
 class FullNames:
@@ -1198,7 +1198,7 @@ class FullNames:
             id_name = type_id_name[type_]
             for record in typeBlock.getActiveRecords():
                 longid = mapper(record.fid)
-                full = record.full or (type_ == 'LIGH' and u'NO NAME')
+                full = record.full or (type_ == 'LIGH' and 'NO NAME')
                 if record.eid and full:
                     id_name[longid] = (record.eid,full)
 
@@ -1219,7 +1219,7 @@ class FullNames:
                 longid = mapper(record.fid)
                 full = record.full
                 eid,newFull = id_name.get(longid,(0,0))
-                if newFull and newFull not in (full,u'NO NAME'):
+                if newFull and newFull not in (full,'NO NAME'):
                     record.full = newFull
                     record.setChanged()
                     changed[eid] = (full,newFull)
@@ -1233,13 +1233,13 @@ class FullNames:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 5 or fields[2][:2] != u'0x': continue
+                if len(fields) < 5 or fields[2][:2] != '0x': continue
                 group,mod,objectIndex,eid,full = fields[:5]
-                group = _coerce(group, unicode)
-                mod = GPath(_coerce(mod, unicode))
+                group = _coerce(group, str)
+                mod = GPath(_coerce(mod, str))
                 longid = (aliases.get(mod,mod),_coerce(objectIndex[2:],int,16))
-                eid = _coerce(eid, unicode, AllowNone=True)
-                full = _coerce(full, unicode, AllowNone=True)
+                eid = _coerce(eid, str, AllowNone=True)
+                full = _coerce(full, str, AllowNone=True)
                 if group in type_id_name:
                     type_id_name[group][longid] = (eid,full)
                 else:
@@ -1249,22 +1249,22 @@ class FullNames:
         """Exports type_id_name to specified text file."""
         textPath = GPath(textPath)
         type_id_name = self.type_id_name
-        headFormat = u'"%s","%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","0x%06X","%s","%s"\n'
+        headFormat = '"%s","%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","0x%06X","%s","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % (
-                _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),
-                _(u'Name')))
+                _('Type'),_('Mod Name'),_('ObjectIndex'),_('Editor Id'),
+                _('Name')))
             for type_ in sorted(type_id_name):
                 id_name = type_id_name[type_]
-                longids = id_name.keys()
+                longids = list(id_name.keys())
                 longids.sort(key=lambda a: id_name[a][0].lower())
                 longids.sort(key=itemgetter(0))
                 for longid in longids:
                     eid,name = id_name[longid]
                     out.write(rowFormat % (
                         type_,longid[0].s,longid[1],eid,
-                        name.replace(u'"',u'""')))
+                        name.replace('"','""')))
 
 class CBash_FullNames:
     """Names for records, with functions for importing/exporting from/to
@@ -1291,7 +1291,7 @@ class CBash_FullNames:
                 fid_name = group_fid_name.setdefault(group[:4],{})
                 for record in getattr(modFile,group):
                     if hasattr(record, 'full'):
-                        full = record.full or (group == 'LIGH' and u'NO NAME')
+                        full = record.full or (group == 'LIGH' and 'NO NAME')
                         eid = record.eid
                         if eid and full:
                             fid_name[record.fid] = (eid,full)
@@ -1312,7 +1312,7 @@ class CBash_FullNames:
                     fid = record.fid
                     full = record.full
                     eid,newFull = fid_name.get(fid,(0,0))
-                    if newFull and newFull not in (full,u'NO NAME'):
+                    if newFull and newFull not in (full,'NO NAME'):
                         record.full = newFull
                         changed[eid] = (full,newFull)
             if changed: modFile.save()
@@ -1325,37 +1325,37 @@ class CBash_FullNames:
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 5 or fields[2][:2] != u'0x': continue
+                if len(fields) < 5 or fields[2][:2] != '0x': continue
                 group,mod,objectIndex,eid,full = fields[:5]
-                group = _coerce(group,unicode)
-                mod = GPath(_coerce(mod,unicode))
+                group = _coerce(group,str)
+                mod = GPath(_coerce(mod,str))
                 longid = FormID(aliases.get(mod,mod),
                                 _coerce(objectIndex[2:],int,16))
-                eid = _coerce(eid,unicode,AllowNone=True)
-                full = _coerce(full,unicode,AllowNone=True)
+                eid = _coerce(eid,str,AllowNone=True)
+                full = _coerce(full,str,AllowNone=True)
                 group_fid_name.setdefault(group,{})[longid] = (eid,full)
 
     def writeToText(self,textPath):
         """Exports type_id_name to specified text file."""
         textPath = GPath(textPath)
         group_fid_name = self.group_fid_name
-        headFormat = u'"%s","%s","%s","%s","%s"\n'
-        rowFormat = u'"%s","%s","0x%06X","%s","%s"\n'
+        headFormat = '"%s","%s","%s","%s","%s"\n'
+        rowFormat = '"%s","%s","0x%06X","%s","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             outWrite = out.write
             outWrite(headFormat % (
-                _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),
-                _(u'Name')))
+                _('Type'),_('Mod Name'),_('ObjectIndex'),_('Editor Id'),
+                _('Name')))
             for group in sorted(group_fid_name):
                 fid_name = group_fid_name[group]
-                longids = fid_name.keys()
+                longids = list(fid_name.keys())
                 longids.sort(key=lambda a: fid_name[a][0])
                 longids.sort(key=itemgetter(0))
                 for longid in longids:
                     eid,name = fid_name[longid]
                     outWrite(rowFormat % (
                         group,longid[0],longid[1],eid,
-                        name.replace(u'"',u'""')))
+                        name.replace('"','""')))
 
 #------------------------------------------------------------------------------
 class ItemStats:
@@ -1364,7 +1364,7 @@ class ItemStats:
 
     @staticmethod
     def sstr(value):
-        return _coerce(value, unicode, AllowNone=True)
+        return _coerce(value, str, AllowNone=True)
 
     @staticmethod
     def sfloat(value):
@@ -1384,8 +1384,8 @@ class ItemStats:
         self.class_attrs = bush.game.statsTypes
         self.class_fid_attr_value = defaultdict(lambda : defaultdict(dict))
         self.aliases = aliases or {} #--For aliasing mod names
-        if bush.game.fsName in (u'Enderal', u'Skyrim',
-                                u'Skyrim Special Edition'):
+        if bush.game.fsName in ('Enderal', 'Skyrim',
+                                'Skyrim Special Edition'):
             self.attr_type = {'eid':self.sstr,
                               'weight':self.sfloat,
                               'value':self.sint,
@@ -1399,7 +1399,7 @@ class ItemStats:
                               'critDamage':self.sint,
                               'criticalMultiplier':self.sfloat,
                               'criticalEffect':self.sint,}
-        elif bush.game.fsName in (u'FalloutNV', u'Fallout3'):
+        elif bush.game.fsName in ('FalloutNV', 'Fallout3'):
             self.attr_type = {'eid':self.sstr,
                               'weight':self.sfloat,
                               'value':self.sint,
@@ -1452,7 +1452,7 @@ class ItemStats:
                               'vatsSkill':self.sfloat,
                               'vatsDamMult':self.sfloat,
                               'vatsAp':self.sfloat,}
-        elif bush.game.fsName == u'Oblivion':
+        elif bush.game.fsName == 'Oblivion':
             self.attr_type = {'eid':self.sstr,
                               'weight':self.sfloat,
                               'value':self.sint,
@@ -1473,10 +1473,10 @@ class ItemStats:
         modFile = ModFile(modInfo,loadFactory)
         modFile.load(True)
         modFile.convertToLongFids()
-        for group, attrs in self.class_attrs.iteritems():
+        for group, attrs in self.class_attrs.items():
             for record in getattr(modFile,group).getActiveRecords():
                 self.class_fid_attr_value[group][record.fid].update(
-                    zip(attrs, map(record.__getattribute__, attrs)))
+                    list(zip(attrs, list(map(record.__getattribute__, attrs)))))
 
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""
@@ -1486,15 +1486,15 @@ class ItemStats:
         modFile.load(True)
         modFile.convertToLongFids()
         changed = defaultdict(int) #--changed[modName] = numChanged
-        for group, fid_attr_value in self.class_fid_attr_value.iteritems():
+        for group, fid_attr_value in self.class_fid_attr_value.items():
             attrs = self.class_attrs[group]
             for record in getattr(modFile,group).getActiveRecords():
                 longid = record.fid
                 itemStats = fid_attr_value.get(longid,None)
                 if not itemStats: continue
-                oldValues = dict(zip(attrs,map(record.__getattribute__,attrs)))
+                oldValues = dict(list(zip(attrs,list(map(record.__getattribute__,attrs)))))
                 if oldValues != itemStats:
-                    for attr, value in itemStats.iteritems():
+                    for attr, value in itemStats.items():
                         setattr(record,attr,value)
                     record.setChanged()
                     changed[longid[0]] += 1
@@ -1507,9 +1507,9 @@ class ItemStats:
         with CsvReader(textPath) as ins:
             attr_type = self.attr_type
             for fields in ins:
-                if len(fields) < 3 or fields[2][:2] != u'0x': continue
+                if len(fields) < 3 or fields[2][:2] != '0x': continue
                 group,modName,objectStr = fields[0:3]
-                modName = GPath(_coerce(modName,unicode))
+                modName = GPath(_coerce(modName,str))
                 longid = (GPath(aliases.get(modName,modName)),
                     _coerce(objectStr,int,16))
                 attrs = self.class_attrs[group]
@@ -1522,14 +1522,14 @@ class ItemStats:
         """Writes stats to specified text file."""
         class_fid_attr_value = self.class_fid_attr_value
         def getSortedIds(fid_attr_value):
-            longids = fid_attr_value.keys()
+            longids = list(fid_attr_value.keys())
             longids.sort(key=lambda a: fid_attr_value[a]['eid'].lower())
             longids.sort(key=itemgetter(0))
             return longids
         with textPath.open('w',encoding='utf-8-sig') as out:
             def write(out, attrs, values):
                 attr_type = self.attr_type
-                csvFormat = u''
+                csvFormat = ''
                 sstr = self.sstr
                 sint = self.sint
                 snoneint = self.snoneint
@@ -1541,13 +1541,13 @@ class ItemStats:
                         stype = attr_type[attr]
                     values[index] = stype(values[index]) #sanitize output
                     if values[index] is None:
-                        csvFormat += u',"{0[%d]}"' % index
-                    elif stype is sstr: csvFormat += u',"{0[%d]}"' % index
+                        csvFormat += ',"{0[%d]}"' % index
+                    elif stype is sstr: csvFormat += ',"{0[%d]}"' % index
                     elif stype is sint or stype is snoneint: csvFormat += \
-                        u',"{0[%d]:d}"' % index
-                    elif stype is sfloat: csvFormat += u',"{0[%d]:f}"' % index
+                        ',"{0[%d]:d}"' % index
+                    elif stype is sfloat: csvFormat += ',"{0[%d]:f}"' % index
                 csvFormat = csvFormat[1:] #--Chop leading comma
-                out.write(csvFormat.format(values) + u'\n')
+                out.write(csvFormat.format(values) + '\n')
             for group,header in bush.game.statsHeaders:
                 fid_attr_value = class_fid_attr_value[group]
                 if not fid_attr_value: continue
@@ -1555,9 +1555,9 @@ class ItemStats:
                 out.write(header)
                 for longid in getSortedIds(fid_attr_value):
                     out.write(
-                        u'"%s","%s","0x%06X",' % (group,longid[0].s,longid[1]))
+                        '"%s","%s","0x%06X",' % (group,longid[0].s,longid[1]))
                     attr_value = fid_attr_value[longid]
-                    write(out, attrs, map(attr_value.get, attrs))
+                    write(out, attrs, list(map(attr_value.get, attrs)))
 
 class CBash_ItemStats:
     """Statistics for armor and weapons, with functions for
@@ -1565,7 +1565,7 @@ class CBash_ItemStats:
 
     @staticmethod
     def sstr(value):
-        return _coerce(value, unicode, AllowNone=True)
+        return _coerce(value, str, AllowNone=True)
 
     @staticmethod
     def sfloat(value):
@@ -1603,10 +1603,10 @@ class CBash_ItemStats:
         with ObCollection(ModsPath=dirs['mods'].s) as Current:
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
-            for group, attrs in self.class_attrs.iteritems():
+            for group, attrs in self.class_attrs.items():
                 for record in getattr(modFile,group):
                     self.class_fid_attr_value[group][record.fid].update(
-                        zip(attrs,map(record.__getattribute__,attrs)))
+                        list(zip(attrs,list(map(record.__getattribute__,attrs)))))
 
     def writeToMod(self,modInfo):
         """Exports type_id_name to specified mod."""
@@ -1614,17 +1614,17 @@ class CBash_ItemStats:
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
             changed = defaultdict(int) #--changed[modName] = numChanged
-            for group, fid_attr_value in self.class_fid_attr_value.iteritems():
+            for group, fid_attr_value in self.class_fid_attr_value.items():
                 attrs = self.class_attrs[group]
                 fid_attr_value = FormID.FilterValidDict(fid_attr_value,modFile,
                                                         True,False)
-                for fid, attr_value in fid_attr_value.iteritems():
+                for fid, attr_value in fid_attr_value.items():
                     record = modFile.LookupRecord(fid)
                     if record and record._Type == group:
                         oldValues = dict(
-                            zip(attrs,map(record.__getattribute__,attrs)))
+                            list(zip(attrs,list(map(record.__getattribute__,attrs)))))
                         if oldValues != attr_value:
-                            for attr, value in attr_value.iteritems():
+                            for attr, value in attr_value.items():
                                 setattr(record,attr,value)
                             changed[fid[0]] += 1
             if changed: modFile.save()
@@ -1636,9 +1636,9 @@ class CBash_ItemStats:
         with CsvReader(textPath) as ins:
             attr_type = self.attr_type
             for fields in ins:
-                if len(fields) < 3 or fields[2][:2] != u'0x': continue
+                if len(fields) < 3 or fields[2][:2] != '0x': continue
                 group,modName,objectStr = fields[0:3]
-                modName = GPath(_coerce(modName,unicode))
+                modName = GPath(_coerce(modName,str))
                 longid = FormID(GPath(aliases.get(modName,modName)),
                                 _coerce(objectStr,int,16))
                 attrs = self.class_attrs[group]
@@ -1651,14 +1651,14 @@ class CBash_ItemStats:
         """Writes stats to specified text file."""
         class_fid_attr_value = self.class_fid_attr_value
         def getSortedIds(fid_attr_value):
-            longids = fid_attr_value.keys()
+            longids = list(fid_attr_value.keys())
             longids.sort(key=lambda a: fid_attr_value[a]['eid'])
             longids.sort(key=itemgetter(0))
             return longids
         with textPath.open('w',encoding='utf-8-sig') as out:
             def write(out, attrs, values):
                 attr_type = self.attr_type
-                _csvFormat = u''
+                _csvFormat = ''
                 sstr = self.sstr
                 sint = self.sint
                 snoneint = self.snoneint
@@ -1667,13 +1667,13 @@ class CBash_ItemStats:
                     stype = attr_type[attr]
                     values[index] = stype(values[index]) #sanitize output
                     if values[index] is None:
-                        _csvFormat += u',"{0[%d]}"' % index
-                    elif stype is sstr: _csvFormat += u',"{0[%d]}"' % index
+                        _csvFormat += ',"{0[%d]}"' % index
+                    elif stype is sstr: _csvFormat += ',"{0[%d]}"' % index
                     elif stype is sint or stype is snoneint: _csvFormat += \
-                        u',"{0[%d]:d}"' % index
-                    elif stype is sfloat: _csvFormat += u',"{0[%d]:f}"' % index
+                        ',"{0[%d]:d}"' % index
+                    elif stype is sfloat: _csvFormat += ',"{0[%d]:f}"' % index
                 _csvFormat = _csvFormat[1:] #--Chop leading comma
-                out.write(_csvFormat.format(values) + u'\n')
+                out.write(_csvFormat.format(values) + '\n')
             for group,header in bush.game.statsHeaders:
                 fid_attr_value = class_fid_attr_value[group]
                 if not fid_attr_value: continue
@@ -1681,9 +1681,9 @@ class CBash_ItemStats:
                 out.write(header)
                 for longid in getSortedIds(fid_attr_value):
                     out.write(
-                        u'"%s","%s","0x%06X",' % (group,longid[0],longid[1]))
+                        '"%s","%s","0x%06X",' % (group,longid[0],longid[1]))
                     attr_value = fid_attr_value[longid]
-                    write(out, attrs, map(attr_value.get, attrs))
+                    write(out, attrs, list(map(attr_value.get, attrs)))
 
 #------------------------------------------------------------------------------
 class _ScriptText(object):
@@ -1702,24 +1702,24 @@ class _ScriptText(object):
         z = 0
         num = 0
         r = len(deprefix)
-        with Progress(_(u"Export Scripts")) as progress:
+        with Progress(_("Export Scripts")) as progress:
             for eid in sorted(eid_data, key=lambda b: (b, eid_data[b][1])):
                 text, longid = eid_data[eid]
                 text = decode(text) # TODO(ut) was only present in PBash version - needed ?
                 if skipcomments:
-                    tmp = u''
-                    for line in text.split(u'\n'):
-                        pos = line.find(u';')
+                    tmp = ''
+                    for line in text.split('\n'):
+                        pos = line.find(';')
                         if pos == -1:
-                            tmp += line + u'\n'
+                            tmp += line + '\n'
                         elif pos == 0:
                             continue
                         else:
                             if line[:pos].isspace(): continue
-                            tmp += line[:pos] + u'\n'
+                            tmp += line[:pos] + '\n'
                     text = tmp
                 z += 1
-                progress((0.5 + 0.5 / y * z),_(u"Exporting script %s.") % eid)
+                progress((0.5 + 0.5 / y * z),_("Exporting script %s.") % eid)
                 if x == 0 or skip.lower() != eid[:x].lower():
                     fileName = eid
                     if r >= 1 and deprefix == fileName[:r]:
@@ -1728,11 +1728,11 @@ class _ScriptText(object):
                     outpath = dirs['patches'].join(folder).join(
                         fileName + inisettings['ScriptFileExt'])
                     with outpath.open('wb',encoding='utf-8-sig') as out:
-                        formid = u'0x%06X' % longid[1]
-                        out.write(u';' + longid[0].s + u'\r\n;' + formid + u'\r\n;' + eid + u'\r\n' + text)
+                        formid = '0x%06X' % longid[1]
+                        out.write(';' + longid[0].s + '\r\n;' + formid + '\r\n;' + eid + '\r\n' + text)
                     exportedScripts.append(eid)
-        return (_(u'Exported %d scripts from %s:') + u'\n') % (
-            num,esp) + u'\n'.join(exportedScripts)
+        return (_('Exported %d scripts from %s:') + '\n') % (
+            num,esp) + '\n'.join(exportedScripts)
 
 class ScriptText(_ScriptText):
 
@@ -1743,13 +1743,13 @@ class ScriptText(_ScriptText):
         modFile = ModFile(modInfo,loadFactory)
         modFile.load(True)
         mapper = modFile.getLongMapper()
-        with Progress(_(u"Export Scripts")) as progress:
+        with Progress(_("Export Scripts")) as progress:
             records = modFile.SCPT.getActiveRecords()
             y = len(records)
             z = 0
             for record in records:
                 z += 1
-                progress((0.5/y*z),_(u"Reading scripts in %s.")% file_)
+                progress((0.5/y*z),_("Reading scripts in %s.")% file_)
                 eid_data[record.eid] = (record.scriptText,mapper(record.fid))
 
     def writeToMod(self, modInfo, makeNew=False):
@@ -1773,7 +1773,7 @@ class ScriptText(_ScriptText):
                 del eid_data[eid]
         if makeNew and eid_data:
             tes4 = modFile.tes4
-            for eid, data in eid_data.iteritems():
+            for eid, data in eid_data.items():
                 newText, longid = data
                 scriptFid = genFid(len(tes4.masters),tes4.getNextObject())
                 newScript = MreRecord.type_class['SCPT'](
@@ -1791,16 +1791,16 @@ class ScriptText(_ScriptText):
         patches folder."""
         eid_data = self.eid_data
         textPath = GPath(textPath)
-        with Progress(_(u"Import Scripts")) as progress:
+        with Progress(_("Import Scripts")) as progress:
             for root_dir, dirs, files in textPath.walk():
                 y = len(files)
                 z = 0
                 for name in files:
                     z += 1
                     if name.cext != inisettings['ScriptFileExt']:
-                        progress(((1/y)*z),_(u"Skipping file %s.") % name.s)
+                        progress(((1/y)*z),_("Skipping file %s.") % name.s)
                         continue
-                    progress(((1 / y) * z),_(u"Reading file %s.") % name.s)
+                    progress(((1 / y) * z),_("Reading file %s.") % name.s)
                     with root_dir.join(name).open('r', encoding='utf-8-sig') \
                             as text:
                         lines = text.readlines()
@@ -1809,10 +1809,10 @@ class ScriptText(_ScriptText):
                                              lines[2][1:-2]
                     except:
                         deprint(
-                            _(u"%s has malformed script header lines - was "
-                              u"skipped") % name)
+                            _("%s has malformed script header lines - was "
+                              "skipped") % name)
                         continue
-                    scriptText = u''.join(lines[3:])
+                    scriptText = ''.join(lines[3:])
                     eid_data[eid] = (scriptText, FormID)
         if eid_data: return True
         return False
@@ -1825,13 +1825,13 @@ class CBash_ScriptText(_ScriptText):
         with ObCollection(ModsPath=dirs['mods'].s) as Current:
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
-            with Progress(_(u"Export Scripts")) as progress:
+            with Progress(_("Export Scripts")) as progress:
                 records = modFile.SCPT
                 y = len(records)
                 z = 0
                 for record in records:
                     z += 1
-                    progress((0.5/y*z),_(u"Reading scripts in %s.") % file_)
+                    progress((0.5/y*z),_("Reading scripts in %s.") % file_)
                     eid_data[record.eid] = (record.scriptText,record.fid)
 
     def writeToMod(self, modInfo, makeNew=False):
@@ -1853,7 +1853,7 @@ class CBash_ScriptText(_ScriptText):
                         changed.append(eid)
                     del eid_data[eid]
             if makeNew and eid_data:
-                for eid, data in eid_data.iteritems():
+                for eid, data in eid_data.items():
                     newText, longid = data
                     newScript = modFile.create_SCPT()
                     if newScript is not None:
@@ -1868,23 +1868,23 @@ class CBash_ScriptText(_ScriptText):
         patches folder."""
         eid_data = self.eid_data
         textPath = GPath(textPath)
-        with Progress(_(u"Import Scripts")) as progress:
+        with Progress(_("Import Scripts")) as progress:
             for root_dir, dirs, files in textPath.walk():
                 y = len(files)
                 z = 0
                 for name in files:
                     z += 1
                     if name.cext != inisettings['ScriptFileExt']:
-                        progress(((1/y)*z),_(u"Skipping file %s.") % name.s)
+                        progress(((1/y)*z),_("Skipping file %s.") % name.s)
                         continue
-                    progress(((1 / y) * z),_(u"Reading file %s.") % name.s)
+                    progress(((1 / y) * z),_("Reading file %s.") % name.s)
                     with root_dir.join(name).open('r', encoding='utf-8-sig') \
                             as text:
                         lines = text.readlines()
                     if not lines: continue
                     modName,formID,eid = lines[0][1:-2],lines[1][1:-2],\
                                          lines[2][1:-2]
-                    scriptText = u''.join(lines[3:])
+                    scriptText = ''.join(lines[3:])
                     eid_data[IUNICODE(eid)] = (
                         IUNICODE(scriptText),formID) #script text is case
                     # insensitive
@@ -1895,26 +1895,26 @@ class CBash_ScriptText(_ScriptText):
 class _UsesEffectsMixin(object):
     """Mixin class to support reading/writing effect data to/from csv files"""
     headers = (
-        _(u'Effect'),_(u'Name'),_(u'Magnitude'),_(u'Area'),_(u'Duration'),
-        _(u'Range'),_(u'Actor Value'),_(u'SE Mod Name'),_(u'SE ObjectIndex'),
-        _(u'SE school'),_(u'SE visual'),_(u'SE Is Hostile'),_(u'SE Name'))
-    headerFormat = u'"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
-                   u'"%s","%s"'
-    recipientTypeNumber_Name = {None:u'NONE',0:u'Self',1:u'Touch',2:u'Target',}
+        _('Effect'),_('Name'),_('Magnitude'),_('Area'),_('Duration'),
+        _('Range'),_('Actor Value'),_('SE Mod Name'),_('SE ObjectIndex'),
+        _('SE school'),_('SE visual'),_('SE Is Hostile'),_('SE Name'))
+    headerFormat = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
+                   '"%s","%s"'
+    recipientTypeNumber_Name = {None:'NONE',0:'Self',1:'Touch',2:'Target',}
     recipientTypeName_Number = dict(
-        [(y.lower(),x) for x,y in recipientTypeNumber_Name.iteritems() if
+        [(y.lower(),x) for x,y in recipientTypeNumber_Name.items() if
          x is not None])
     actorValueNumber_Name = dict(
         [(x,y) for x,y in enumerate(brec.actorValues)])
-    actorValueNumber_Name[None] = u'NONE'
+    actorValueNumber_Name[None] = 'NONE'
     actorValueName_Number = dict(
-        [(y.lower(),x) for x,y in actorValueNumber_Name.iteritems() if
+        [(y.lower(),x) for x,y in actorValueNumber_Name.items() if
          x is not None])
-    schoolTypeNumber_Name = {None:u'NONE',0:u'Alteration',1:u'Conjuration',
-                             2:u'Destruction',3:u'Illusion',4:u'Mysticism',
-                             5:u'Restoration',}
+    schoolTypeNumber_Name = {None:'NONE',0:'Alteration',1:'Conjuration',
+                             2:'Destruction',3:'Illusion',4:'Mysticism',
+                             5:'Restoration',}
     schoolTypeName_Number = dict(
-        [(y.lower(),x) for x,y in schoolTypeNumber_Name.iteritems() if
+        [(y.lower(),x) for x,y in schoolTypeNumber_Name.items() if
          x is not None])
 
     def readEffects(self,_effects,aliases,doCBash):
@@ -1926,17 +1926,17 @@ class _UsesEffectsMixin(object):
             _effect,_effects = _effects[1:13],_effects[13:]
             name,magnitude,area,duration,range_,actorvalue,semod,seobj,\
             seschool,sevisual,seflags,sename = tuple(_effect)
-            name = _coerce(name,unicode,AllowNone=True) #OBME not supported
+            name = _coerce(name,str,AllowNone=True) #OBME not supported
             # (support requires adding a mod/objectid format to the
             # csv, this assumes all MGEFCodes are raw)
             magnitude = _coerce(magnitude,int,AllowNone=True)
             area = _coerce(area,int,AllowNone=True)
             duration = _coerce(duration,int,AllowNone=True)
-            range_ = _coerce(range_,unicode,AllowNone=True)
+            range_ = _coerce(range_,str,AllowNone=True)
             if range_:
                 range_ = recipientTypeName_Number.get(range_.lower(),
                                                       _coerce(range_,int))
-            actorvalue = _coerce(actorvalue, unicode, AllowNone=True)
+            actorvalue = _coerce(actorvalue, str, AllowNone=True)
             if actorvalue:
                 actorvalue = actorValueName_Number.get(actorvalue.lower(),
                                                        _coerce(actorvalue,int))
@@ -1947,9 +1947,9 @@ class _UsesEffectsMixin(object):
                           ActorValue(actorvalue)]
             else:
                 effect = [name,magnitude,area,duration,range_,actorvalue]
-            semod = _coerce(semod, unicode, AllowNone=True)
+            semod = _coerce(semod, str, AllowNone=True)
             seobj = _coerce(seobj, int, 16, AllowNone=True)
-            seschool = _coerce(seschool, unicode, AllowNone=True)
+            seschool = _coerce(seschool, str, AllowNone=True)
             if seschool:
                 seschool = schoolTypeName_Number.get(seschool.lower(),
                                                      _coerce(seschool,int))
@@ -1957,7 +1957,7 @@ class _UsesEffectsMixin(object):
             # supported (support requires adding a mod/objectid format to
             # the csv, this assumes visual MGEFCode is raw)
             if sevisuals is None:
-                sevisuals = _coerce(sevisual, unicode, AllowNone=True)
+                sevisuals = _coerce(sevisual, str, AllowNone=True)
             else:
                 sevisuals = ctypes.cast(ctypes.byref(ctypes.c_ulong(sevisuals))
                     ,ctypes.POINTER(ctypes.c_char * 4)).contents.value
@@ -1966,10 +1966,10 @@ class _UsesEffectsMixin(object):
                     sevisuals = 0
             else:
                 if sevisuals == '' or sevisuals is None:
-                    sevisuals = u'\x00\x00\x00\x00'
+                    sevisuals = '\x00\x00\x00\x00'
             sevisual = sevisuals
             seflags = _coerce(seflags, int, AllowNone=True)
-            sename = _coerce(sename, unicode, AllowNone=True)
+            sename = _coerce(sename, str, AllowNone=True)
             if None in (semod,seobj,seschool,sevisual,seflags,sename):
                 if doCBash:
                     effect.extend(
@@ -1995,9 +1995,9 @@ class _UsesEffectsMixin(object):
         schoolTypeNumber_Name = _UsesEffectsMixin.schoolTypeNumber_Name
         recipientTypeNumber_Name = _UsesEffectsMixin.recipientTypeNumber_Name
         actorValueNumber_Name = _UsesEffectsMixin.actorValueNumber_Name
-        effectFormat = u',,"%s","%d","%d","%d","%s","%s"'
-        scriptEffectFormat = u',"%s","0x%06X","%s","%s","%s","%s"'
-        noscriptEffectFiller = u',"None","None","None","None","None","None"'
+        effectFormat = ',,"%s","%d","%d","%d","%s","%s"'
+        scriptEffectFormat = ',"%s","0x%06X","%s","%s","%s","%s"'
+        noscriptEffectFiller = ',"None","None","None","None","None","None"'
         output = []
         for effect in effects:
             if doCBash:
@@ -2030,21 +2030,21 @@ class _UsesEffectsMixin(object):
                     #  requires adding a mod/objectid format to the csv,
                     # this assumes visual MGEFCode is raw)
                     if sevisual in (None, 0, ''):
-                        sevisual = u'NONE'
+                        sevisual = 'NONE'
                     output.append(scriptEffectFormat % (
                         semod,seobj,seschool,sevisual,seflags,sename))
             else:
                 if len(scripteffect):
                     longid,seschool,sevisual,seflags,sename = scripteffect
                     if sevisual == '\x00\x00\x00\x00':
-                        sevisual = u'NONE'
+                        sevisual = 'NONE'
                     seschool = schoolTypeNumber_Name.get(seschool,seschool)
                     output.append(scriptEffectFormat % (
                         longid[0].s,longid[1],seschool,sevisual,seflags,
                         sename))
                 else:
                     output.append(noscriptEffectFiller)
-        return u''.join(output)
+        return ''.join(output)
 
 #------------------------------------------------------------------------------
 class SigilStoneDetails(_UsesEffectsMixin):
@@ -2142,20 +2142,20 @@ class SigilStoneDetails(_UsesEffectsMixin):
         fid_stats,aliases = self.fid_stats,self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 12 or fields[1][:2] != u'0x': continue
+                if len(fields) < 12 or fields[1][:2] != '0x': continue
                 mmod,mobj,eid,full,modPath,modb,iconPath,smod,sobj,uses,\
                 value,weight = fields[:12]
-                mmod = _coerce(mmod,unicode)
+                mmod = _coerce(mmod,str)
                 mid = (GPath(aliases.get(mmod,mmod)),_coerce(mobj,int,16))
-                smod = _coerce(smod,unicode,AllowNone=True)
+                smod = _coerce(smod,str,AllowNone=True)
                 if smod is None: sid = None
                 else: sid = (
                     GPath(aliases.get(smod,smod)),_coerce(sobj,int,16))
-                eid = _coerce(eid,unicode,AllowNone=True)
-                full = _coerce(full,unicode,AllowNone=True)
-                modPath = _coerce(modPath,unicode,AllowNone=True)
+                eid = _coerce(eid,str,AllowNone=True)
+                full = _coerce(full,str,AllowNone=True)
+                modPath = _coerce(modPath,str,AllowNone=True)
                 modb = _coerce(modb,float)
-                iconPath = _coerce(iconPath,unicode,AllowNone=True)
+                iconPath = _coerce(iconPath,str,AllowNone=True)
                 uses = _coerce(uses,int)
                 value = _coerce(value,int)
                 weight = _coerce(weight,float)
@@ -2166,23 +2166,23 @@ class SigilStoneDetails(_UsesEffectsMixin):
     def writeToText(self,textPath):
         """Exports stats to specified text file."""
         fid_stats = self.fid_stats
-        header = (_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),_(u'Name'),
-                  _(u'Model Path'),_(u'Bound Radius'),_(u'Icon Path'),
-                  _(u'Script Mod Name'),_(u'Script ObjectIndex'),_(u'Uses'),
-                  _(u'Value'),_(u'Weight'),) + _UsesEffectsMixin.headers * 2 +\
-                     (_(u'Additional Effects (Same format)'),)
-        headFormat = u','.join([u'"%s"'] * len(header)) + u'\n'
-        rowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
-                    u'"%d","%d","%f"'
-        altrowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
-                       u'"%d","%d","%f"'
+        header = (_('Mod Name'),_('ObjectIndex'),_('Editor Id'),_('Name'),
+                  _('Model Path'),_('Bound Radius'),_('Icon Path'),
+                  _('Script Mod Name'),_('Script ObjectIndex'),_('Uses'),
+                  _('Value'),_('Weight'),) + _UsesEffectsMixin.headers * 2 +\
+                     (_('Additional Effects (Same format)'),)
+        headFormat = ','.join(['"%s"'] * len(header)) + '\n'
+        rowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
+                    '"%d","%d","%f"'
+        altrowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
+                       '"%d","%d","%f"'
         with textPath.open('w',encoding='utf-8-sig') as out:
             outWrite = out.write
             outWrite(headFormat % header)
             for fid in sorted(fid_stats,key=lambda x:fid_stats[x][0].lower()):
                 eid,name,modpath,modb,iconpath,scriptfid,uses,value,weight,\
                 effects = fid_stats[fid]
-                scriptfid = scriptfid or (GPath(u'None'),None)
+                scriptfid = scriptfid or (GPath('None'),None)
                 try:
                     output = rowFormat % (
                         fid[0].s,fid[1],eid,name,modpath,modb,iconpath,
@@ -2192,7 +2192,7 @@ class SigilStoneDetails(_UsesEffectsMixin):
                         fid[0].s,fid[1],eid,name,modpath,modb,iconpath,
                         scriptfid[0].s,scriptfid[1],uses,value,weight)
                 output += self.writeEffects(effects,False)
-                output += u'\n'
+                output += '\n'
                 outWrite(output)
 
 class CBash_SigilStoneDetails(_UsesEffectsMixin):
@@ -2246,21 +2246,21 @@ class CBash_SigilStoneDetails(_UsesEffectsMixin):
         fid_stats,aliases = self.fid_stats,self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 12 or fields[1][:2] != u'0x': continue
+                if len(fields) < 12 or fields[1][:2] != '0x': continue
                 mmod,mobj,eid,full,modPath,modb,iconPath,smod,sobj,uses,\
                 value,weight = fields[:12]
-                mmod = _coerce(mmod,unicode)
+                mmod = _coerce(mmod,str)
                 mid = FormID(GPath(aliases.get(mmod,mmod)),
                              _coerce(mobj,int,16))
-                smod = _coerce(smod,unicode,AllowNone=True)
+                smod = _coerce(smod,str,AllowNone=True)
                 if smod is None: sid = FormID(None,None)
                 else: sid = FormID(GPath(aliases.get(smod,smod)),
                                    _coerce(sobj,int,16))
-                eid = _coerce(eid,unicode,AllowNone=True)
-                full = _coerce(full,unicode,AllowNone=True)
-                modPath = _coerce(modPath,unicode,AllowNone=True)
+                eid = _coerce(eid,str,AllowNone=True)
+                full = _coerce(full,str,AllowNone=True)
+                modPath = _coerce(modPath,str,AllowNone=True)
                 modb = _coerce(modb,float)
-                iconPath = _coerce(iconPath,unicode,AllowNone=True)
+                iconPath = _coerce(iconPath,str,AllowNone=True)
                 uses = _coerce(uses,int)
                 value = _coerce(value,int)
                 weight = _coerce(weight,float)
@@ -2271,23 +2271,23 @@ class CBash_SigilStoneDetails(_UsesEffectsMixin):
     def writeToText(self,textPath):
         """Exports stats to specified text file."""
         fid_stats = self.fid_stats
-        header = (_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),_(u'Name'),
-                  _(u'Model Path'),_(u'Bound Radius'),_(u'Icon Path'),
-                  _(u'Script Mod Name'),_(u'Script ObjectIndex'),_(u'Uses'),
-                  _(u'Value'),_(u'Weight'),) + _UsesEffectsMixin.headers * 2 +\
-                     (_(u'Additional Effects (Same format)'),)
-        headFormat = u','.join([u'"%s"'] * len(header)) + u'\n'
-        rowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
-                    u'"%d","%d","%f"'
-        altrowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
-                       u'"%d","%d","%f"'
+        header = (_('Mod Name'),_('ObjectIndex'),_('Editor Id'),_('Name'),
+                  _('Model Path'),_('Bound Radius'),_('Icon Path'),
+                  _('Script Mod Name'),_('Script ObjectIndex'),_('Uses'),
+                  _('Value'),_('Weight'),) + _UsesEffectsMixin.headers * 2 +\
+                     (_('Additional Effects (Same format)'),)
+        headFormat = ','.join(['"%s"'] * len(header)) + '\n'
+        rowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
+                    '"%d","%d","%f"'
+        altrowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
+                       '"%d","%d","%f"'
         with textPath.open('w',encoding='utf-8-sig') as out:
             outWrite = out.write
             outWrite(headFormat % header)
             for fid in sorted(fid_stats,key=lambda x:fid_stats[x][0]):
                 eid,name,modpath,modb,iconpath,scriptfid,uses,value,weight,\
                 effects = fid_stats[fid]
-                scriptfid = scriptfid or (GPath(u'None'),None)
+                scriptfid = scriptfid or (GPath('None'),None)
                 try:
                     output = rowFormat % (
                         fid[0],fid[1],eid,name,modpath,modb,iconpath,
@@ -2297,7 +2297,7 @@ class CBash_SigilStoneDetails(_UsesEffectsMixin):
                         fid[0],fid[1],eid,name,modpath,modb,iconpath,
                         scriptfid[0],scriptfid[1],uses,value,weight)
                 output += self.writeEffects(effects,True)
-                output += u'\n'
+                output += '\n'
                 outWrite(output)
 
 #------------------------------------------------------------------------------
@@ -2321,10 +2321,10 @@ class ItemPrices(_ItemPrices):
         modFile.load(True)
         mapper = modFile.getLongMapper()
         attrs = self.item_prices_attrs
-        for group, fid_stats in class_fid_stats.iteritems():
+        for group, fid_stats in class_fid_stats.items():
             for record in getattr(modFile,group).getActiveRecords():
-                fid_stats[mapper(record.fid)] = map(record.__getattribute__,
-                                                    attrs)
+                fid_stats[mapper(record.fid)] = list(map(record.__getattribute__,
+                                                    attrs))
 
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""
@@ -2335,7 +2335,7 @@ class ItemPrices(_ItemPrices):
         modFile.load(True)
         mapper = modFile.getLongMapper()
         changed = defaultdict(int) #--changed[modName] = numChanged
-        for group, fid_stats in class_fid_stats.iteritems():
+        for group, fid_stats in class_fid_stats.items():
             for record in getattr(modFile,group).getActiveRecords():
                 longid = mapper(record.fid)
                 stats = fid_stats.get(longid,None)
@@ -2353,31 +2353,31 @@ class ItemPrices(_ItemPrices):
         class_fid_stats, aliases = self.class_fid_stats, self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 6 or fields[1][:2] != u'0x': continue
+                if len(fields) < 6 or fields[1][:2] != '0x': continue
                 mmod,mobj,value,eid,name,group = fields[:6]
-                mmod = GPath(_coerce(mmod, unicode))
+                mmod = GPath(_coerce(mmod, str))
                 longid = (GPath(aliases.get(mmod,mmod)),_coerce(mobj, int, 16))
                 value = _coerce(value, int)
-                eid = _coerce(eid, unicode, AllowNone=True)
-                name = _coerce(name, unicode, AllowNone=True)
-                group = _coerce(group, unicode)
+                eid = _coerce(eid, str, AllowNone=True)
+                name = _coerce(name, str, AllowNone=True)
+                group = _coerce(group, str)
                 class_fid_stats[group][longid] = [value,eid,name]
 
     def writeToText(self,textPath):
         """Writes stats to specified text file."""
         class_fid_stats = self.class_fid_stats
         with textPath.open('w',encoding='utf-8-sig') as out:
-            format_,header = csvFormat(u'iss'),(u'"' + u'","'.join((
-                _(u'Mod Name'),_(u'ObjectIndex'),_(u'Value'),_(u'Editor Id'),
-                _(u'Name'),_(u'Type'))) + u'"\n')
-            for group, fid_stats in sorted(class_fid_stats.iteritems()):
+            format_,header = csvFormat('iss'),('"' + '","'.join((
+                _('Mod Name'),_('ObjectIndex'),_('Value'),_('Editor Id'),
+                _('Name'),_('Type'))) + '"\n')
+            for group, fid_stats in sorted(class_fid_stats.items()):
                 if not fid_stats: continue
                 out.write(header)
                 for fid in sorted(fid_stats,key=lambda x:(
                         fid_stats[x][1].lower(),fid_stats[x][0])):
-                    out.write(u'"%s","0x%06X",' % (fid[0].s,fid[1]))
+                    out.write('"%s","0x%06X",' % (fid[0].s,fid[1]))
                     out.write(
-                        format_ % tuple(fid_stats[fid]) + u',%s\n' % group)
+                        format_ % tuple(fid_stats[fid]) + ',%s\n' % group)
 
 class CBash_ItemPrices(_ItemPrices):
     """Function for importing/exporting from/to mod/text file only the
@@ -2396,9 +2396,9 @@ class CBash_ItemPrices(_ItemPrices):
         with ObCollection(ModsPath=dirs['mods'].s) as Current:
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
-            for group, fid_stats in class_fid_stats.iteritems():
+            for group, fid_stats in class_fid_stats.items():
                 for record in getattr(modFile,group):
-                    fid_stats[record.fid] = map(record.__getattribute__,attrs)
+                    fid_stats[record.fid] = list(map(record.__getattribute__,attrs))
 
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""
@@ -2407,10 +2407,10 @@ class CBash_ItemPrices(_ItemPrices):
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
             changed = defaultdict(int) #--changed[modName] = numChanged
-            for group,fid_stats in class_fid_stats.iteritems():
+            for group,fid_stats in class_fid_stats.items():
                 fid_stats = FormID.FilterValidDict(fid_stats,modFile,True,
                                                    False)
-                for fid,stats in fid_stats.iteritems():
+                for fid,stats in fid_stats.items():
                     record = modFile.LookupRecord(fid)
                     if record and record._Type == group:
                         value = stats[0]
@@ -2425,32 +2425,32 @@ class CBash_ItemPrices(_ItemPrices):
         class_fid_stats, aliases = self.class_fid_stats, self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 6 or fields[1][:2] != u'0x': continue
+                if len(fields) < 6 or fields[1][:2] != '0x': continue
                 mmod,mobj,value,eid,name,group = fields[:6]
-                mmod = GPath(_coerce(mmod, unicode))
+                mmod = GPath(_coerce(mmod, str))
                 longid = FormID(GPath(aliases.get(mmod,mmod)),
                                 _coerce(mobj,int,16))
                 value = _coerce(value, int)
-                eid = _coerce(eid, unicode, AllowNone=True)
-                name = _coerce(name, unicode, AllowNone=True)
-                group = _coerce(group, unicode)
+                eid = _coerce(eid, str, AllowNone=True)
+                name = _coerce(name, str, AllowNone=True)
+                group = _coerce(group, str)
                 class_fid_stats[group][longid] = [value,eid,name]
 
     def writeToText(self,textPath):
         """Writes stats to specified text file."""
         class_fid_stats = self.class_fid_stats
         with textPath.open('w',encoding='utf-8-sig') as out:
-            format_,header = csvFormat(u'iss'),(u'"' + u'","'.join((
-                _(u'Mod Name'),_(u'ObjectIndex'),_(u'Value'),_(u'Editor Id'),
-                _(u'Name'),_(u'Type'))) + u'"\n')
-            for group,fid_stats in sorted(class_fid_stats.iteritems()):
+            format_,header = csvFormat('iss'),('"' + '","'.join((
+                _('Mod Name'),_('ObjectIndex'),_('Value'),_('Editor Id'),
+                _('Name'),_('Type'))) + '"\n')
+            for group,fid_stats in sorted(class_fid_stats.items()):
                 if not fid_stats: continue
                 out.write(header)
                 for fid in sorted(fid_stats,key=lambda x:(
                         fid_stats[x][1],fid_stats[x][0])):
-                    out.write(u'"%s","0x%06X",' % (fid[0],fid[1]))
+                    out.write('"%s","0x%06X",' % (fid[0],fid[1]))
                     out.write(
-                        format_ % tuple(fid_stats[fid]) + u',%s\n' % group)
+                        format_ % tuple(fid_stats[fid]) + ',%s\n' % group)
 
 #------------------------------------------------------------------------------
 class CompleteItemData(_UsesEffectsMixin): #Needs work
@@ -2540,7 +2540,7 @@ class CompleteItemData(_UsesEffectsMixin): #Needs work
                 longid = mapper(record.fid)
                 itemStats = stats.get(longid,None)
                 if not itemStats: continue
-                map(record.__setattr__,attrs,itemStats)
+                list(map(record.__setattr__,attrs,itemStats))
                 record.setChanged()
                 changed[longid[0]] += 1
         if changed: modFile.safeSave()
@@ -2628,143 +2628,143 @@ class CompleteItemData(_UsesEffectsMixin): #Needs work
     def writeToText(self,textPath):
         """Writes stats to specified text file."""
         def getSortedIds(stats):
-            longids = stats.keys()
+            longids = list(stats.keys())
             longids.sort(key=lambda a:stats[a][0])
             longids.sort(key=itemgetter(0))
             return longids
         with textPath.open('w',encoding='utf-8-sig') as out:
             for type_,format_,header in (
                     #--Alch
-                    ('ALCH',csvFormat(u'ssfiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('ALCH',csvFormat('ssfiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Ammo
-                    ('AMMO',csvFormat(u'ssfiifiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Damage'),_(u'Speed'),_(u'EPoints'),
-                                        _(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('AMMO',csvFormat('ssfiifiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Damage'),_('Speed'),_('EPoints'),
+                                        _('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Apparatus
-                    ('APPA',csvFormat(u'ssfifss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Quantity'),_(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('APPA',csvFormat('ssfifss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Quantity'),_('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Armor
-                    ('ARMO',csvFormat(u'ssfiiissssss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Health'),_(u'AR'),
-                                        _(u'Male Icon Path'),
-                                        _(u'Female Icon Path'),
-                                        _(u'Male Model Path'),
-                                        _(u'Female Model Path'),
-                                        _(u'Male World Model Path'),
-                                        _(u'Female World Model '
-                                          u'Path'))) + u'"\n')),#Books
-                    ('BOOK',csvFormat(u'ssfiiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'EPoints'),_(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('ARMO',csvFormat('ssfiiissssss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Health'),_('AR'),
+                                        _('Male Icon Path'),
+                                        _('Female Icon Path'),
+                                        _('Male Model Path'),
+                                        _('Female Model Path'),
+                                        _('Male World Model Path'),
+                                        _('Female World Model '
+                                          'Path'))) + '"\n')),#Books
+                    ('BOOK',csvFormat('ssfiiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('EPoints'),_('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Clothing
-                    ('CLOT',csvFormat(u'ssfiissssss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'EPoints'),_(u'Male Icon Path'),
-                                        _(u'Female Icon Path'),
-                                        _(u'Male Model Path'),
-                                        _(u'Female Model Path'),
-                                        _(u'Male World Model Path'),
-                                        _(u'Female World Model '
-                                          u'Path'))) + u'"\n')),
+                    ('CLOT',csvFormat('ssfiissssss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('EPoints'),_('Male Icon Path'),
+                                        _('Female Icon Path'),
+                                        _('Male Model Path'),
+                                        _('Female Model Path'),
+                                        _('Male World Model Path'),
+                                        _('Female World Model '
+                                          'Path'))) + '"\n')),
                     #--Ingredients
-                    ('INGR',csvFormat(u'ssfiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('INGR',csvFormat('ssfiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Keys
-                    ('KEYM',csvFormat(u'ssfiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('KEYM',csvFormat('ssfiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Lights
-                    ('LIGH',csvFormat(u'ssfiiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Duration'),_(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('LIGH',csvFormat('ssfiiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Duration'),_('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Misc
-                    ('MISC',csvFormat(u'ssfiss') + u'\n',(u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('MISC',csvFormat('ssfiss') + '\n',('"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Sigilstones
-                    ('SGST',csvFormat(u'ssfiiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Uses'),_(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('SGST',csvFormat('ssfiiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Uses'),_('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Soulgems
-                    ('SLGM',csvFormat(u'ssfiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('SLGM',csvFormat('ssfiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Icon Path'),
+                                        _('Model'))) + '"\n')),
                     #--Weapons
-                    ('WEAP',csvFormat(u'ssfiiiffiss') + u'\n',(
-                                    u'"' + u'","'.join((
-                                        _(u'Type'),_(u'Mod Name'),
-                                        _(u'ObjectIndex'),_(u'Editor Id'),
-                                        _(u'Name'),_(u'Weight'),_(u'Value'),
-                                        _(u'Health'),_(u'Damage'),_(u'Speed'),
-                                        _(u'Reach'),_(u'EPoints'),
-                                        _(u'Icon Path'),
-                                        _(u'Model'))) + u'"\n')),
+                    ('WEAP',csvFormat('ssfiiiffiss') + '\n',(
+                                    '"' + '","'.join((
+                                        _('Type'),_('Mod Name'),
+                                        _('ObjectIndex'),_('Editor Id'),
+                                        _('Name'),_('Weight'),_('Value'),
+                                        _('Health'),_('Damage'),_('Speed'),
+                                        _('Reach'),_('EPoints'),
+                                        _('Icon Path'),
+                                        _('Model'))) + '"\n')),
             ):
                 stats = self.type_stats[type_]
                 if not stats: continue
-                out.write(u'\n' + header)
+                out.write('\n' + header)
                 for longid in getSortedIds(stats):
                     out.write(
-                        u'"%s","%s","0x%06X",' % (type_,longid[0].s,longid[1]))
+                        '"%s","%s","0x%06X",' % (type_,longid[0].s,longid[1]))
                     tempstats = list(stats[longid])
                     if type_ == 'ARMO' or type_ == 'CLOT':
-                        tempstats.append(self.Mmodel.get(longid,u'NONE'))
-                        tempstats.append(self.Fmodel.get(longid,u'NONE'))
-                        tempstats.append(self.MGndmodel.get(longid,u'NONE'))
-                        tempstats.append(self.FGndmodel.get(longid,u'NONE'))
+                        tempstats.append(self.Mmodel.get(longid,'NONE'))
+                        tempstats.append(self.Fmodel.get(longid,'NONE'))
+                        tempstats.append(self.MGndmodel.get(longid,'NONE'))
+                        tempstats.append(self.FGndmodel.get(longid,'NONE'))
                     else:
-                        tempstats.append(self.model.get(longid,u'NONE'))
+                        tempstats.append(self.model.get(longid,'NONE'))
                     finalstats = tuple(tempstats)
                     out.write(format_ % finalstats)
 
@@ -2774,7 +2774,7 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
 
     @staticmethod
     def sstr(value):
-        return _coerce(value,unicode,AllowNone=True)
+        return _coerce(value,str,AllowNone=True)
 
     @staticmethod
     def sfloat(value):
@@ -2807,9 +2807,9 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
             for group in pickupables:
                 for record in getattr(modFile,group):
                     values = ExtractExportList(record)
-                    print values
-                    print
-                    print
+                    print(values)
+                    print()
+                    print()
                     class_fid_values.setdefault(group,{})[record.fid] = values
                     break
 
@@ -2819,17 +2819,17 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
             changed = defaultdict(int) #--changed[modName] = numChanged
-            for group,fid_attr_value in self.class_fid_attr_value.iteritems():
+            for group,fid_attr_value in self.class_fid_attr_value.items():
                 attrs = self.class_attrs[group]
                 fid_attr_value = FormID.FilterValidDict(fid_attr_value,modFile,
                                                         True,False)
-                for fid,attr_value in fid_attr_value.iteritems():
+                for fid,attr_value in fid_attr_value.items():
                     record = modFile.LookupRecord(fid)
                     if record and record._Type == group:
                         if not ValidateDict(attr_value,modFile): continue
-                        oldValues = map(record.__getattribute__,attrs)
+                        oldValues = list(map(record.__getattribute__,attrs))
                         if oldValues != attr_value:
-                            map(record.__setattr__,attrs,attr_value)
+                            list(map(record.__setattr__,attrs,attr_value))
                             changed[fid[0]] += 1
             if changed: modFile.save()
             return changed
@@ -2845,18 +2845,18 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
             name,magnitude,area,duration,range_,actorvalue,semod,seobj,\
             seschool,sevisual,seflags,sename = tuple(
                 _effect)
-            name = _coerce(name,unicode,
+            name = _coerce(name,str,
                            AllowNone=True) #OBME not supported (support
             # requires adding a mod/objectid format to the
             # csv, this assumes all MGEFCodes are raw)
             magnitude = _coerce(magnitude,int,AllowNone=True)
             area = _coerce(area,int,AllowNone=True)
             duration = _coerce(duration,int,AllowNone=True)
-            range_ = _coerce(range_,unicode,AllowNone=True)
+            range_ = _coerce(range_,str,AllowNone=True)
             if range_:
                 range_ = recipientTypeName_Number.get(range_.lower(),
                                                       _coerce(range_,int))
-            actorvalue = _coerce(actorvalue,unicode,AllowNone=True)
+            actorvalue = _coerce(actorvalue,str,AllowNone=True)
             if actorvalue:
                 actorvalue = actorValueName_Number.get(actorvalue.lower(),
                                                        _coerce(actorvalue,int))
@@ -2864,12 +2864,12 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
                 continue
             effect = [MGEFCode(name),magnitude,area,duration,range_,
                       ActorValue(actorvalue)]
-            semod = _coerce(semod,unicode,AllowNone=True)
+            semod = _coerce(semod,str,AllowNone=True)
             seobj = _coerce(seobj,int,16,AllowNone=True)
             seschool = _coerce(seschool,int,AllowNone=True)
             sevisual = _coerce(sevisual,int,AllowNone=True)
             seflags = _coerce(seflags,int,AllowNone=True)
-            sename = _coerce(sename,unicode,AllowNone=True)
+            sename = _coerce(sename,str,AllowNone=True)
             if None in (semod,seobj,seschool,sevisual,seflags,sename):
                 effect.extend(
                     [FormID(None,None),None,MGEFCode(None,None),None,None])
@@ -2885,14 +2885,14 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
         eid,full,weight,value,uses,iconPath,modPath,modb,smod,sobj = fields[
                                                                      :10]
         fields = fields[:10]
-        smod = _coerce(smod,unicode,AllowNone=True)
+        smod = _coerce(smod,str,AllowNone=True)
         if smod is None: sid = FormID(None,None)
         else: sid = FormID(GPath(aliases.get(smod,smod)),_coerce(sobj,int,16))
-        eid = _coerce(eid,unicode,AllowNone=True)
-        full = _coerce(full,unicode,AllowNone=True)
-        modPath = _coerce(modPath,unicode,AllowNone=True)
+        eid = _coerce(eid,str,AllowNone=True)
+        full = _coerce(full,str,AllowNone=True)
+        modPath = _coerce(modPath,str,AllowNone=True)
         modb = _coerce(modb,float)
-        iconPath = _coerce(iconPath,unicode,AllowNone=True)
+        iconPath = _coerce(iconPath,str,AllowNone=True)
         uses = _coerce(uses,int)
         value = _coerce(value,int)
         weight = _coerce(weight,float)
@@ -2904,10 +2904,10 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
         class_fid_attr_value,aliases = self.class_fid_attr_value,self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 3 or fields[2][:2] != u'0x': continue
+                if len(fields) < 3 or fields[2][:2] != '0x': continue
                 group,modName,objectStr = fields[:3]
                 fields = fields[3:]
-                modName = GPath(_coerce(modName,unicode))
+                modName = GPath(_coerce(modName,str))
                 longid = FormID(GPath(aliases.get(modName,modName)),
                                 _coerce(objectStr,int,16))
                 if group == 'ALCH':
@@ -2926,7 +2926,7 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
         with textPath.open('w',encoding='utf-8-sig') as out:
             def write(out,attrs,values):
                 attr_type = self.attr_type
-                csvFormat = u''
+                csvFormat = ''
                 sstr = self.sstr
                 sint = self.sint
                 snoneint = self.snoneint
@@ -2935,80 +2935,80 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
                     stype = attr_type[attr]
                     values[index] = stype(values[index]) #sanitize output
                     if values[
-                        index] is None: csvFormat += u',"{0[%d]}"' % index
-                    elif stype is sstr: csvFormat += u',"{0[%d]}"' % index
+                        index] is None: csvFormat += ',"{0[%d]}"' % index
+                    elif stype is sstr: csvFormat += ',"{0[%d]}"' % index
                     elif stype is sint or stype is snoneint: csvFormat += \
-                        u',"{0[%d]:d}"' % index
-                    elif stype is sfloat: csvFormat += u',"{0[%d]:f}"' % index
+                        ',"{0[%d]:d}"' % index
+                    elif stype is sfloat: csvFormat += ',"{0[%d]:f}"' % index
                 csvFormat = csvFormat[1:] #--Chop leading comma
-                out.write(csvFormat.format(values) + u'\n')
+                out.write(csvFormat.format(values) + '\n')
             for group,header in (
                     #--Alch
-                    ('ALCH',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),
-                            _(u'Value'))) + u'"\n')),
-                    ('AMMO',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),_(u'Value'),
-                            _(u'Damage'),_(u'Speed'),
-                            _(u'EPoints'))) + u'"\n')),
+                    ('ALCH',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),
+                            _('Value'))) + '"\n')),
+                    ('AMMO',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),_('Value'),
+                            _('Damage'),_('Speed'),
+                            _('EPoints'))) + '"\n')),
                     #--Apparatus
-                    ('APPA',(u'"' + u'","'.join((
-                            _(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),
-                            _(u'Weight'),_(u'Value'),
-                            _(u'Quality'))) + u'"\n')),
+                    ('APPA',('"' + '","'.join((
+                            _('Mod Name'),_('ObjectIndex'),_('Editor Id'),
+                            _('Weight'),_('Value'),
+                            _('Quality'))) + '"\n')),
                     #--Armor
-                    ('ARMO',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),_(u'Value'),
-                            _(u'Health'),_(u'AR'))) + u'"\n')),
+                    ('ARMO',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),_('Value'),
+                            _('Health'),_('AR'))) + '"\n')),
                     #--Books
-                    ('BOOK',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),_(u'Value'),
-                            _(u'EPoints'))) + u'"\n')),
+                    ('BOOK',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),_('Value'),
+                            _('EPoints'))) + '"\n')),
                     #--Clothing
-                    ('CLOT',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),_(u'Value'),
-                            _(u'EPoints'))) + u'"\n')),
+                    ('CLOT',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),_('Value'),
+                            _('EPoints'))) + '"\n')),
                     #--Ingredients
-                    ('INGR',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),
-                            _(u'Value'))) + u'"\n')),
+                    ('INGR',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),
+                            _('Value'))) + '"\n')),
                     #--Keys
-                    ('KEYM',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),
-                            _(u'Value'))) + u'"\n')),
+                    ('KEYM',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),
+                            _('Value'))) + '"\n')),
                     #--Lights
-                    ('LIGH',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),_(u'Value'),
-                            _(u'Duration'))) + u'"\n')),
+                    ('LIGH',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),_('Value'),
+                            _('Duration'))) + '"\n')),
                     #--Misc
-                    ('MISC',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),
-                            _(u'Value'))) + u'"\n')),
+                    ('MISC',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),
+                            _('Value'))) + '"\n')),
                     #--Sigilstones
-                    ('SGST',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),_(u'Value'),
-                            _(u'Uses'))) + u'"\n')),
+                    ('SGST',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),_('Value'),
+                            _('Uses'))) + '"\n')),
                     #--Soulgems
-                    ('SLGM',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),
-                            _(u'Value'))) + u'"\n')),
+                    ('SLGM',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),
+                            _('Value'))) + '"\n')),
                     #--Weapons
-                    ('WEAP',(u'"' + u'","'.join((
-                            _(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),
-                            _(u'Editor Id'),_(u'Weight'),_(u'Value'),
-                            _(u'Health'),_(u'Damage'),_(u'Speed'),_(u'Reach'),
-                            _(u'EPoints'))) + u'"\n')),
+                    ('WEAP',('"' + '","'.join((
+                            _('Type'),_('Mod Name'),_('ObjectIndex'),
+                            _('Editor Id'),_('Weight'),_('Value'),
+                            _('Health'),_('Damage'),_('Speed'),_('Reach'),
+                            _('EPoints'))) + '"\n')),
             ):
                 fid_attr_value = class_fid_attr_value[group]
                 if not fid_attr_value: continue
@@ -3016,9 +3016,9 @@ class CBash_CompleteItemData(_UsesEffectsMixin): #Needs work
                 out.write(header)
                 for longid in getSortedIds(fid_attr_value):
                     out.write(
-                        u'"%s","%s","0x%06X",' % (group,longid[0].s,longid[1]))
+                        '"%s","%s","0x%06X",' % (group,longid[0].s,longid[1]))
                     attr_value = fid_attr_value[longid]
-                    write(out,attrs,map(attr_value.get,attrs))
+                    write(out,attrs,list(map(attr_value.get,attrs)))
 
 #------------------------------------------------------------------------------
 class SpellRecords(_UsesEffectsMixin):
@@ -3043,7 +3043,7 @@ class SpellRecords(_UsesEffectsMixin):
                                      4 : 'Ability',
                                      5 : 'Poison',}
         self.spellTypeName_Number = dict(
-            [(y.lower(),x) for x,y in self.spellTypeNumber_Name.iteritems() if
+            [(y.lower(),x) for x,y in self.spellTypeNumber_Name.items() if
              x is not None])
         self.levelTypeNumber_Name = {None : 'NONE',
                                      0 : 'Novice',
@@ -3052,7 +3052,7 @@ class SpellRecords(_UsesEffectsMixin):
                                      3 : 'Expert',
                                      4 : 'Master',}
         self.levelTypeName_Number = dict(
-            [(y.lower(),x) for x,y in self.levelTypeNumber_Name.iteritems() if
+            [(y.lower(),x) for x,y in self.levelTypeNumber_Name.items() if
              x is not None])
 
     def readFromMod(self,modInfo):
@@ -3144,21 +3144,21 @@ class SpellRecords(_UsesEffectsMixin):
         fid_stats = self.fid_stats
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 8 or fields[2][:2] != u'0x': continue
+                if len(fields) < 8 or fields[2][:2] != '0x': continue
                 group,mmod,mobj,eid,full,cost,levelType,spellType = fields[:8]
                 fields = fields[8:]
-                group = _coerce(group, unicode)
-                if group.lower() != u'spel': continue
-                mmod = _coerce(mmod, unicode)
+                group = _coerce(group, str)
+                if group.lower() != 'spel': continue
+                mmod = _coerce(mmod, str)
                 mid = (GPath(aliases.get(mmod,mmod)),_coerce(mobj,int,16))
-                eid = _coerce(eid, unicode, AllowNone=True)
-                full = _coerce(full, unicode, AllowNone=True)
+                eid = _coerce(eid, str, AllowNone=True)
+                full = _coerce(full, str, AllowNone=True)
                 cost = _coerce(cost, int)
-                levelType = _coerce(levelType, unicode)
+                levelType = _coerce(levelType, str)
                 levelType = levelTypeName_Number.get(levelType.lower(),
                                                      _coerce(levelType,
                                                              int) or 0)
-                spellType = _coerce(spellType, unicode)
+                spellType = _coerce(spellType, str)
                 spellType = spellTypeName_Number.get(spellType.lower(),
                                                      _coerce(spellType,
                                                              int) or 0)
@@ -3183,19 +3183,19 @@ class SpellRecords(_UsesEffectsMixin):
         detailed,fid_stats,spellTypeNumber_Name,levelTypeNumber_Name = \
             self.detailed,self.fid_stats,self.spellTypeNumber_Name,\
             self.levelTypeNumber_Name
-        header = (_(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),
-                  _(u'Name'),_(u'Cost'),_(u'Level Type'),_(u'Spell Type'))
-        rowFormat = u'"%s","%s","0x%06X","%s","%s","%d","%s","%s"'
+        header = (_('Type'),_('Mod Name'),_('ObjectIndex'),_('Editor Id'),
+                  _('Name'),_('Cost'),_('Level Type'),_('Spell Type'))
+        rowFormat = '"%s","%s","0x%06X","%s","%s","%d","%s","%s"'
         if detailed:
             header = header + (
-                _(u'Manual Cost'),_(u'Start Spell'),_(u'Immune To Silence'),
-                _(u'Area Effect Ignores LOS'),_(u'Script Always Applies'),
-                _(u'Disallow Absorb and Reflect'),
-                _(u'Touch Explodes Without Target'),
+                _('Manual Cost'),_('Start Spell'),_('Immune To Silence'),
+                _('Area Effect Ignores LOS'),_('Script Always Applies'),
+                _('Disallow Absorb and Reflect'),
+                _('Touch Explodes Without Target'),
             ) + _UsesEffectsMixin.headers * 2 + (
-                         _(u'Additional Effects (Same format)'),)
-            rowFormat += u',"%s","%s","%s","%s","%s","%s","%s"'
-        headFormat = u','.join([u'"%s"'] * len(header)) + u'\n'
+                         _('Additional Effects (Same format)'),)
+            rowFormat += ',"%s","%s","%s","%s","%s","%s","%s"'
+        headFormat = ','.join(['"%s"'] * len(header)) + '\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % header)
             for fid in sorted(fid_stats,
@@ -3207,7 +3207,7 @@ class SpellRecords(_UsesEffectsMixin):
                     levelType = levelTypeNumber_Name.get(levelType,levelType)
                     spellType = spellTypeNumber_Name.get(spellType,spellType)
                     output = rowFormat % (
-                    u'SPEL',fid[0].s,fid[1],eid,name,cost,levelType,spellType,
+                    'SPEL',fid[0].s,fid[1],eid,name,cost,levelType,spellType,
                     mc,ss,its,aeil,saa,daar,tewt)
                     output += self.writeEffects(effects, False)
                 else:
@@ -3215,8 +3215,8 @@ class SpellRecords(_UsesEffectsMixin):
                     levelType = levelTypeNumber_Name.get(levelType,levelType)
                     spellType = spellTypeNumber_Name.get(spellType,spellType)
                     output = rowFormat % (
-                    u'SPEL',fid[0].s,fid[1],eid,name,cost,levelType,spellType)
-                output += u'\n'
+                    'SPEL',fid[0].s,fid[1],eid,name,cost,levelType,spellType)
+                output += '\n'
                 out.write(output)
 
 class CBash_SpellRecords(_UsesEffectsMixin):
@@ -3233,24 +3233,24 @@ class CBash_SpellRecords(_UsesEffectsMixin):
                 'IsAreaEffectIgnoresLOS','IsScriptAlwaysApplies',
                 'IsDisallowAbsorbReflect','IsTouchExplodesWOTarget',
                 'effects_list')
-        self.spellTypeNumber_Name = {None : u'NONE',
-                                     0 : u'Spell',
-                                     1 : u'Disease',
-                                     2 : u'Power',
-                                     3 : u'LesserPower',
-                                     4 : u'Ability',
-                                     5 : u'Poison',}
+        self.spellTypeNumber_Name = {None : 'NONE',
+                                     0 : 'Spell',
+                                     1 : 'Disease',
+                                     2 : 'Power',
+                                     3 : 'LesserPower',
+                                     4 : 'Ability',
+                                     5 : 'Poison',}
         self.spellTypeName_Number = dict(
-            [(y.lower(),x) for x,y in self.spellTypeNumber_Name.iteritems() if
+            [(y.lower(),x) for x,y in self.spellTypeNumber_Name.items() if
              x is not None])
-        self.levelTypeNumber_Name = {None : u'NONE',
-                                     0 : u'Novice',
-                                     1 : u'Apprentice',
-                                     2 : u'Journeyman',
-                                     3 : u'Expert',
-                                     4 : u'Master',}
+        self.levelTypeNumber_Name = {None : 'NONE',
+                                     0 : 'Novice',
+                                     1 : 'Apprentice',
+                                     2 : 'Journeyman',
+                                     3 : 'Expert',
+                                     4 : 'Master',}
         self.levelTypeName_Number = dict(
-            [(y.lower(),x) for x,y in self.levelTypeNumber_Name.iteritems() if
+            [(y.lower(),x) for x,y in self.levelTypeNumber_Name.items() if
              x is not None])
 
     def readFromMod(self,modInfo):
@@ -3260,7 +3260,7 @@ class CBash_SpellRecords(_UsesEffectsMixin):
             modFile = Current.addMod(modInfo.getPath().stail,LoadMasters=False)
             Current.load()
             for record in modFile.SPEL:
-                fid_stats[record.fid] = map(record.__getattribute__, attrs)
+                fid_stats[record.fid] = list(map(record.__getattribute__, attrs))
 
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""
@@ -3273,10 +3273,10 @@ class CBash_SpellRecords(_UsesEffectsMixin):
                 newStats = fid_stats.get(record.fid, None)
                 if not newStats: continue
                 if not ValidateList(newStats, modFile): continue
-                oldStats = map(record.__getattribute__,attrs)
+                oldStats = list(map(record.__getattribute__,attrs))
                 if oldStats != newStats:
                     changed.append(oldStats[0]) #eid
-                    map(record.__setattr__,attrs,newStats)
+                    list(map(record.__setattr__,attrs,newStats))
             #--Done
             if changed: modFile.save()
             return changed
@@ -3289,22 +3289,22 @@ class CBash_SpellRecords(_UsesEffectsMixin):
         fid_stats = self.fid_stats
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 8 or fields[2][:2] != u'0x': continue
+                if len(fields) < 8 or fields[2][:2] != '0x': continue
                 group,mmod,mobj,eid,full,cost,levelType,spellType = fields[:8]
                 fields = fields[8:]
-                group = _coerce(group, unicode)
-                if group.lower() != u'spel': continue
-                mmod = _coerce(mmod, unicode)
+                group = _coerce(group, str)
+                if group.lower() != 'spel': continue
+                mmod = _coerce(mmod, str)
                 mid = FormID(GPath(aliases.get(mmod,mmod)),
                              _coerce(mobj,int,16))
-                eid = _coerce(eid, unicode, AllowNone=True)
-                full = _coerce(full, unicode, AllowNone=True)
+                eid = _coerce(eid, str, AllowNone=True)
+                full = _coerce(full, str, AllowNone=True)
                 cost = _coerce(cost, int)
-                levelType = _coerce(levelType, unicode)
+                levelType = _coerce(levelType, str)
                 levelType = levelTypeName_Number.get(levelType.lower(),
                                                      _coerce(levelType,
                                                              int) or 0)
-                spellType = _coerce(spellType, unicode)
+                spellType = _coerce(spellType, str)
                 spellType = spellTypeName_Number.get(spellType.lower(),
                                                      _coerce(spellType,
                                                              int) or 0)
@@ -3329,19 +3329,19 @@ class CBash_SpellRecords(_UsesEffectsMixin):
         detailed,fid_stats,spellTypeNumber_Name,levelTypeNumber_Name = \
             self.detailed,self.fid_stats,self.spellTypeNumber_Name,\
             self.levelTypeNumber_Name
-        header = (_(u'Type'),_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),
-                  _(u'Name'),_(u'Cost'),_(u'Level Type'),_(u'Spell Type'))
-        rowFormat = u'"%s","%s","0x%06X","%s","%s","%d","%s","%s"'
+        header = (_('Type'),_('Mod Name'),_('ObjectIndex'),_('Editor Id'),
+                  _('Name'),_('Cost'),_('Level Type'),_('Spell Type'))
+        rowFormat = '"%s","%s","0x%06X","%s","%s","%d","%s","%s"'
         if detailed:
             header = header + (
-                _(u'Manual Cost'),_(u'Start Spell'),_(u'Immune To Silence'),
-                _(u'Area Effect Ignores LOS'),_(u'Script Always Applies'),
-                _(u'Disallow Absorb and Reflect'),
-                _(u'Touch Explodes Without Target'),
+                _('Manual Cost'),_('Start Spell'),_('Immune To Silence'),
+                _('Area Effect Ignores LOS'),_('Script Always Applies'),
+                _('Disallow Absorb and Reflect'),
+                _('Touch Explodes Without Target'),
             ) + _UsesEffectsMixin.headers * 2 + (
-                         _(u'Additional Effects (Same format)'),)
-            rowFormat += u',"%s","%s","%s","%s","%s","%s","%s"'
-        headFormat = u','.join([u'"%s"'] * len(header)) + u'\n'
+                         _('Additional Effects (Same format)'),)
+            rowFormat += ',"%s","%s","%s","%s","%s","%s","%s"'
+        headFormat = ','.join(['"%s"'] * len(header)) + '\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % header)
             for fid in sorted(fid_stats,key=lambda x:(fid_stats[x][0],x[0])):
@@ -3351,7 +3351,7 @@ class CBash_SpellRecords(_UsesEffectsMixin):
                     levelType = levelTypeNumber_Name.get(levelType,levelType)
                     spellType = spellTypeNumber_Name.get(spellType,spellType)
                     output = rowFormat % (
-                        u'SPEL',fid[0],fid[1],eid,name,cost,levelType,
+                        'SPEL',fid[0],fid[1],eid,name,cost,levelType,
                         spellType,mc,ss,its,aeil,saa,daar,tewt)
                     output += self.writeEffects(effects, True)
                 else:
@@ -3359,9 +3359,9 @@ class CBash_SpellRecords(_UsesEffectsMixin):
                     levelType = levelTypeNumber_Name.get(levelType,levelType)
                     spellType = spellTypeNumber_Name.get(spellType,spellType)
                     output = rowFormat % (
-                        u'SPEL',fid[0],fid[1],eid,name,cost,levelType,
+                        'SPEL',fid[0],fid[1],eid,name,cost,levelType,
                         spellType)
-                output += u'\n'
+                output += '\n'
                 out.write(output)
 
 #------------------------------------------------------------------------------
@@ -3460,20 +3460,20 @@ class IngredientDetails(_UsesEffectsMixin):
         fid_stats,aliases = self.fid_stats, self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 11 or fields[1][:2] != u'0x': continue
+                if len(fields) < 11 or fields[1][:2] != '0x': continue
                 mmod,mobj,eid,full,modPath,modb,iconPath,smod,sobj,value,\
                 weight = fields[:11]
-                mmod = _coerce(mmod, unicode)
+                mmod = _coerce(mmod, str)
                 mid = (GPath(aliases.get(mmod,mmod)),_coerce(mobj,int,16))
-                smod = _coerce(smod, unicode, AllowNone=True)
+                smod = _coerce(smod, str, AllowNone=True)
                 if smod is None: sid = None
                 else: sid = (
                     GPath(aliases.get(smod,smod)),_coerce(sobj,int,16))
-                eid = _coerce(eid, unicode, AllowNone=True)
-                full = _coerce(full, unicode, AllowNone=True)
-                modPath = _coerce(modPath, unicode, AllowNone=True)
+                eid = _coerce(eid, str, AllowNone=True)
+                full = _coerce(full, str, AllowNone=True)
+                modPath = _coerce(modPath, str, AllowNone=True)
                 modb = _coerce(modb, float)
-                iconPath = _coerce(iconPath, unicode, AllowNone=True)
+                iconPath = _coerce(iconPath, str, AllowNone=True)
                 value = _coerce(value, int)
                 weight = _coerce(weight, float)
                 effects = self.readEffects(fields[11:], aliases, False)
@@ -3483,22 +3483,22 @@ class IngredientDetails(_UsesEffectsMixin):
     def writeToText(self,textPath):
         """Exports stats to specified text file."""
         fid_stats = self.fid_stats
-        header = (_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),_(u'Name'),
-                  _(u'Model Path'),_(u'Bound Radius'),_(u'Icon Path'),
-                  _(u'Script Mod Name'),_(u'Script ObjectIndex'),_(u'Value'),
-                  _(u'Weight'),) + _UsesEffectsMixin.headers * 2 + (
-                     _(u'Additional Effects (Same format)'),)
-        headFormat = u','.join([u'"%s"'] * len(header)) + u'\n'
-        rowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
-                    u'"%d","%f"'
-        altrowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
-                       u'"%d","%f"'
+        header = (_('Mod Name'),_('ObjectIndex'),_('Editor Id'),_('Name'),
+                  _('Model Path'),_('Bound Radius'),_('Icon Path'),
+                  _('Script Mod Name'),_('Script ObjectIndex'),_('Value'),
+                  _('Weight'),) + _UsesEffectsMixin.headers * 2 + (
+                     _('Additional Effects (Same format)'),)
+        headFormat = ','.join(['"%s"'] * len(header)) + '\n'
+        rowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
+                    '"%d","%f"'
+        altrowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
+                       '"%d","%f"'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(headFormat % header)
             for fid in sorted(fid_stats,key=lambda x:fid_stats[x][0].lower()):
                 eid,name,modpath,modb,iconpath,scriptfid,value,weight,\
                 effects = fid_stats[fid]
-                scriptfid = scriptfid or (GPath(u'None'), None)
+                scriptfid = scriptfid or (GPath('None'), None)
                 try:
                     output = rowFormat % (
                         fid[0].s,fid[1],eid,name,modpath,modb,iconpath,
@@ -3508,7 +3508,7 @@ class IngredientDetails(_UsesEffectsMixin):
                         fid[0].s,fid[1],eid,name,modpath,modb,iconpath,
                         scriptfid[0].s,scriptfid[1],value,weight)
                 output += self.writeEffects(effects, False)
-                output += u'\n'
+                output += '\n'
                 out.write(output)
 
 class CBash_IngredientDetails(_UsesEffectsMixin):
@@ -3561,21 +3561,21 @@ class CBash_IngredientDetails(_UsesEffectsMixin):
         fid_stats,aliases = self.fid_stats, self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
-                if len(fields) < 11 or fields[1][:2] != u'0x': continue
+                if len(fields) < 11 or fields[1][:2] != '0x': continue
                 mmod,mobj,eid,full,modPath,modb,iconPath,smod,sobj,value,\
                 weight = fields[:11]
-                mmod = _coerce(mmod, unicode)
+                mmod = _coerce(mmod, str)
                 mid = FormID(GPath(aliases.get(mmod,mmod)),
                              _coerce(mobj,int,16))
-                smod = _coerce(smod, unicode, AllowNone=True)
+                smod = _coerce(smod, str, AllowNone=True)
                 if smod is None: sid = FormID(None,None)
                 else: sid = FormID(GPath(aliases.get(smod,smod)),
                                    _coerce(sobj,int,16))
-                eid = _coerce(eid, unicode, AllowNone=True)
-                full = _coerce(full, unicode, AllowNone=True)
-                modPath = _coerce(modPath, unicode, AllowNone=True)
+                eid = _coerce(eid, str, AllowNone=True)
+                full = _coerce(full, str, AllowNone=True)
+                modPath = _coerce(modPath, str, AllowNone=True)
                 modb = _coerce(modb, float)
-                iconPath = _coerce(iconPath, unicode, AllowNone=True)
+                iconPath = _coerce(iconPath, str, AllowNone=True)
                 value = _coerce(value, int)
                 weight = _coerce(weight, float)
                 effects = self.readEffects(fields[11:], aliases, True)
@@ -3585,23 +3585,23 @@ class CBash_IngredientDetails(_UsesEffectsMixin):
     def writeToText(self,textPath):
         """Exports stats to specified text file."""
         fid_stats = self.fid_stats
-        header = (_(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),_(u'Name'),
-                  _(u'Model Path'),_(u'Bound Radius'),_(u'Icon Path'),
-                  _(u'Script Mod Name'),_(u'Script ObjectIndex'),_(u'Value'),
-                  _(u'Weight'),) + _UsesEffectsMixin.headers * 2 + (
-                     _(u'Additional Effects (Same format)'),)
-        headFormat = u','.join([u'"%s"'] * len(header)) + u'\n'
-        rowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
-                    u'"%d","%f"'
-        altrowFormat = u'"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
-                       u'"%d","%f"'
+        header = (_('Mod Name'),_('ObjectIndex'),_('Editor Id'),_('Name'),
+                  _('Model Path'),_('Bound Radius'),_('Icon Path'),
+                  _('Script Mod Name'),_('Script ObjectIndex'),_('Value'),
+                  _('Weight'),) + _UsesEffectsMixin.headers * 2 + (
+                     _('Additional Effects (Same format)'),)
+        headFormat = ','.join(['"%s"'] * len(header)) + '\n'
+        rowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","0x%06X",' \
+                    '"%d","%f"'
+        altrowFormat = '"%s","0x%06X","%s","%s","%s","%f","%s","%s","%s",' \
+                       '"%d","%f"'
         with textPath.open('w',encoding='utf-8-sig') as out:
             outWrite = out.write
             outWrite(headFormat % header)
             for fid in sorted(fid_stats,key = lambda x: fid_stats[x][0]):
                 eid,name,modpath,modb,iconpath,scriptfid,value,weight,\
                 effects = fid_stats[fid]
-                scriptfid = scriptfid or (GPath(u'None'), None)
+                scriptfid = scriptfid or (GPath('None'), None)
                 try:
                     output = rowFormat % (
                     fid[0],fid[1],eid,name,modpath,modb,iconpath,scriptfid[0],
@@ -3611,7 +3611,7 @@ class CBash_IngredientDetails(_UsesEffectsMixin):
                     fid[0],fid[1],eid,name,modpath,modb,iconpath,scriptfid[0],
                     scriptfid[1],value,weight)
                 output += self.writeEffects(effects, True)
-                output += u'\n'
+                output += '\n'
                 outWrite(output)
 
 #------------------------------------------------------------------------------
@@ -3624,44 +3624,44 @@ class CBash_MapMarkers:
     def __init__(self,types=None,aliases=None):
         self.fid_markerdata = {}
         self.aliases = aliases or {}
-        self.markerFid = FormID(GPath(u'Oblivion.esm'), 0x000010)
+        self.markerFid = FormID(GPath('Oblivion.esm'), 0x000010)
         self.attrs = ['eid','markerName','markerType','IsVisible',
                       'IsCanTravelTo','posX','posY','posZ','rotX','rotY',
                       'rotZ']
         self.markerTypeNumber_Name = {
-            None : u'NONE',
-            0 : u'NONE',
-            1 : u'Camp',
-            2 : u'Cave',
-            3 : u'City',
-            4 : u'Elven Ruin',
-            5 : u'Fort Ruin',
-            6 : u'Mine',
-            7 : u'Landmark',
-            8 : u'Tavern',
-            9 : u'Settlement',
-            10 : u'Daedric Shrine',
-            11 : u'Oblivion Gate',
-            12 : u'?',
-            13 : u'Ayleid Well',
-            14 : u'Wayshrine',
-            15 : u'Magical Stone',
-            16 : u'Spire',
-            17 : u'Obelisk of Order',
-            18 : u'House',
-            19 : u'Player marker (flag)',
-            20 : u'Player marker (Q flag)',
-            21 : u'Player marker (i flag)',
-            22 : u'Player marker (? flag)',
-            23 : u'Harbor/dock',
-            24 : u'Stable',
-            25 : u'Castle',
-            26 : u'Farm',
-            27 : u'Chapel',
-            28 : u'Merchant',
-            29 : u'Ayleid Step (old Ayleid ruin icon)',}
+            None : 'NONE',
+            0 : 'NONE',
+            1 : 'Camp',
+            2 : 'Cave',
+            3 : 'City',
+            4 : 'Elven Ruin',
+            5 : 'Fort Ruin',
+            6 : 'Mine',
+            7 : 'Landmark',
+            8 : 'Tavern',
+            9 : 'Settlement',
+            10 : 'Daedric Shrine',
+            11 : 'Oblivion Gate',
+            12 : '?',
+            13 : 'Ayleid Well',
+            14 : 'Wayshrine',
+            15 : 'Magical Stone',
+            16 : 'Spire',
+            17 : 'Obelisk of Order',
+            18 : 'House',
+            19 : 'Player marker (flag)',
+            20 : 'Player marker (Q flag)',
+            21 : 'Player marker (i flag)',
+            22 : 'Player marker (? flag)',
+            23 : 'Harbor/dock',
+            24 : 'Stable',
+            25 : 'Castle',
+            26 : 'Farm',
+            27 : 'Chapel',
+            28 : 'Merchant',
+            29 : 'Ayleid Step (old Ayleid ruin icon)',}
         self.markerTypeName_Number = dict(
-            [(y.lower(),x) for x,y in self.markerTypeNumber_Name.iteritems() if
+            [(y.lower(),x) for x,y in self.markerTypeNumber_Name.items() if
              x is not None])
 
     def readFromMod(self,modInfo):
@@ -3712,14 +3712,14 @@ class CBash_MapMarkers:
                                         self.aliases,self.markerTypeName_Number
         with CsvReader(GPath(textPath)) as ins:
             for fields in ins:
-                if len(fields) < 13 or fields[1][:2] != u'0x': continue
+                if len(fields) < 13 or fields[1][:2] != '0x': continue
                 mod,objectIndex,eid,markerName,_markerType,IsVisible,\
                 IsCanTravelTo,posX,posY,posZ,rotX,rotY,rotZ = fields[:13]
-                mod = GPath(_coerce(mod, unicode))
+                mod = GPath(_coerce(mod, str))
                 longid = FormID(aliases.get(mod,mod),
                                 _coerce(objectIndex,int,16))
-                eid = _coerce(eid, unicode, AllowNone=True)
-                markerName = _coerce(markerName, unicode, AllowNone=True)
+                eid = _coerce(eid, str, AllowNone=True)
+                markerName = _coerce(markerName, str, AllowNone=True)
                 markerType = _coerce(_markerType, int)
                 if markerType is None: #coercion failed
                     markerType = markerTypeName_Number.get(_markerType.lower(),
@@ -3741,17 +3741,17 @@ class CBash_MapMarkers:
         fid_markerdata,markerTypeNumber_Name = self.fid_markerdata,\
                                                self.markerTypeNumber_Name
         textPath = GPath(textPath)
-        headFormat = u'"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
-                     u'"%s","%s","%s"\n'
-        rowFormat = u'"%s","0x%06X","%s","%s","%s","%s","%s","%s","%s","%s",' \
-                    u'"%s","%s","%s"\n'
+        headFormat = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",' \
+                     '"%s","%s","%s"\n'
+        rowFormat = '"%s","0x%06X","%s","%s","%s","%s","%s","%s","%s","%s",' \
+                    '"%s","%s","%s"\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             outWrite = out.write
             outWrite(headFormat % (
-                _(u'Mod Name'),_(u'ObjectIndex'),_(u'Editor Id'),_(u'Name'),
-                _(u'Type'),_(u'IsVisible'),_(u'IsCanTravelTo'),_(u'posX'),
-                _(u'posY'),_(u'posZ'),_(u'rotX'),_(u'rotY'),_(u'rotZ')))
-            longids = fid_markerdata.keys()
+                _('Mod Name'),_('ObjectIndex'),_('Editor Id'),_('Name'),
+                _('Type'),_('IsVisible'),_('IsCanTravelTo'),_('posX'),
+                _('posY'),_('posZ'),_('rotX'),_('rotY'),_('rotZ')))
+            longids = list(fid_markerdata.keys())
             longids.sort(key=lambda a: fid_markerdata[a][0])
             longids.sort(key=itemgetter(0))
             for longid in longids:
@@ -3786,12 +3786,12 @@ class CBash_CellBlockInfo:
         """Exports markers to specified text file."""
         celldata = self.celldata
         textPath = GPath(textPath)
-        headFormat = u'"%s","%s","%s",\n'
-        rowFormat  = u'"%s","%s","%s",\n'
+        headFormat = '"%s","%s","%s",\n'
+        rowFormat  = '"%s","%s","%s",\n'
         with textPath.open('w',encoding='utf-8-sig') as out:
             out.write(
-                headFormat % (_(u'Editor Id'),_(u'Block'),_(u'Sub-Block')))
-            eids = celldata.keys()
+                headFormat % (_('Editor Id'),_('Block'),_('Sub-Block')))
+            eids = list(celldata.keys())
             eids.sort()
             for eid in eids:
                 block, subblock = celldata[eid]
@@ -3820,7 +3820,7 @@ class MasterMap:
         inIndex = int(fid >> 24)
         outIndex = self.map.get(inIndex,-2)
         if outIndex >= 0:
-            return (long(outIndex) << 24 ) | (fid & 0xFFFFFFL)
+            return (int(outIndex) << 24 ) | (fid & 0xFFFFFF)
         elif default != -1:
             return default
         else:
@@ -3855,7 +3855,7 @@ class LoadFactory:
     def addClass(self,recClass):
         """Adds specified class."""
         cellTypes = ('WRLD','ROAD','CELL','REFR','ACHR','ACRE','PGRD','LAND')
-        if isinstance(recClass,basestring):
+        if isinstance(recClass,str):
             recType = recClass
             recClass = MreRecord
         else:
@@ -3948,7 +3948,7 @@ class ModFile(object):
         elif topType == '__repr__':
             raise AttributeError
         else:
-            raise ArgumentError(u'Invalid top group type: '+topType)
+            raise ArgumentError('Invalid top group type: '+topType)
 
     def load(self, do_unpack=False, progress=None, loadStrings=True):
         """Load file."""
@@ -3984,7 +3984,7 @@ class ModFile(object):
                 header = insRecHeader()
                 type = header.recType
                 if type != 'GRUP' or header.groupType != 0:
-                    raise ModError(self.fileInfo.name,u'Improperly grouped file.')
+                    raise ModError(self.fileInfo.name,'Improperly grouped file.')
                 label,size = header.label,header.size
                 topClass = self.loadFactory.getTopClass(label)
                 try:
@@ -3995,8 +3995,8 @@ class ModFile(object):
                         self.topsSkipped.add(label)
                         insSeek(size-header.__class__.rec_header_size,1,type + '.' + label)
                 except:
-                    print u'Error in',self.fileInfo.name.s
-                    deprint(u' ',traceback=True)
+                    print('Error in',self.fileInfo.name.s)
+                    deprint(' ',traceback=True)
                     break
                 subProgress(insTell())
         #--Done Reading
@@ -4020,11 +4020,11 @@ class ModFile(object):
         and then save if the answer is yes. If hasSaved == False, then does nothing."""
         if not hasChanged: return
         fileName = self.fileInfo.name
-        if re.match(u'' r'\s*[yY]', raw_input(u'\nSave changes to '+fileName.s+u' [y/n]?: '), flags=re.U):
+        if re.match('' r'\s*[yY]', input('\nSave changes to '+fileName.s+' [y/n]?: '), flags=re.U):
             self.safeSave()
-            print fileName.s,u'saved.'
+            print(fileName.s,'saved.')
         else:
-            print fileName.s,u'not saved.'
+            print(fileName.s,'not saved.')
 
     def safeSave(self):
         """Save data to file safely.  Works under UAC."""
@@ -4041,12 +4041,12 @@ class ModFile(object):
     def save(self,outPath=None):
         """Save data to file.
         outPath -- Path of the output file to write to. Defaults to original file path."""
-        if not self.loadFactory.keepAll: raise StateError(u"Insufficient data to write file.")
+        if not self.loadFactory.keepAll: raise StateError("Insufficient data to write file.")
         outPath = outPath or self.fileInfo.getPath()
         with ModWriter(outPath.open('wb')) as out:
             #--Mod Record
             self.tes4.setChanged()
-            self.tes4.numRecords = sum(block.getNumRecords() for block in self.tops.values())
+            self.tes4.numRecords = sum(block.getNumRecords() for block in list(self.tops.values()))
             self.tes4.getSize()
             self.tes4.dump(out)
             #--Blocks
@@ -4062,7 +4062,7 @@ class ModFile(object):
         def mapper(fid):
             if fid is None: return None
             if isinstance(fid,tuple): return fid
-            mod,object = int(fid >> 24),int(fid & 0xFFFFFFL)
+            mod,object = int(fid >> 24),int(fid & 0xFFFFFF)
             return masters[min(mod,maxMaster)],object
         return mapper
 
@@ -4073,12 +4073,12 @@ class ModFile(object):
         gLong = self.getLongMapper()
         def mapper(fid):
             if fid is None: return None
-            if isinstance(fid, (long, int)):
+            if isinstance(fid, int):
                 fid = gLong(fid)
             modName, object_id = fid
-            long_id = long(object_id)
+            long_id = int(object_id)
             mod = indices[modName] if long_id >= 0x800 else 0
-            return (long(mod) << 24) | long_id
+            return (int(mod) << 24) | long_id
         return mapper
 
     def convertToLongFids(self,types=None):
@@ -4086,7 +4086,7 @@ class ModFile(object):
         :type types: list[str] | tuple[str] | set[str]
         """
         mapper = self.getLongMapper()
-        if types is None: types = self.tops.keys()
+        if types is None: types = list(self.tops.keys())
         else: assert isinstance(types, (list, tuple, set))
         selfTops = self.tops
         for type in types:
@@ -4106,12 +4106,12 @@ class ModFile(object):
 
     def getMastersUsed(self):
         """Updates set of master names according to masters actually used."""
-        if not self.longFids: raise StateError(u"ModFile fids not in long form.")
+        if not self.longFids: raise StateError("ModFile fids not in long form.")
         for fname in bush.game.masterFiles:
             if dirs['mods'].join(fname).exists():
                 masters = MasterSet([GPath(fname)])
                 break
-        for block in self.tops.values():
+        for block in list(self.tops.values()):
             block.updateMasters(masters)
         return masters.getOrdered()
 
@@ -4125,7 +4125,7 @@ class ModFile(object):
         if 'MGEF' in self.tops:
             for record in self.MGEF.getActiveRecords():
                 if isinstance(record,MreRecord.type_class['MGEF']):
-                    if bush.game.fsName == u'Oblivion':
+                    if bush.game.fsName == 'Oblivion':
                         mgef_school[record.eid] = record.school
                     else:
                         mgef_school[record.eid] = record.magicSkill

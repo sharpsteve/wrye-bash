@@ -27,108 +27,108 @@ from .. import GameInfo
 from ... import brec
 
 class Fallout4GameInfo(GameInfo):
-    displayName = u'Fallout 4'
-    fsName = u'Fallout4'
-    altName = u'Wrye Flash'
-    defaultIniFile = u'Fallout4_default.ini'
-    launch_exe = u'Fallout4.exe'
-    game_detect_file = [u'Fallout4.exe']
-    version_detect_file = [u'Fallout4.exe']
-    masterFiles = [u'Fallout4.esm']
-    iniFiles = [u'Fallout4.ini', u'Fallout4Prefs.ini', u'Fallout4Custom.ini', ]
-    pklfile = u'bash\\db\\Fallout4_ids.pkl'
-    masterlist_dir = u'Fallout4'
-    regInstallKeys = (u'Bethesda Softworks\\Fallout4', u'Installed Path')
-    nexusUrl = u'https://www.nexusmods.com/fallout4/'
-    nexusName = u'Fallout 4 Nexus'
+    displayName = 'Fallout 4'
+    fsName = 'Fallout4'
+    altName = 'Wrye Flash'
+    defaultIniFile = 'Fallout4_default.ini'
+    launch_exe = 'Fallout4.exe'
+    game_detect_file = ['Fallout4.exe']
+    version_detect_file = ['Fallout4.exe']
+    masterFiles = ['Fallout4.esm']
+    iniFiles = ['Fallout4.ini', 'Fallout4Prefs.ini', 'Fallout4Custom.ini', ]
+    pklfile = 'bash\\db\\Fallout4_ids.pkl'
+    masterlist_dir = 'Fallout4'
+    regInstallKeys = ('Bethesda Softworks\\Fallout4', 'Installed Path')
+    nexusUrl = 'https://www.nexusmods.com/fallout4/'
+    nexusName = 'Fallout 4 Nexus'
     nexusKey = 'bash.installers.openFallout4Nexus.continue'
 
-    bsa_extension = u'ba2'
+    bsa_extension = 'ba2'
     vanilla_string_bsas = {
-        u'fallout4.esm': [u'Fallout4 - Interface.ba2'],
-        u'dlcrobot.esm': [u'DLCRobot - Main.ba2'],
-        u'dlcworkshop01.esm': [u'DLCworkshop01 - Main.ba2'],
-        u'dlcworkshop02.esm': [u'DLCworkshop02 - Main.ba2'],
-        u'dlcworkshop03.esm': [u'DLCworkshop03 - Main.ba2'],
-        u'dlccoast.esm': [u'DLCCoast - Main.ba2'],
-        u'dlcnukaworld.esm':  [u'DLCNukaWorld - Main.ba2'],
+        'fallout4.esm': ['Fallout4 - Interface.ba2'],
+        'dlcrobot.esm': ['DLCRobot - Main.ba2'],
+        'dlcworkshop01.esm': ['DLCworkshop01 - Main.ba2'],
+        'dlcworkshop02.esm': ['DLCworkshop02 - Main.ba2'],
+        'dlcworkshop03.esm': ['DLCworkshop03 - Main.ba2'],
+        'dlccoast.esm': ['DLCCoast - Main.ba2'],
+        'dlcnukaworld.esm':  ['DLCNukaWorld - Main.ba2'],
     }
     resource_archives_keys = (
-        u'sResourceIndexFileList', u'sResourceStartUpArchiveList',
-        u'sResourceArchiveList', u'sResourceArchiveList2',
-        u'sResourceArchiveListBeta'
+        'sResourceIndexFileList', 'sResourceStartUpArchiveList',
+        'sResourceArchiveList', 'sResourceArchiveList2',
+        'sResourceArchiveListBeta'
     )
 
-    espm_extensions = {u'.esp', u'.esm', u'.esl'}
-    script_extensions = {u'.psc'}
+    espm_extensions = {'.esp', '.esm', '.esl'}
+    script_extensions = {'.psc'}
     has_achlist = True
     check_esl = True
 
     class cs(GameInfo.cs):
         # TODO:  When the Fallout 4 Creation Kit is actually released,
         # double check that the filename is correct, and create an actual icon
-        cs_abbrev = u'FO4CK'
-        long_name = u'Creation Kit'
-        exe = u'CreationKit.exe'
+        cs_abbrev = 'FO4CK'
+        long_name = 'Creation Kit'
+        exe = 'CreationKit.exe'
         se_args = None
-        image_name = u'creationkit%s.png'
+        image_name = 'creationkit%s.png'
 
     class se(GameInfo.se):
-        se_abbrev = u'F4SE'
-        long_name = u'Fallout 4 Script Extender'
-        exe = u'f4se_loader.exe'
-        steam_exe = u'f4se_steam_loader.dll'
-        plugin_dir = u'F4SE'
-        cosave_ext = u'.f4se'
-        url = u'http://f4se.silverlock.org/'
-        url_tip = u'http://f4se.silverlock.org/'
+        se_abbrev = 'F4SE'
+        long_name = 'Fallout 4 Script Extender'
+        exe = 'f4se_loader.exe'
+        steam_exe = 'f4se_steam_loader.dll'
+        plugin_dir = 'F4SE'
+        cosave_ext = '.f4se'
+        url = 'http://f4se.silverlock.org/'
+        url_tip = 'http://f4se.silverlock.org/'
 
     class ini(GameInfo.ini):
         allowNewLines = True
-        bsaRedirection = (u'',u'')
+        bsaRedirection = ('','')
 
     class ess(GameInfo.ess):
-        ext = u'.fos'
+        ext = '.fos'
 
     class pnd(GameInfo.pnd):
-        facegen_dir_1 = [u'meshes', u'actors', u'character', u'facegendata',
-                         u'facegeom']
-        facegen_dir_2 = [u'meshes', u'actors', u'character',
-                         u'facecustomization']
+        facegen_dir_1 = ['meshes', 'actors', 'character', 'facegendata',
+                         'facegeom']
+        facegen_dir_2 = ['meshes', 'actors', 'character',
+                         'facecustomization']
 
     # BAIN:
     dataDirs = GameInfo.dataDirs | {
-        u'interface',
-        u'lodsettings',
-        u'materials',
-        u'misc',
-        u'programs',
-        u'scripts',
-        u'seq',
-        u'shadersfx',
-        u'strings',
-        u'vis',
+        'interface',
+        'lodsettings',
+        'materials',
+        'misc',
+        'programs',
+        'scripts',
+        'seq',
+        'shadersfx',
+        'strings',
+        'vis',
     }
     dataDirsPlus = {
-        u'f4se',
-        u'ini',
-        u'mcm',   # FO4 MCM
-        u'tools', # bodyslide
+        'f4se',
+        'ini',
+        'mcm',   # FO4 MCM
+        'tools', # bodyslide
     }
     dontSkipDirs = {
         # This rule is to allow mods with string translation enabled.
         'interface\\translations':['.txt']
     }
-    SkipBAINRefresh = {u'fo4edit backups', u'fo4edit cache'}
+    SkipBAINRefresh = {'fo4edit backups', 'fo4edit cache'}
 
     class esp(GameInfo.esp):
         canBash = True
         canEditHeader = True
         validHeaderVersions = (0.95,)
 
-    allTags = {u'Delev', u'Relev'}
+    allTags = {'Delev', 'Relev'}
 
-    patchers = (u'ListsMerger',)
+    patchers = ('ListsMerger',)
 
     # ---------------------------------------------------------------------
     # --Imported - MreGlob is special import, not in records.py

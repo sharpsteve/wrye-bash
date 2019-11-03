@@ -27,44 +27,44 @@ from ... import brec
 from ...brec import MreGlob
 
 class FalloutNVGameInfo(Fallout3GameInfo):
-    displayName = u'Fallout New Vegas'
-    fsName = u'FalloutNV'
-    altName = u'Wrye Flash NV'
-    defaultIniFile = u'Fallout_default.ini'
-    launch_exe = u'FalloutNV.exe'
-    game_detect_file = [u'FalloutNV.exe']
-    version_detect_file = [u'FalloutNV.exe']
-    masterFiles = [u'FalloutNV.esm']
-    iniFiles = [u'Fallout.ini', u'FalloutPrefs.ini']
-    pklfile = u'bash\\db\\FalloutNV_ids.pkl'
-    masterlist_dir = u'FalloutNV'
-    regInstallKeys = (u'Bethesda Softworks\\FalloutNV',u'Installed Path')
-    nexusUrl = u'https://www.nexusmods.com/newvegas/'
-    nexusName = u'New Vegas Nexus'
-    nexusKey = u'bash.installers.openNewVegasNexus'
+    displayName = 'Fallout New Vegas'
+    fsName = 'FalloutNV'
+    altName = 'Wrye Flash NV'
+    defaultIniFile = 'Fallout_default.ini'
+    launch_exe = 'FalloutNV.exe'
+    game_detect_file = ['FalloutNV.exe']
+    version_detect_file = ['FalloutNV.exe']
+    masterFiles = ['FalloutNV.esm']
+    iniFiles = ['Fallout.ini', 'FalloutPrefs.ini']
+    pklfile = 'bash\\db\\FalloutNV_ids.pkl'
+    masterlist_dir = 'FalloutNV'
+    regInstallKeys = ('Bethesda Softworks\\FalloutNV','Installed Path')
+    nexusUrl = 'https://www.nexusmods.com/newvegas/'
+    nexusName = 'New Vegas Nexus'
+    nexusKey = 'bash.installers.openNewVegasNexus'
 
     class se(Fallout3GameInfo.se):
-        se_abbrev = u'NVSE'
-        long_name = u'Fallout Script Extender'
-        exe = u'nvse_loader.exe'
-        steam_exe = u'nvse_loader.dll'
-        plugin_dir = u'NVSE'
-        cosave_ext = u'.nvse'
-        url = u'http://nvse.silverlock.org/'
-        url_tip = u'http://nvse.silverlock.org/'
+        se_abbrev = 'NVSE'
+        long_name = 'Fallout Script Extender'
+        exe = 'nvse_loader.exe'
+        steam_exe = 'nvse_loader.dll'
+        plugin_dir = 'NVSE'
+        cosave_ext = '.nvse'
+        url = 'http://nvse.silverlock.org/'
+        url_tip = 'http://nvse.silverlock.org/'
 
     # BAIN:
     dataDirsPlus = {
-        u'ini',
-        u'nvse',
-        u'scripts',
+        'ini',
+        'nvse',
+        'scripts',
         }
-    SkipBAINRefresh = {u'fnvedit backups', u'fnvedit cache'}
+    SkipBAINRefresh = {'fnvedit backups', 'fnvedit cache'}
     ignoreDataFiles = {
         #    u'NVSE\\Plugins\\Construction Set Extender.dll',
         #    u'NVSE\\Plugins\\Construction Set Extender.ini'
     }
-    ignoreDataDirs = {u'LSData'} #    u'NVSE\\Plugins\\ComponentDLLs\\CSE',
+    ignoreDataDirs = {'LSData'} #    u'NVSE\\Plugins\\ComponentDLLs\\CSE',
 
     class esp(Fallout3GameInfo.esp):
         canCBash = False # True?
@@ -83,7 +83,7 @@ class FalloutNVGameInfo(Fallout3GameInfo):
     # 'Actors.CombatStyle', 'Creatures.Blood', 'NPC.Race','Actors.Skeleton',
     # 'NpcFacesForceFullImport', 'MustBeActiveIfImported', 'Deflst',
     # 'Destructible', 'WeaponMods'
-    allTags = Fallout3GameInfo.allTags | {u'WeaponMods'}
+    allTags = Fallout3GameInfo.allTags | {'WeaponMods'}
 
     # ActorImporter, AliasesPatcher, AssortedTweaker, CellImporter, ContentsChecker,
     # DeathItemPatcher, DestructiblePatcher, FidListsMerger, GlobalsTweaker,
@@ -92,7 +92,7 @@ class FalloutNVGameInfo(Fallout3GameInfo):
     # NamesTweaker, NPCAIPackagePatcher, NpcFacePatcher, PatchMerger, RacePatcher,
     # RoadImporter, SoundPatcher, StatsPatcher, UpdateReferences, WeaponModsPatcher,
     #--Patcher available when building a Bashed Patch (referenced by class name)
-    patchers = Fallout3GameInfo.patchers + (u'WeaponModsPatcher',)
+    patchers = Fallout3GameInfo.patchers + ('WeaponModsPatcher',)
 
     @classmethod
     def init(cls):

@@ -30,47 +30,47 @@ from ... import brec
 from ...brec import MreGlob
 
 class EnderalGameInfo(SkyrimGameInfo):
-    displayName = u'Enderal'
-    fsName = u'Enderal'
-    altName = u'Wrye Smash'
-    defaultIniFile = u'enderal_default.ini'
+    displayName = 'Enderal'
+    fsName = 'Enderal'
+    altName = 'Wrye Smash'
+    defaultIniFile = 'enderal_default.ini'
     # Set to this because TESV.exe also exists for Enderal
-    game_detect_file = [u'Enderal Launcher.exe']
+    game_detect_file = ['Enderal Launcher.exe']
     # This isn't exact (currently 1.5.0 when it should be 1.5.7), but it's the
     # closest we're going to get
-    version_detect_file = [u'Enderal Launcher.exe']
-    iniFiles = [u'Enderal.ini', u'EnderalPrefs.ini']
-    pklfile = u'bash\\db\\Enderal_ids.pkl'
+    version_detect_file = ['Enderal Launcher.exe']
+    iniFiles = ['Enderal.ini', 'EnderalPrefs.ini']
+    pklfile = 'bash\\db\\Enderal_ids.pkl'
     regInstallKeys = (
-        u'SureAI\\Enderal',
-        u'Install_Path'
+        'SureAI\\Enderal',
+        'Install_Path'
     )
-    save_prefix = u'..\\Enderal\\Saves'
+    save_prefix = '..\\Enderal\\Saves'
 
-    nexusUrl = u'https://www.nexusmods.com/enderal/'
-    nexusName = u'Enderal Nexus'
-    nexusKey = u'bash.installers.openEnderalNexus.continue'
+    nexusUrl = 'https://www.nexusmods.com/enderal/'
+    nexusName = 'Enderal Nexus'
+    nexusKey = 'bash.installers.openEnderalNexus.continue'
 
     vanilla_string_bsas = {
-        u'skyrim.esm': [u'Skyrim - Interface.bsa'],
-        u'update.esm': [u'Skyrim - Interface.bsa'],
-        u'enderal - forgotten stories.esm': [u'Skyrim - Interface.bsa'],
+        'skyrim.esm': ['Skyrim - Interface.bsa'],
+        'update.esm': ['Skyrim - Interface.bsa'],
+        'enderal - forgotten stories.esm': ['Skyrim - Interface.bsa'],
     }
-    SkipBAINRefresh = {u'enderaledit backups', u'enderaledit cache'}
+    SkipBAINRefresh = {'enderaledit backups', 'enderaledit cache'}
 
     raceNames = {
-        0x13741 : _(u'Half Kilénian'),
-        0x13742 : _(u'Half Aeterna'),
-        0x13743 : _(u'Half Aeterna'),
-        0x13746 : _(u'Half Arazealean'),
-        0x13748 : _(u'Half Qyranian'),
+        0x13741 : _('Half Kilénian'),
+        0x13742 : _('Half Aeterna'),
+        0x13743 : _('Half Aeterna'),
+        0x13746 : _('Half Arazealean'),
+        0x13748 : _('Half Qyranian'),
     }
     raceShortNames = {
-        0x13741 : u'Kil',
-        0x13742 : u'Aet',
-        0x13743 : u'Aet',
-        0x13746 : u'Ara',
-        0x13748 : u'Qyr',
+        0x13741 : 'Kil',
+        0x13742 : 'Aet',
+        0x13743 : 'Aet',
+        0x13746 : 'Ara',
+        0x13748 : 'Qyr',
     }
     # TODO(inf) Not updated yet - seem to only be needed for Oblivion-specific
     #  save code

@@ -46,8 +46,8 @@ class GlobalsTweak(MultiTweakItem):
                         record.value = value
                         keep(record.fid)
                     break
-        log(u'* ' + _(u'%(label)s set to') % {
-            'label': (u'%s ' % self.label)} + (u': %4.2f' % value))
+        log('* ' + _('%(label)s set to') % {
+            'label': ('%s ' % self.label)} + (': %4.2f' % value))
 
 class CBash_GlobalsTweak(CBash_MultiTweakItem):
     """Sets a global to specified value"""
@@ -73,8 +73,8 @@ class CBash_GlobalsTweak(CBash_MultiTweakItem):
     def buildPatchLog(self,log):
         """Will write to log."""
         #--Log
-        if self.count: log(u'* ' + _(u'%(label)s set to') % {
-            'label': (u'%s ' % self.label)} + (u': %4.2f' % self.value))
+        if self.count: log('* ' + _('%(label)s set to') % {
+            'label': ('%s ' % self.label)} + (': %4.2f' % self.value))
 
 #------------------------------------------------------------------------------
 class GmstTweak(MultiTweakItem):
@@ -82,11 +82,11 @@ class GmstTweak(MultiTweakItem):
     def buildPatch(self,patchFile,keep,log):
         """Build patch."""
         eids = ((self.key,),self.key)[isinstance(self.key,tuple)]
-        isOblivion = bush.game.fsName.lower() == u'oblivion'
+        isOblivion = bush.game.fsName.lower() == 'oblivion'
         for eid,value in zip(eids,self.choiceValues[self.chosen]):
             if isOblivion and value < 0:
-                deprint(_(u"GMST values can't be negative - currently %s - "
-                          u"skipping setting GMST.") % value)
+                deprint(_("GMST values can't be negative - currently %s - "
+                          "skipping setting GMST.") % value)
                 return
             eidLower = eid.lower()
             for record in patchFile.GMST.records:
@@ -102,19 +102,19 @@ class GmstTweak(MultiTweakItem):
                 fid = gmst.fid = keep(gmst.getGMSTFid())
                 patchFile.GMST.setRecord(gmst)
         if len(self.choiceLabels) > 1:
-            if self.choiceLabels[self.chosen].startswith(_(u'Custom')):
-                if isinstance(self.choiceValues[self.chosen][0],basestring):
-                    log(u'* %s: %s %s' % (
+            if self.choiceLabels[self.chosen].startswith(_('Custom')):
+                if isinstance(self.choiceValues[self.chosen][0],str):
+                    log('* %s: %s %s' % (
                         self.label, self.choiceLabels[self.chosen],
                         self.choiceValues[self.chosen][0]))
                 else:
-                    log(u'* %s: %s %4.2f' % (
+                    log('* %s: %s %4.2f' % (
                         self.label, self.choiceLabels[self.chosen],
                         self.choiceValues[self.chosen][0]))
             else:
-                log(u'* %s: %s' % (self.label, self.choiceLabels[self.chosen]))
+                log('* %s: %s' % (self.label, self.choiceLabels[self.chosen]))
         else:
-            log(u'* ' + self.label)
+            log('* ' + self.label)
 
 class CBash_GmstTweak(CBash_MultiTweakItem):
     """Sets a gmst to specified value"""
@@ -133,15 +133,15 @@ class CBash_GmstTweak(CBash_MultiTweakItem):
                 break
         else:
             return
-        if recEid.startswith(u"f") and type(newValue) != float:
-            deprint(_(u"converting custom value to float for GMST %s: %s") % (
+        if recEid.startswith("f") and type(newValue) != float:
+            deprint(_("converting custom value to float for GMST %s: %s") % (
                 recEid, newValue))
             newValue = float(newValue)
         if record.value != newValue:
             self.eid_count[eid] = 1
             if newValue < 0:
-                deprint(_(u"GMST values can't be negative - currently %s - "
-                          u"skipping setting GMST.") % newValue)
+                deprint(_("GMST values can't be negative - currently %s - "
+                          "skipping setting GMST.") % newValue)
                 return
             override = record.CopyAsOverride(self.patchFile)
             if override:
@@ -156,19 +156,19 @@ class CBash_GmstTweak(CBash_MultiTweakItem):
         subProgress.setFull(max(len(values),1))
         pstate = 0
         for eid,value in zip(self.key,values):
-            subProgress(pstate, _(u"Finishing GMST Tweaks..."))
+            subProgress(pstate, _("Finishing GMST Tweaks..."))
             if not self.eid_count.get(eid,0):
                 self.eid_count[eid] = 1
                 record = patchFile.create_GMST(eid)
                 if not record:
-                    print eid
-                    print patchFile.Current.Debug_DumpModFiles()
+                    print(eid)
+                    print(patchFile.Current.Debug_DumpModFiles())
                     for conflict in patchFile.Current.LookupRecords(eid,False):
-                        print conflict.GetParentMod().ModName
-                    raise StateError(u"Tweak Settings: Unable to create GMST!")
+                        print(conflict.GetParentMod().ModName)
+                    raise StateError("Tweak Settings: Unable to create GMST!")
                 if eid.startswith("f") and type(value) != float:
-                    deprint(_(u"converting custom value to float for GMST"
-                              u" %s: %s") % (eid, value))
+                    deprint(_("converting custom value to float for GMST"
+                              " %s: %s") % (eid, value))
                     value = float(value)
                 record.value = value
             pstate += 1
@@ -177,26 +177,26 @@ class CBash_GmstTweak(CBash_MultiTweakItem):
         """Will write to log."""
         #--Log
         if len(self.choiceLabels) > 1:
-            if self.choiceLabels[self.chosen].startswith(_(u'Custom')):
-                if isinstance(self.values[0],basestring):
-                    log(u'  * %s: %s %s' % (
+            if self.choiceLabels[self.chosen].startswith(_('Custom')):
+                if isinstance(self.values[0],str):
+                    log('  * %s: %s %s' % (
                         self.label, self.choiceLabels[self.chosen],
                         self.values[0]))
                 else:
-                    log(u'  * %s: %s %4.2f' % (
+                    log('  * %s: %s %4.2f' % (
                         self.label, self.choiceLabels[self.chosen],
                         self.values[0]))
             else:
-                log(u'  * %s: %s' % (
+                log('  * %s: %s' % (
                     self.label, self.choiceLabels[self.chosen]))
         else:
-            log(u'  * ' + self.label)
+            log('  * ' + self.label)
 
 #------------------------------------------------------------------------------
 class _AGmstTweaker(AMultiTweaker):
     """Tweaks miscellaneous gmsts in miscellaneous ways."""
-    name = _(u'Tweak Settings')
-    text = _(u"Tweak game settings.")
+    name = _('Tweak Settings')
+    text = _("Tweak game settings.")
     tweaks = []
 
 class GmstTweaker(MultiTweaker, _AGmstTweaker):
@@ -232,7 +232,7 @@ class GmstTweaker(MultiTweaker, _AGmstTweaker):
         """Edits patch file as desired. Will write to log."""
         if not self.isActive: return
         keep = self.patchFile.getKeeper()
-        log.setHeader(u'= '+self.__class__.name)
+        log.setHeader('= '+self.__class__.name)
         for tweak in self.enabledTweaks:
             tweak.buildPatch(self.patchFile,keep,log)
 
