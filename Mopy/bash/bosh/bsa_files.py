@@ -61,7 +61,7 @@ class _Header(object):
     __slots__ = ('file_id', 'version')
     formats = ['4s', 'I']
     formats = list((f, struct.calcsize(f)) for f in formats)
-    bsa_magic = 'BSA\x00'
+    bsa_magic = b'BSA\x00'
     bsa_version = int('0x67', 16)
 
     def load_header(self, ins):
@@ -105,7 +105,7 @@ class Ba2Header(_Header):
         'b2a_files_type', 'b2a_num_files', 'b2a_name_table_offset')
     formats = ['4s', 'I', 'Q']
     formats = list((f, struct.calcsize(f)) for f in formats)
-    bsa_magic = 'BTDX'
+    bsa_magic = b'BTDX'
     file_types = {'GNRL', 'DX10'} # GNRL=General, DX10=Textures
     bsa_version = int('0x01', 16)
     header_size = 24
@@ -482,7 +482,7 @@ class BSA(ABsa):
                     total_names_length, self.bsa_header.folder_count))
             self.total_names_length = total_names_length
             file_names = bsa_file.read( # has an empty string at the end
-                self.bsa_header.total_file_name_length).split('\00')
+                self.bsa_header.total_file_name_length).split(b'\00')
             # close the file
         return file_names
 
