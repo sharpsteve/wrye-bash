@@ -186,7 +186,7 @@ class PatchDialog(balt.Dialog):
             patch_name = self.patchInfo.name
             patch_size = self.patchInfo.size
             progress = balt.Progress(patch_name.s,(' '*60+'\n'), abort=True)
-            timer1 = time.clock()
+            timer1 = time.process_time()
             #--Save configs
             self._saveConfig(patch_name)
             #--Do it
@@ -214,7 +214,7 @@ class PatchDialog(balt.Dialog):
                 self._save_pbash(patchFile, patch_name)
             #--Done
             progress.Destroy(); progress = None
-            timer2 = time.clock()
+            timer2 = time.process_time()
             #--Readme and log
             log.setHeader(None)
             log('{{CSS:wtxt_sand_small.css}}')
