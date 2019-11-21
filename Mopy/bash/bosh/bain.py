@@ -31,6 +31,7 @@ import re
 import sys
 import time
 from binascii import crc32
+from collections import OrderedDict
 from functools import partial, wraps
 from itertools import groupby, imap
 from operator import itemgetter, attrgetter
@@ -52,17 +53,50 @@ class Installer(object):
     """Object representing an installer archive, its user configuration, and
     its installation state."""
     #--Member data
-    persistent = ('archive', 'order', 'group', 'modified', 'size', 'crc',
-        'fileSizeCrcs', 'type', 'is_active', 'subNames', 'subActives',
-        'dirty_sizeCrc', 'comments', 'extras_dict', 'packageDoc', 'packagePic',
-        'src_sizeCrcDate', 'hasExtraData', 'skipVoices', 'espmNots', 'isSolid',
-        'blockSize', 'overrideSkips', 'remaps', 'skipRefresh', 'fileRootIdex')
+    _persistent = OrderedDict( # 26 persistent attributes
+        [(u'archive', u''),
+        #--User Only
+        (u'order', -1), #--Set by user/interface.
+        (u'group', u''), #--Default from abstract. Else set by user.
+        #--Set by _refreshSource called by refreshBasic
+        (u'modified', 0), (u'size', -1), (u'crc', 0),
+        (u'fileSizeCrcs', []), #--list of tuples for _all_ files in installer
+        #--Set by refreshBasic
+        (u'type', 0), #--Package type: 0: unset/invalid; 1: simple; 2: complex
+        #--User Only
+        (u'is_active', False),
+        #--Set by refreshBasic
+        (u'subNames', []), (u'subActives', []),
+        #--Set by refreshDataSizeCrc
+        (u'dirty_sizeCrc', bolt.LowerDict()),
+        #--User Only
+        (u'comments', u''),
+        #--hack to add more persistent attributes
+        #--Attributes set in refreshBasic and in FOMod code
+        (u'extras_dict', {}), # FIXME hunt down - keys must be unicode!
+        #--Set by refreshDataSizeCrc
+        (u'packageDoc', None), (u'packagePic', None),
+        #--For InstallerProject's, cache if refresh projects is skipped
+        # set by _refreshSource called by refreshBasic
+        (u'src_sizeCrcDate', bolt.LowerDict()),
+        #--User Only
+        (u'hasExtraData', False), (u'skipVoices', False),
+        (u'espmNots', set()), #--Lowercase plugin file names that user has decided not to install.
+        # set by _refreshSource
+        (u'isSolid', False), #--package only - solid 7z archive
+        (u'blockSize', None), #--package only - set here and there
+        #--User Only
+        (u'overrideSkips', False), (u'remaps', {}),
+        (u'skipRefresh', False),    # Projects only
+        # set in refreshBasic
+        (u'fileRootIdex', 0), # len of the root path including the final separator
+    ])
     volatile = ('ci_dest_sizeCrc', 'skipExtFiles', 'skipDirFiles', 'status',
         'missingFiles', 'mismatchedFiles', 'project_refreshed',
         'mismatchedEspms', 'unSize', 'espms', 'underrides', 'hasWizard',
         'espmMap', 'hasReadme', 'hasBCF', 'hasBethFiles', '_dir_dirs_files',
         'has_fomod_conf')
-    __slots__ = persistent + volatile
+    __slots__ = tuple(_persistent) + volatile
     #--Package analysis/porting.
     type_string = _(u'Unrecognized')
     docDirs = {u'screenshots'}
@@ -176,36 +210,9 @@ class Installer(object):
     #--Initialization, etc ----------------------------------------------------
     def initDefault(self):
         """Initialize everything to default values."""
-        self.archive = u''
-        #--Persistent: set by _refreshSource called by refreshBasic
-        self.modified = 0 #--Modified date
-        self.size = -1 #--size of archive file
-        self.crc = 0 #--crc of archive
-        self.isSolid = False #--package only - solid 7z archive
-        self.blockSize = None #--package only - set here and there
-        self.fileSizeCrcs = [] #--list of tuples for _all_ files in installer
-        #--For InstallerProject's, cache if refresh projects is skipped
-        self.src_sizeCrcDate = bolt.LowerDict()
-        #--Set by refreshBasic
-        self.fileRootIdex = 0 # len of the root path including the final separator
-        self.type = 0 #--Package type: 0: unset/invalid; 1: simple; 2: complex
-        self.subNames = []
-        self.subActives = []
-        self.extras_dict = {} # hack to add more persistent attributes
-        #--Set by refreshDataSizeCrc
-        self.dirty_sizeCrc = bolt.LowerDict()
-        self.packageDoc = self.packagePic = None
-        #--User Only
-        self.skipVoices = False
-        self.hasExtraData = False
-        self.overrideSkips = False
-        self.skipRefresh = False    # Projects only
-        self.comments = u''
-        self.group = u'' #--Default from abstract. Else set by user.
-        self.order = -1 #--Set by user/interface.
-        self.is_active = False
-        self.espmNots = set() #--Lowercase plugin file names that user has decided not to install.
-        self.remaps = {}
+        #--Persistent
+        for k, v in self._persistent.iteritems():
+            setattr(self, k, copy.copy(v)) # those are builtin types or empty lists/dicts
         #--Volatiles (not pickled values)
         #--Volatiles: directory specific
         self.project_refreshed = False
@@ -288,16 +295,22 @@ class Installer(object):
         return self.getEspmName(currentName) != currentName
 
     def __init__(self,archive):
+        """Called directly or by the unpickler to construct the instance it
+        will pass to __setstate__ - that duplicates the initDefault call"""
         self.initDefault()
         self.archive = archive.stail
 
     def __getstate__(self):
         """Used by pickler to save object state.""" ##: __reduce__ is called instead
         getter = object.__getattribute__ ##: is the object. necessary?
-        return tuple(getter(self,x) for x in self.persistent)
+        getter = object.__getattribute__
+        return tuple(getter(self,x) for x in self._persistent)
 
     def _fixme_drop__for_loading_in_previous_versions(self):
-        self.src_sizeCrcDate = {GPath(x): y for x, y # FIXME: backwards compat!
+        # FIXME: backwards compat ! we may want to keep for persisting
+        #  builtin only - those are bolt.LowerDict and fileSizeCrcs is list[
+        #  tuple[bolt.CIstr, long, long]]
+        self.src_sizeCrcDate = {GPath(x): y for x, y
                                 in self.src_sizeCrcDate.iteritems()}
         self.dirty_sizeCrc = {GPath(x): y for x, y
                               in self.dirty_sizeCrc.iteritems()}
@@ -313,12 +326,14 @@ class Installer(object):
                 in self.extras_dict.pop(u'fomod_files_dict').iteritems()})
 
     def __setstate__(self,values):
-        """Used by unpickler to recreate object."""
+        # type: (tuple[set|int|list|long|bool|unicode|dict|None]) -> None
+        """Used by unpickler to recreate object. First item in values is the
+        package name."""
         try:
             self.__setstate(values)
         except Exception as e:
-            print(('Failed loading %s' % values[0]) + ' due to %s' % e)
-            deprint('Failed loading %s' % values[0], traceback=True)
+            print((u'Failed loading %s' % values[0]) + u' due to %s' % e)
+            deprint(u'Failed loading %s' % values[0], traceback=True)
             # init to default values and let it be picked for refresh in
             # InstallersData#scan_installers_dir
             self.initDefault()
@@ -329,7 +344,7 @@ class Installer(object):
 
     def __setstate(self,values):
         self.initDefault() # runs on __init__ called by __reduce__
-        for a, v in zip(self.persistent, values):
+        for a, v in zip(self._persistent, values):
             setattr(self, a, v)
         rescan = False
         if not isinstance(self.extras_dict, dict):
@@ -342,10 +357,10 @@ class Installer(object):
             return  # don't do anything should be deleted from our data soon
         if not isinstance(self.src_sizeCrcDate, bolt.LowerDict):
             self.src_sizeCrcDate = bolt.LowerDict(
-                ('%s' % x, y) for x, y in self.src_sizeCrcDate.iteritems())
+                (u'%s' % x, y) for x, y in self.src_sizeCrcDate.iteritems())
         if not isinstance(self.dirty_sizeCrc, bolt.LowerDict):
             self.dirty_sizeCrc = bolt.LowerDict(
-                ('%s' % x, y) for x, y in self.dirty_sizeCrc.iteritems())
+                (u'%s' % x, y) for x, y in self.dirty_sizeCrc.iteritems())
         if rescan:
             dest_scr = self.refreshBasic(bolt.Progress(),
                                          recalculate_project_crc=False)
@@ -1239,7 +1254,7 @@ class InstallerMarker(Installer):
         from . import InstallerMarker as boshInstallerMarker
         self._fixme_drop__for_loading_in_previous_versions()
         return boshInstallerMarker, (GPath(self.archive),), tuple(
-            getattr(self, a) for a in self.persistent)
+            getattr(self, a) for a in self._persistent)
 
     @property
     def num_of_files(self): return -1
@@ -1285,7 +1300,7 @@ class InstallerArchive(Installer):
         from . import InstallerArchive as boshInstallerArchive
         self._fixme_drop__for_loading_in_previous_versions()
         return boshInstallerArchive, (GPath(self.archive),), tuple(
-            getattr(self, a) for a in self.persistent)
+            getattr(self, a) for a in self._persistent)
 
     #--File Operations --------------------------------------------------------
     def _refreshSource(self, progress, recalculate_project_crc):
@@ -1473,7 +1488,7 @@ class InstallerProject(Installer):
         from . import InstallerProject as boshInstallerProject
         self._fixme_drop__for_loading_in_previous_versions()
         return boshInstallerProject, (GPath(self.archive),), tuple(
-            getattr(self, a) for a in self.persistent)
+            getattr(self, a) for a in self._persistent)
 
     def _refresh_from_project_dir(self, progress=None,
                                   recalculate_all_crcs=False):
