@@ -2953,10 +2953,9 @@ class InstallersData(DataStore):
         :param installerKeys: an iterable of bolt.Path
         :return: a list of installable packages/projects bolt.Path
         """
-        def installable(x): # type -> 0: unset/invalid; 1: simple; 2: complex
-            return self[x].type in (1, 2) and (
-                        self[x].is_archive() or self[x].is_project())
-        return filter(installable, installerKeys)
+        # type -> 0: unset/invalid; 1: simple; 2: complex
+        return [k for k in installerKeys if
+                self[k].type in (1, 2) and not self[k].is_marker()]
 
     def filterPackages(self, installerKeys):
         """Remove markers from installerKeys.
