@@ -48,8 +48,8 @@ class PCFaces(object):
         def __init__(self):
             self.face_masters = []
             self.eid = self.pcName = u'generic'
-            self.fggs_p = self.fgts_p = '\x00'*4*50
-            self.fgga_p = '\x00'*4*30
+            self.fggs_p = self.fgts_p = b'\x00'*4*50
+            self.fgga_p = b'\x00'*4*30
             self.unused2 = null2
             self.health = self.unused3 = self.baseSpell = self.fatigue = self.level = 0
             self.skills = self.attributes = self.iclass = None
@@ -119,7 +119,7 @@ class PCFaces(object):
             saveFile.load()
         faces = {}
         for record in saveFile.created:
-            if record.recType != 'NPC_': continue
+            if record.recType != b'NPC_': continue
             #--Created NPC record
             if targetid and record.fid != targetid: continue
             npc = record.getTypeCopy()
@@ -217,7 +217,7 @@ class PCFaces(object):
                 break
         else:
             raise StateError(u'Record %08X not found in %s.' % (targetid, saveFile.fileInfo))
-        if npc.recType != 'NPC_':
+        if npc.recType != b'NPC_':
             raise StateError(u'Record %08X in %s is not an NPC.' % (targetid, saveFile.fileInfo))
         #--Update masters
         for fid in (face.race, face.eye, face.hair):
@@ -257,7 +257,7 @@ class PCFaces(object):
         if changeRecord is None: return
         fid,recType,recFlags,version,data = changeRecord
         npc = SreNPC(recFlags,data)
-        if not npc.acbs: npc.acbs = npc.getDefault('acbs')
+        if not npc.acbs: npc.acbs = npc.getDefault(u'acbs')
         npc.acbs.flags.female = face.gender
         npc.acbs.level = face.level
         npc.acbs.baseSpell = face.baseSpell
@@ -323,7 +323,7 @@ class PCFaces(object):
             postName = buff.getvalue()[buff.tell()+len(saveFile.pcName)+2:]
             buffPack('B',len(face.pcName)+1)
             buff.write(
-                encode(face.pcName, firstEncoding=Path.sys_fs_enc) + '\x00')
+                encode(face.pcName, firstEncoding=Path.sys_fs_enc) + b'\x00')
             buff.write(postName)
             buff.seek(-len(postName),1)
             saveFile.pcName = face.pcName
@@ -456,7 +456,7 @@ class PCFaces(object):
         masterMap = MasterMap(face.face_masters,tes4.masters+[modInfo.name])
         #--Eid
         npcEids = {record.eid for record in modFile.tops[b'NPC_'].records}
-        eidForm = u''.join((u"sg", bush.game.raceShortNames.get(face.race,u'Unk'),
+        eidForm = u''.join((u'sg', bush.game.raceShortNames.get(face.race, u'Unk'),
             (face.gender and u'a' or u'u'), re.sub(u'' r'\W', u'', face.pcName), u'%02d'))
         count,eid = 0, eidForm % 0
         while eid in npcEids:
