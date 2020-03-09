@@ -48,7 +48,7 @@ from .gui import Button, CancelButton, CheckBox, HBoxedLayout, HLayout, \
     web_viewer_available, DialogWindow, WindowFrame, EventResult, ListBox, \
     Font, CheckListBox, UIListCtrl, PanelWin, Colors, DocumentViewer, \
     ImageWrapper, BusyCursor, GlobalMenu, WrappingTextMixin
-from .gui.base_components import _AComponent
+from .gui.base_components import _AComponent, WithMouseEvents
 
 # Print a notice if wx.html2 is missing
 if not web_viewer_available():
@@ -698,65 +698,62 @@ class ListEditor(DialogWindow):
 #------------------------------------------------------------------------------
 ##: Is there even a good reason for having this as a mixin? AFAICT, the only
 # thing this accomplishes is causing pycharm to spit out tons of warnings
-class TabDragMixin(object):
+class TabDragMixin(WithMouseEvents):
     """Mixin for the wx.Notebook class.  Enables draggable Tabs.
        Events:
          EVT_NB_TAB_DRAGGED: Called after a tab has been dragged
-           event.oldIdex = old tab position (of tab that was moved
-           event.newIdex = new tab position (of tab that was moved
+           event.oldIdex = old tab position (of tab that was moved)
+           event.newIdex = new tab position (of tab that was moved)
     """
-    # PY3: These slots cause a crash on wx4
-    #__slots__ = ('__dragX','__dragging','__justSwapped')
+    bind_lclick_up = bind_lclick_down = bind_mouse_capture_lost = True
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(TabDragMixin, self).__init__(*args, **kwargs)
         self.__dragX = 0
         self.__dragging = wx.NOT_FOUND
         self.__justSwapped = wx.NOT_FOUND
         # TODO(inf) Test in wx3
         if wx.Platform == u'__WXMSW__': # CaptureMouse() works badly in wxGTK
-            self.Bind(wx.EVT_LEFT_DOWN, self.__OnDragStart)
-            self.Bind(wx.EVT_LEFT_UP, self.__OnDragEnd)
-            self.Bind(wx.EVT_MOUSE_CAPTURE_LOST, self.__OnDragEndForced)
-            self.Bind(wx.EVT_MOTION, self.__OnDragging)
+            self.on_mouse_left_down.subscribe(self.__OnDragStart)
+            self.on_mouse_left_up.subscribe(self.__OnDragEnd)
+            self.on_mouse_capture_lost.subscribe(self.__OnDragEndForced)
+            self.on_mouse_motion.subscribe(self.__OnDragging)
 
-    def __OnDragStart(self, event):
-        if not self.HasCapture(): # or blow up on CaptureMouse()
-            pos = event.GetPosition()
-            self.__dragging = self.HitTest(pos)
-            if self.__dragging != wx.NOT_FOUND:
-                self.__dragX = pos[0]
-                self.__justSwapped = wx.NOT_FOUND
-                self.CaptureMouse()
-        event.Skip()
-
-    def __OnDragEndForced(self, _event):
-        self.__dragging = wx.NOT_FOUND
-        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-
-    def __OnDragEnd(self, event):
+    def __OnDragStart(self, wrapped_evt, lb_dex_and_flags):
+        # if not self.HasCapture(): # or blow up on CaptureMouse()
+        self.__dragging = lb_dex_and_flags
         if self.__dragging != wx.NOT_FOUND:
-            self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+            self.__dragX = wrapped_evt.evt_pos[0]
+            self.__justSwapped = wx.NOT_FOUND
+            self._native_widget.CaptureMouse()
+
+    def __OnDragEndForced(self):
+        self.__dragging = wx.NOT_FOUND
+        self._native_widget.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+
+    def __OnDragEnd(self):
+        if self.__dragging != wx.NOT_FOUND:
+            self._native_widget.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
             self.__dragging = wx.NOT_FOUND
             try:
-                self.ReleaseMouse()
+                self._native_widget.ReleaseMouse()
             except AssertionError:
                 """PyAssertionError: C++ assertion "GetCapture() == this"
                 failed at ..\..\src\common\wincmn.cpp(2536) in
                 wxWindowBase::ReleaseMouse(): attempt to release mouse,
                 but this window hasn't captured it""" # assertion error...
-        event.Skip()
 
-    def __OnDragging(self, event):
+    def __OnDragging(self, wrapped_evt, lb_dex_and_flags):
         if self.__dragging != wx.NOT_FOUND:
-            pos = event.GetPosition()
+            pos = wrapped_evt.evt_pos
             if abs(pos[0] - self.__dragX) > 5:
-                self.SetCursor(wx.Cursor(wx.CURSOR_HAND))
-            tabId = self.HitTest(pos)
+                self._native_widget.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+            tabId = lb_dex_and_flags
             if tabId == wx.NOT_FOUND or tabId[0] in (wx.NOT_FOUND,self.__dragging[0]):
                 self.__justSwapped = wx.NOT_FOUND
             else:
                 if self.__justSwapped == tabId[0]:
-                    return
+                    return EventResult.FINISH
                 # We'll do the swapping by removing all pages in the way,
                 # then readding them in the right place.  Do this because
                 # it makes the tab we're dragging not have to refresh, whereas
@@ -779,7 +776,6 @@ class TabDragMixin(object):
                 for page,title in addPages:
                     self.InsertPage(insert,page,title)
                 self.drag_tab(newPos)
-        event.Skip()
 
 #------------------------------------------------------------------------------
 class Progress(bolt.Progress):
