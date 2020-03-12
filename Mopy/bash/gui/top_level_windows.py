@@ -299,7 +299,7 @@ class Splitter(_AComponent):
         self._native_widget.SetSashGravity(sash_gravity)
 
 class _APageComponent(_AComponent):
-    """Abstract base class for 'page' compoenents, i.e. notebooks and
+    """Abstract base class for 'page' components, i.e. notebooks and
     listbooks."""
     def add_page(self, page_component, page_title):
         self._native_widget.AddPage(self._resolve(page_component), page_title)
@@ -320,6 +320,12 @@ class TabbedPanel(_APageComponent):
         self.on_nb_page_change = self._evt_handler(
             _wx.EVT_NOTEBOOK_PAGE_CHANGED,
             lambda event: [event.GetId(), event.GetSelection()])
+
+    def nb_select_page_at_index(self, page_index):
+        self._native_widget.SetSelection(page_index)
+
+    def nb_get_page_count(self):
+        return self._native_widget.GetPageCount()
 
 class ListPanel(_APageComponent):
     """A panel with a list of options that each correspond to a different

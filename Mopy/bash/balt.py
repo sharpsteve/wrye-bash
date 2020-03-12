@@ -768,13 +768,13 @@ class TabDragMixin(WithMouseEvents):
                 else:
                     left,right,step = oldPos+1,newPos+1,-1
                 insert = left+step
-                addPages = [(self.GetPage(x),self.GetPageText(x)) for x in range(left,right)]
+                addPages = [(self._native_widget.GetPage(x),self._native_widget.GetPageText(x)) for x in range(left,right)]
                 addPages.reverse()
                 num = right - left
                 for i in range(num):
-                    self.RemovePage(left)
+                    self._native_widget.RemovePage(left)
                 for page,title in addPages:
-                    self.InsertPage(insert,page,title)
+                    self._native_widget.InsertPage(insert,page,title)
                 self.drag_tab(newPos)
 
 #------------------------------------------------------------------------------
