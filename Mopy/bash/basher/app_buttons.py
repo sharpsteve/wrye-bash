@@ -32,12 +32,40 @@ from .. import bass, bosh, bolt, balt, bush, load_order
 from ..balt import ItemLink, Link, Links, SeparatorLink, BoolLink, staticBitmap
 from ..env import getJava
 from ..exception import AbstractError
-from ..gui import ClickableImage, EventResult
+from ..gui import ClickableImage, EventResult, WithMouseEvents
 
 __all__ = [u'Obse_Button', u'LAA_Button', u'AutoQuit_Button', u'Game_Button',
            u'TESCS_Button', u'App_Tes4View', u'App_BOSS',
            u'App_DocBrowser', u'App_ModChecker', u'App_Settings', u'App_Help',
            u'App_Restart', u'app_button_factory']
+
+class _DraggableButton(ClickableImage, WithMouseEvents):
+    bind_rclick_down = bind_rclick_up = False
+    bind_lclick_up = bind_lclick_down = bind_mouse_capture_lost = True
+
+    def __init__(self, *args, **kwargs):
+        super(_DraggableButton, self).__init__(*args, **kwargs)
+        # TODO(inf) Test in wx3
+        # DnD events (only on windows, CaptureMouse works badly in wxGTK)
+        import wx
+        if wx.Platform == '__WXMSW__':
+            self.on_mouse_left_down.subscribe(self._handle_drag_start)
+            self.on_mouse_left_up.subscribe(self._handle_drag_end)
+            self.on_mouse_capture_lost.subscribe(
+                self._handle_mouse_capture_lost)
+            self.on_mouse_motion.subscribe(self._handle_mouse_dragging)
+
+    def _handle_drag_start(self, wrapped_evt, lb_dex_and_flags):
+        balt.Link.Frame.statusBar.OnDragStart(self, wrapped_evt.evt_pos)
+
+    def _handle_drag_end(self):
+        return balt.Link.Frame.statusBar.OnDragEnd(self)
+
+    def _handle_mouse_capture_lost(self):
+        balt.Link.Frame.statusBar.OnDragEndForced()
+
+    def _handle_mouse_dragging(self, wrapped_evt, lb_dex_and_flags):
+        balt.Link.Frame.statusBar.OnDrag(self, wrapped_evt.evt_pos)
 
 #------------------------------------------------------------------------------
 # StatusBar Links--------------------------------------------------------------
@@ -86,8 +114,8 @@ class StatusBar_Button(ItemLink):
             u'bash.statusbar.iconSize']].GetBitmap()
         if self.gButton is not None:
             self.gButton.destroy_component()
-        self.gButton = ClickableImage(window, btn_image,
-                                      btn_tooltip=self.sb_button_tip)
+        self.gButton = _DraggableButton(window, btn_image,
+                                        btn_tooltip=self.sb_button_tip)
         self.gButton.on_clicked.subscribe(self.Execute)
         self.gButton.on_right_clicked.subscribe(onRClick or self.DoPopupMenu)
         return self.gButton

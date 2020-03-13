@@ -2280,7 +2280,7 @@ class DnDStatusBar(wx.StatusBar):
         #--Bind events
         self.Bind(wx.EVT_SIZE, self.OnSize)
         #--Setup Drag-n-Drop reordering
-        self.dragging = wx.NOT_FOUND
+        self.dragging = None # the button we are dragging
         self.dragStart = 0
         self.moved = False
 
@@ -2291,24 +2291,10 @@ class DnDStatusBar(wx.StatusBar):
     def iconsSize(self): # +8 as each button has 4 px border on left and right
         return _settings[u'bash.statusbar.iconSize'] + 8
 
-    def _addButton(self, link):
-        gButton = link.GetBitmapButton(self)
-        if gButton:
-            self.buttons.append(gButton)
-            # TODO(inf) Test in wx3
-            # DnD events (only on windows, CaptureMouse works badly in wxGTK)
-            if wx.Platform == u'__WXMSW__':
-                gButton._native_widget.Bind(wx.EVT_LEFT_DOWN, self.OnDragStart)
-                gButton._native_widget.Bind(wx.EVT_LEFT_UP, self.OnDragEnd)
-                gButton._native_widget.Bind(wx.EVT_MOUSE_CAPTURE_LOST,
-                                            self.OnDragEndForced)
-                gButton._native_widget.Bind(wx.EVT_MOTION, self.OnDrag)
-
-    def _getButtonIndex(self, mouseEvent):
-        id_ = mouseEvent.GetId()
+    def _getButtonIndex(self, button_clicked, evt_pos):
         for i, button in enumerate(self.buttons):
-            if button.wx_id_() == id_:
-                x = mouseEvent.GetPosition()[0]
+            if button is button_clicked:
+                x = evt_pos[0]
                 # position is 0 at the beginning of the button's _icon_
                 # negative beyond that (on the left) and positive after
                 if x < -4:
@@ -2318,65 +2304,57 @@ class DnDStatusBar(wx.StatusBar):
                 return i
         return wx.NOT_FOUND
 
-    def OnDragStart(self, event):
-        self.dragging = self._getButtonIndex(event)
-        if self.dragging != wx.NOT_FOUND:
-            self.dragStart = event.GetPosition()[0]
-            button = self.buttons[self.dragging]
-            button._native_widget.CaptureMouse()
-        event.Skip()
+    def _addButton(self, link):
+        gButton = link.GetBitmapButton(self)
+        if gButton:
+            self.buttons.append(gButton)
 
-    def OnDragEndForced(self, event):
-        if self.dragging == wx.NOT_FOUND or not self.GetParent().IsActive():
+    def OnDragStart(self, button_clicked, evt_pos):
+        self.dragging = button_clicked
+        self.dragStart = evt_pos[0]
+        button_clicked._native_widget.CaptureMouse()
+
+    def OnDragEndForced(self):
+        if self.dragging is None or not self.GetParent().IsActive():
             # The even for clicking the button sends a force capture loss
             # message.  Ignore lost capture messages if we're the active
             # window.  If we're not, that means something else forced the
             # loss of mouse capture.
-            self.dragging = wx.NOT_FOUND
+            self.dragging = None
             self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-        event.Skip()
 
-    def OnDragEnd(self, event):
-        if self.dragging != wx.NOT_FOUND:
+    def OnDragEnd(self, button_clicked):
+        if self.dragging is not None:
+            self.dragging = None
             try:
                 if self.moved:
-                    for button in self.buttons:
-                        if button._native_widget.HasCapture():
-                            button._native_widget.ReleaseMouse()
-                            break
+                    button_clicked._native_widget.ReleaseMouse()
             except:
-                # deprint(u'Exception while handling mouse up on button',
-                #         traceback=True)
                 pass
-            self.dragging = wx.NOT_FOUND
             self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
             if self.moved:
                 self.moved = False
-                return
-        event.Skip()
+                return EventResult.FINISH # do not click the button!
 
-    def OnDrag(self, event):
-        if self.dragging != wx.NOT_FOUND:
-            if abs(event.GetPosition()[0] - self.dragStart) > 4:
+    def OnDrag(self, button_clicked, evt_pos):
+        if self.dragging is not None:
+            if abs(evt_pos[0] - self.dragStart) > 4:
                 self.SetCursor(wx.Cursor(wx.CURSOR_HAND))
-            over = self._getButtonIndex(event)
-            if over not in (wx.NOT_FOUND, self.dragging):
+            over = self._getButtonIndex(button_clicked, evt_pos)
+            if self.buttons[over] is not self.dragging:
                 self.moved = True
-                button = self.buttons[self.dragging]
                 # update settings
-                uid = self.GetLink(button=button).uid
+                uid = self.GetLink(button=button_clicked).uid
                 overUid = self.GetLink(index=over).uid
                 overIndex = _settings[u'bash.statusbar.order'].index(overUid)
                 _settings[u'bash.statusbar.order'].remove(uid)
                 _settings[u'bash.statusbar.order'].insert(overIndex, uid)
                 _settings.setChanged(u'bash.statusbar.order')
                 # update self.buttons
-                self.buttons.remove(button)
-                self.buttons.insert(over, button)
-                self.dragging = over
+                self.buttons.remove(button_clicked)
+                self.buttons.insert(over, button_clicked)
                 # Refresh button positions
                 self.OnSize()
-        event.Skip()
 
     def OnSize(self, event=None):
         rect = self.GetFieldRect(0)
