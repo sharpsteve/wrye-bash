@@ -3563,6 +3563,7 @@ class BashStatusBar(DnDStatusBar):
     SettingsMenu = Links()
     obseButton = None
     laaButton = None
+    txt_len = 280 if bush.game.has_esl else 130
 
     def UpdateIconSizes(self):
         self.buttons = [] # will be populated with _displayed_ gButtons - g ?
@@ -3616,7 +3617,7 @@ class BashStatusBar(DnDStatusBar):
                 self.buttons.remove(button)
                 settings['bash.statusbar.hide'].add(link.uid)
                 settings.setChanged('bash.statusbar.hide')
-                self._do_refresh()
+                self.OnSize()
 
     def UnhideButton(self,link):
         uid = link.uid
@@ -3641,7 +3642,7 @@ class BashStatusBar(DnDStatusBar):
                     insertBefore = i
                     break
             self.buttons.insert(insertBefore,button)
-        self._do_refresh()
+        self.OnSize()
 
     def GetLink(self,uid=None,index=None,button=None):
         """Get the Link object with a specific uid,
@@ -3663,21 +3664,21 @@ class BashStatusBar(DnDStatusBar):
         True. Also propagates resizing events.
 
         :param refresh_icon_size: Whether or not to update icon sizes too."""
-        txt_len = 280 if bush.game.has_esl else 130
-        self.SetStatusWidths([self.iconsSize * len(self.buttons), -1, txt_len])
+        self.OnSize()
         if refresh_icon_size:
             self.SetMinHeight(self.iconsSize + 8)
             self.SetMinSize((-1, self.iconsSize + 8))
             self.SetSize((-1, self.iconsSize + 8))
             self.Refresh()
             self.Update()
-            self.OnSize()
-            self.PostSizeEvent()
+            # self.OnSize()
+            # self.PostSizeEvent()
             # wx.CallAfter(gMainWin.Refresh)
             # wx.CallAfter(gMainWin.Update)
-        else: self.OnSize()
         # self.SendSizeEventToParent()
+        # wx.CallAfter(self.PostSizeEvent)
         wx.CallAfter(balt.Link.Frame._native_widget.PostSizeEvent)
+        # self.OnSize()
 
 #------------------------------------------------------------------------------
 class BashFrame(WindowFrame):
