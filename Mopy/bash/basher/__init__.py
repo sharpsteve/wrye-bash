@@ -3659,25 +3659,24 @@ class BashStatusBar(DnDStatusBar):
                     return link
         return None
 
-    def _do_refresh(self, refresh_icon_size=False):
+    def _do_refresh(self, refresh_icon_size):
         """Updates status widths and the icon sizes, if refresh_icon_size is
         True. Also propagates resizing events.
 
         :param refresh_icon_size: Whether or not to update icon sizes too."""
-        self.OnSize()
         if refresh_icon_size:
             self.SetMinHeight(self.iconsSize + 8)
             self.SetMinSize((-1, self.iconsSize + 8))
             self.SetSize((-1, self.iconsSize + 8))
+            self.OnSize()
             self.Refresh()
             self.Update()
-            # self.OnSize()
-            # self.PostSizeEvent()
-            # wx.CallAfter(gMainWin.Refresh)
-            # wx.CallAfter(gMainWin.Update)
+            self.PostSizeEvent()
+            wx.CallAfter(balt.Link.Frame._native_widget.Refresh)
+            wx.CallAfter(balt.Link.Frame._native_widget.Update)
         # self.SendSizeEventToParent()
-        # wx.CallAfter(self.PostSizeEvent)
-        wx.CallAfter(balt.Link.Frame._native_widget.PostSizeEvent)
+        wx.CallAfter(self.SendSizeEventToParent)
+        # wx.CallAfter(balt.Link.Frame._native_widget.PostSizeEvent)
         # self.OnSize()
 
 #------------------------------------------------------------------------------
