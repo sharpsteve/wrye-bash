@@ -300,12 +300,6 @@ class Installer(object):
         self.initDefault()
         self.archive = archive.stail
 
-    def __getstate__(self):
-        """Used by pickler to save object state.""" ##: __reduce__ is called instead
-        getter = object.__getattribute__ ##: is the object. necessary?
-        getter = object.__getattribute__
-        return tuple(getter(self,x) for x in self._persistent)
-
     def _fixme_drop__for_loading_in_previous_versions(self):
         # FIXME: backwards compat ! we may want to keep for persisting
         #  builtin only - those are bolt.LowerDict and fileSizeCrcs is list[
