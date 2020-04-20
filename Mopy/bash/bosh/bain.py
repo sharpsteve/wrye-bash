@@ -33,7 +33,7 @@ import time
 from binascii import crc32
 from collections import OrderedDict
 from functools import partial, wraps
-from itertools import groupby, imap
+from itertools import groupby, imap, izip
 from operator import itemgetter, attrgetter
 
 from . import imageExts, DataStore, BestIniFile, InstallerConverter, ModInfos
@@ -131,6 +131,9 @@ class Installer(object):
                            for x in bush.game.Esp.stringsFiles}
 
     @classmethod
+    def pickle_key(cls): return u'%s' % cls.__name__
+
+    @classmethod
     def is_archive(cls): return False
     @classmethod
     def is_project(cls): return False
@@ -208,11 +211,10 @@ class Installer(object):
             new_sizeCrcDate[rpFile] = (size, crc, date, asFile)
 
     #--Initialization, etc ----------------------------------------------------
-    def initDefault(self):
+    def initDefault(self, *args):
         """Initialize everything to default values."""
-        #--Persistent
-        for k, v in self._persistent.iteritems():
-            setattr(self, k, copy.copy(v)) # those are builtin types or empty lists/dicts
+        values_ = tuple(args) + tuple(self._persistent.values())[len(args):]
+        self.__set_persistent_attrs(values_)
         #--Volatiles (not pickled values)
         #--Volatiles: directory specific
         self.project_refreshed = False
@@ -237,6 +239,12 @@ class Installer(object):
         self.missingFiles = set()
         self.mismatchedFiles = set()
         self.mismatchedEspms = set()
+
+    def __set_persistent_attrs(self, persistent_values):
+        # type: (tuple[set|int|list|long|bool|unicode|dict|None]) -> None
+        #--Persistent - _values are builtin types, so copy should be fast
+        for k, v in izip(self._persistent, persistent_values):
+            setattr(self, k, copy.copy(v))
 
     @property
     def num_of_files(self): return len(self.fileSizeCrcs)
@@ -294,11 +302,11 @@ class Installer(object):
     def isEspmRenamed(self,currentName):
         return self.getEspmName(currentName) != currentName
 
-    def __init__(self,archive):
+    def __init__(self, package_path):
         """Called directly or by the unpickler to construct the instance it
         will pass to __setstate__ - that duplicates the initDefault call"""
-        self.initDefault()
-        self.archive = archive.stail
+        self.initDefault(package_path)
+        self.archive = package_path.stail
 
     def _fixme_drop__for_loading_in_previous_versions(self):
         # FIXME: backwards compat ! we may want to keep for persisting
@@ -336,10 +344,8 @@ class Installer(object):
     def ipath(self): ##: aka abs_path
         return bass.dirs[u'installers'].join(self.archive)
 
-    def __setstate(self,values):
-        self.initDefault() # runs on __init__ called by __reduce__
-        for a, v in zip(self._persistent, values):
-            setattr(self, a, v)
+    def __setstate(self, values):
+        self.initDefault(*values) # runs on __init__ called by __reduce__
         rescan = False
         if not isinstance(self.extras_dict, dict):
             self.extras_dict = {}
@@ -1240,8 +1246,8 @@ class InstallerMarker(Installer):
     @classmethod
     def is_marker(cls): return True
 
-    def __init__(self,archive):
-        Installer.__init__(self,archive)
+    def __init__(self, package_path):
+        Installer.__init__(self, package_path)
         self.modified = time.time()
 
     def __reduce__(self):
@@ -1716,15 +1722,25 @@ class InstallersData(DataStore):
         if changed: self.hasChanged = True
         return changed
 
+    # noinspection PyUnreachableCode
     def __load(self, progress):
         progress(0, _(u"Loading Data..."))
         self.dictFile.load()
         self.converters_data.load()
         data = self.dictFile.data
-        self.data = data.get('installers', {})
-        pickle = data.get('sizeCrcDate', {})
-        self.data_sizeCrcDate = bolt.LowerDict(pickle) if not isinstance(
-            pickle, bolt.LowerDict) else pickle
+        if True: # self.dictFile.vdata[b'version'] == 1:
+            self.data = data.get(b'installers', {})
+            pickle = data.get(b'sizeCrcDate', {})
+            self.data_sizeCrcDate = bolt.LowerDict(pickle) if not isinstance(
+                pickle, bolt.LowerDict) else pickle
+        elif self.dictFile.vdata[u'version'] == 2:
+            installers_dict = data.get(u'installers', {})
+            for class_key, instances in installers_dict.iteritems():
+                inst_type = _installer_class_types[class_key]
+                for iname, persistent_attrs in instances.iteritems():
+                    self.data[GPath(iname)] = inst_type(persistent_attrs)
+            pickle = data.get(u'sizeCrcDate', {})
+            self.data_sizeCrcDate = bolt.LowerDict(pickle)
         # fixup: all markers had their archive attribute set to u'===='
         for key, value in self.iteritems():
             if value.is_marker():
@@ -1732,12 +1748,27 @@ class InstallersData(DataStore):
         self.loaded = True
         return True
 
-    def save(self):
+    # noinspection PyUnreachableCode
+    def save(self, __getattr=attrgetter(tuple(Installer._persistent))):
         """Saves to pickle file."""
         if self.hasChanged:
-            self.dictFile.data['installers'] = self.data
-            self.dictFile.data['sizeCrcDate'] = { # FIXME: backwards compat
-                GPath(x): y for x, y in self.data_sizeCrcDate.iteritems()}
+            if True:
+                self.dictFile.data['installers'] = self.data
+                self.dictFile.data['sizeCrcDate'] = { # FIXME: backwards compat
+                    GPath(x): y for x, y in self.data_sizeCrcDate.iteritems()}
+            else:
+                for k, v in list(self.dictFile.vdata.items()):
+                    del self.dictFile.vdata[k]
+                    self.dictFile.vdata[u'%s' % k] = v # convert keys to unicode
+                self.dictFile.vdata[u'version'] = 2
+                # do not store Installer classes, store one dict per Installer type
+                self.dictFile.data.clear()
+                self.dictFile.data[u'installers'] = dict.fromkeys(_installer_class_types)
+                for k, v in self.data.iteritems():
+                    self.dictFile.data[u'installers'][v.pickle_key][
+                        u'%s' % k] = __getattr(v)
+                self.dictFile.data[u'sizeCrcDate'] = dict(
+                    (u'%s' % x, y) for x, y in self.data_sizeCrcDate.iteritems())
             self.dictFile.save()
             self.converters_data.save()
             self.hasChanged = False
@@ -2981,3 +3012,7 @@ class InstallersData(DataStore):
         # Refresh, so we can manipulate the InstallerProject item
         self.refresh_installer(projectPath, True, progress, do_refresh=True,
                                install_order=len(self)) # install last
+
+_installer_class_types = {t.pickle_key: t for t in
+                          [InstallerMarker, InstallerArchive,
+                           InstallerProject]}
