@@ -33,7 +33,7 @@ import time
 from binascii import crc32
 from collections import OrderedDict
 from functools import partial, wraps
-from itertools import groupby, imap, izip
+from itertools import groupby, imap, izip, chain
 from operator import itemgetter, attrgetter
 
 from . import imageExts, DataStore, BestIniFile, InstallerConverter, ModInfos
@@ -91,12 +91,32 @@ class Installer(object):
         # set in refreshBasic
         (u'fileRootIdex', 0), # len of the root path including the final separator
     ])
-    volatile = ('ci_dest_sizeCrc', 'skipExtFiles', 'skipDirFiles', 'status',
-        'missingFiles', 'mismatchedFiles', 'project_refreshed',
-        'mismatchedEspms', 'unSize', 'espms', 'underrides', 'hasWizard',
-        'espmMap', 'hasReadme', 'hasBCF', 'hasBethFiles', '_dir_dirs_files',
-        'has_fomod_conf')
-    __slots__ = tuple(_persistent) + volatile
+    #--Volatiles (not pickled values)
+    _volatile = OrderedDict([
+        #--Volatiles: InstallerProject specific
+        (u'project_refreshed', False), (u'_dir_dirs_files', None),
+        #--Volatile: set by refreshDataSizeCrc
+        # LowerDict mapping destinations (relative to Data/ directory) of files
+        # in this installer to their size and crc - built in refreshDataSizeCrc
+        (u'ci_dest_sizeCrc', bolt.LowerDict()),
+        (u'has_fomod_conf', False),
+        (u'hasWizard', False),
+        (u'hasBCF', False),
+        (u'espmMap', bolt.DefaultLowerDict(list)),
+        (u'hasReadme', False),
+        (u'hasBethFiles', False),
+        (u'skipExtFiles', set()),
+        (u'skipDirFiles', set()),
+        (u'espms', set()),
+        (u'unSize', 0),
+        #--Volatile: set by refreshStatus
+        (u'status', 0),
+        (u'underrides', set()),
+        (u'missingFiles', set()),
+        (u'mismatchedFiles', set()),
+        (u'mismatchedEspms', set()),
+    ])
+    __slots__ = tuple(chain(_persistent, _volatile))
     #--Package analysis/porting.
     type_string = _(u'Unrecognized')
     docDirs = {u'screenshots'}
@@ -216,29 +236,8 @@ class Installer(object):
         values_ = tuple(args) + tuple(self._persistent.values())[len(args):]
         self.__set_persistent_attrs(values_)
         #--Volatiles (not pickled values)
-        #--Volatiles: directory specific
-        self.project_refreshed = False
-        self._dir_dirs_files = None
-        #--Volatile: set by refreshDataSizeCrc
-        # LowerDict mapping destinations (relative to Data/ directory) of files
-        # in this installer to their size and crc - built in refreshDataSizeCrc
-        self.ci_dest_sizeCrc = bolt.LowerDict()
-        self.has_fomod_conf = False
-        self.hasWizard = False
-        self.hasBCF = False
-        self.espmMap = bolt.DefaultLowerDict(list)
-        self.hasReadme = False
-        self.hasBethFiles = False
-        self.skipExtFiles = set()
-        self.skipDirFiles = set()
-        self.espms = set()
-        self.unSize = 0
-        #--Volatile: set by refreshStatus
-        self.status = 0
-        self.underrides = set()
-        self.missingFiles = set()
-        self.mismatchedFiles = set()
-        self.mismatchedEspms = set()
+        for k, v in self._volatile.iteritems():
+            setattr(self, k, copy.copy(v))
 
     def __set_persistent_attrs(self, persistent_values):
         # type: (tuple[set|int|list|long|bool|unicode|dict|None]) -> None
@@ -330,7 +329,7 @@ class Installer(object):
     def __setstate__(self,values):
         # type: (tuple[set|int|list|long|bool|unicode|dict|None]) -> None
         """Used by unpickler to recreate object. First item in values is the
-        package name."""
+        package name. self's __init__ is called before this."""
         try:
             self.__setstate(values)
         except Exception as e:
@@ -345,7 +344,7 @@ class Installer(object):
         return bass.dirs[u'installers'].join(self.archive)
 
     def __setstate(self, values):
-        self.initDefault(*values) # runs on __init__ called by __reduce__
+        self.__set_persistent_attrs(values) # initDefault run on init
         rescan = False
         if not isinstance(self.extras_dict, dict):
             self.extras_dict = {}
