@@ -1729,10 +1729,6 @@ class InstallersData(DataStore):
             self.dictFile.data['installers'] = self.data
             self.dictFile.data['sizeCrcDate'] = { # FIXME: backwards compat
                 GPath(x): y for x, y in self.data_sizeCrcDate.iteritems()}
-            # for backwards compatibility, drop
-            self.dictFile.data['crc_installer'] = {
-                x.crc: x for x in self.itervalues() if x.is_archive()}
-            self.dictFile.vdata['version'] = 1
             self.dictFile.save()
             self.converters_data.save()
             self.hasChanged = False
