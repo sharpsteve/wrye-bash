@@ -225,31 +225,26 @@ class _APreserver(ImportPatcher):
                         break
 
     # noinspection PyDefaultArgument
-    def _inner_loop(self, keep, records, top_mod_rec, type_count,
-                    __attrgetters=attrgetter_cache):
-        loop_setattr = setattr_deep if self._deep_attrs else setattr
-        id_data = self.id_data
-        for record in records:
-            rec_fid = record.fid
-            if rec_fid not in id_data: continue
-            for attr, value in id_data[rec_fid].iteritems():
-                if __attrgetters[attr](record) != value: break
-            else: continue
-            for attr, value in id_data[rec_fid].iteritems():
-                loop_setattr(record, attr, value)
-            keep(rec_fid)
-            type_count[top_mod_rec] += 1
-
-    def buildPatch(self, log, progress):
+    def buildPatch(self, log, progress, __attrgetters=attrgetter_cache):
         if not self.isActive: return
         modFileTops = self.patchFile.tops
         keep = self.patchFile.getKeeper()
         type_count = Counter()
+        loop_setattr = setattr_deep if self._deep_attrs else setattr
+        id_data = self.id_data
         for rsig in self.srcs_sigs:
             if rsig not in modFileTops: continue
-            records = modFileTops[rsig].iter_present_records(
-                include_ignored=True) ##: why include_ignored?
-            self._inner_loop(keep, records, rsig, type_count)
+            for record in modFileTops[rsig].iter_present_records(
+                    include_ignored=True): ##: why include_ignored?
+                rec_fid = record.fid
+                if rec_fid not in id_data: continue
+                for attr, value in id_data[rec_fid].iteritems():
+                    if __attrgetters[attr](record) != value: break
+                else: continue
+                for attr, value in id_data[rec_fid].iteritems():
+                    loop_setattr(record, attr, value)
+                keep(rec_fid)
+                type_count[rsig] += 1
         self.id_data.clear() # cleanup to save memory
         # Log
         self._patchLog(log, type_count)
@@ -615,21 +610,3 @@ class ImportCellsPatcher(ImportPatcher):
 class ImportGraphicsPatcher(_APreserver):
     rec_attrs = bush.game.graphicsTypes
     _fid_rec_attrs = bush.game.graphicsFidTypes
-
-    def _inner_loop(self, keep, records, top_mod_rec, type_count,
-                    __attrgetters=attrgetter_cache):
-        id_data = self.id_data
-        for record in records:
-            fid = record.fid
-            if fid not in id_data: continue
-            for attr, value in id_data[fid].iteritems():
-                rec_attr = __attrgetters[attr](record)
-                if isinstance(rec_attr, unicode) and isinstance(
-                        value, unicode):
-                    rec_attr, value = rec_attr.lower(), value.lower()
-                if rec_attr != value: break
-            else: continue
-            for attr, value in id_data[fid].iteritems():
-                setattr(record, attr, value)
-            keep(fid)
-            type_count[top_mod_rec] += 1
