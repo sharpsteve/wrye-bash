@@ -40,7 +40,7 @@ from .base import MultiTweakItem
 from ..base import ListPatcher, ModLoader
 from ... import bosh, bush
 from ...bolt import GPath, deprint
-from ...brec import MelObject, strFid
+from ...brec import strFid
 from ...exception import BoltError
 from ...patcher.base import AMultiTweaker
 
@@ -589,7 +589,7 @@ class RaceRecordsPatcher(AMultiTweaker, ListPatcher, ModLoader):
                 if newRelations != oldRelations:
                     del race.relations[:]
                     for faction,mod in newRelations:
-                        entry = MelObject()
+                        entry = race.get_mel_object_for_group(u'relations')
                         entry.faction = faction
                         entry.mod = mod
                         race.relations.append(entry)
