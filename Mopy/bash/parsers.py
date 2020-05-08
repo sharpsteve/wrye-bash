@@ -485,7 +485,7 @@ class ActorFactions(_AParser):
                     break
             else:
                 # This is an addition, we need to create a new faction instance
-                target_entry = MelObject()
+                target_entry = record.get_mel_object_for_group(u'factions')
                 record.factions.append(target_entry)
             # Actually write out the attributes from new_info
             target_entry.faction = faction
@@ -758,7 +758,7 @@ class FactionRelations(_AParser):
                     break
             else:
                 # It's an addition, we need to make a new relation object
-                target_entry = MelObject()
+                target_entry = record.get_mel_object_for_group(u'relations')
                 record.relations.append(target_entry)
             # Actually write out the attributes from new_info
             for rel_attr, rel_val in izip(self.cls_rel_attrs,
@@ -1417,12 +1417,12 @@ class SigilStoneDetails(_UsesEffectsMixin):
                 record.script = script
                 record.effects = []
                 for effect in effects:
-                    neweffect = record.getDefault(u'effects')
+                    neweffect = record.get_mel_object_for_group(u'effects')
                     neweffect.effect_sig,neweffect.magnitude,neweffect.area,\
                     neweffect.duration,neweffect.recipient,\
                     neweffect.actorValue,scripteffect = effect
                     if len(scripteffect):
-                        scriptEffect = record.getDefault(
+                        scriptEffect = record.get_mel_object_for_group(
                             u'effects.scriptEffect')
                         script,scriptEffect.school,scriptEffect.visual,\
                         scriptEffect.flags.hostile,scriptEffect.full = \
@@ -1625,12 +1625,12 @@ class SpellRecords(_UsesEffectsMixin):
                     effects = newStats[-1]
                     record.effects = []
                     for effect in effects:
-                        neweffect = record.getDefault(u'effects')
+                        neweffect = record.get_mel_object_for_group(u'effects')
                         neweffect.effect_sig,neweffect.magnitude,neweffect.area,\
                         neweffect.duration,neweffect.recipient,\
                         neweffect.actorValue,scripteffect = effect
                         if len(scripteffect):
-                            scriptEffect = record.getDefault(
+                            scriptEffect = record.get_mel_object_for_group(
                                 u'effects.scriptEffect')
                             script,scriptEffect.school,scriptEffect.visual,\
                             scriptEffect.flags.hostile,scriptEffect.full = \
@@ -1813,12 +1813,12 @@ class IngredientDetails(_UsesEffectsMixin):
                 record.script = script
                 record.effects = []
                 for effect in effects:
-                    neweffect = record.getDefault(u'effects')
+                    neweffect = record.get_mel_object_for_group(u'effects')
                     neweffect.effect_sig,neweffect.magnitude,neweffect.area,\
                     neweffect.duration,neweffect.recipient,\
                     neweffect.actorValue,scripteffect = effect
                     if len(scripteffect):
-                        scriptEffect = record.getDefault(
+                        scriptEffect = record.get_mel_object_for_group(
                             u'effects.scriptEffect')
                         script,scriptEffect.school,scriptEffect.visual,\
                         scriptEffect.flags.hostile.hostile,scriptEffect.full\
