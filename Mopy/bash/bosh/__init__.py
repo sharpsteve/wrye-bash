@@ -42,7 +42,6 @@ from functools import wraps, partial
 from itertools import imap
 #--Local
 from ._mergeability import isPBashMergeable, is_esl_capable
-from .loot_parser import LOOTParser, libloot_version
 from .mods_metadata import get_tags_from_dir
 from .. import bass, bolt, balt, bush, env, load_order, archives, \
     initialization
@@ -77,8 +76,6 @@ saveInfos = None   # type: SaveInfos
 iniInfos = None    # type: INIInfos
 bsaInfos = None    # type: BSAInfos
 screen_infos = None # type: ScreenInfos
-#--Config Helper files (LOOT Master List, etc.)
-lootDb = None # type: LOOTParser
 
 #--Header tags
 reVersion = re.compile(
@@ -893,7 +890,8 @@ def read_dir_tags(plugin_name):
 
 def read_loot_tags(plugin_name):
     """Wrapper around get_tags_from_loot. See that method for docs."""
-    added_tags, deleted_tags = lootDb.get_tags_from_loot(plugin_name)
+    added_tags, deleted_tags = initialization.lootDb.get_tags_from_loot(
+        plugin_name)
     return process_tags(added_tags), process_tags(deleted_tags)
 
 #------------------------------------------------------------------------------
@@ -2553,7 +2551,7 @@ class ModInfos(FileInfos):
         """Returns a dirty message from LOOT."""
         if self.table.getItem(modname, u'ignoreDirty', False):
             return False, u''
-        if lootDb.is_plugin_dirty(modname, self):
+        if initialization.lootDb.is_plugin_dirty(modname, self):
             return True, _(u'Contains dirty edits, needs cleaning.')
         return False, u''
 
@@ -3353,15 +3351,6 @@ def initBosh(bashIni, game_ini_path):
     # Setup loot_parser, needs to be done after the dirs are initialized
     if not initialization.bash_dirs_initialized:
         raise BoltError(u'initBosh: Bash dirs are not initialized')
-    loot_path = bass.dirs[u'userApp'].join(os.pardir, u'LOOT',
-        bush.game.fsName)
-    lootMasterPath = loot_path.join(u'masterlist.yaml')
-    lootUserPath = loot_path.join(u'userlist.yaml')
-    tagList = bass.dirs[u'taglists'].join(u'taglist.yaml')
-    global lootDb
-    lootDb = LOOTParser(lootMasterPath, lootUserPath, tagList)
-    deprint(u'Initialized loot_parser, compatible with libloot '
-            u'v%s' % libloot_version)
     # game ini files
     deprint(u'Looking for main game INI at %s' % game_ini_path)
     global oblivionIni, gameInis
