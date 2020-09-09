@@ -44,7 +44,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelRefScale, MelMapMarker, MelActionFlags, MelEnchantment, MelScript, \
     MelDecalData, MelDescription, MelLists, MelPickupSound, MelDropSound, \
     MelActivateParents, BipedFlags, MelSpells, MelUInt8Flags, MelUInt16Flags, \
-    MelUInt32Flags, MelOptUInt32Flags, MelOptUInt8Flags
+    MelUInt32Flags, MelOptUInt32Flags, MelOptUInt8Flags, MelOwnership
 from ...exception import ModError, ModSizeError
 # Set MelModel in brec but only if unset
 if brec.MelModel is None:
@@ -242,22 +242,6 @@ class MreLeveledList(MreLeveledListBase):
         MelModel(),
     )
     __slots__ = melSet.getSlotsUsed()
-
-#------------------------------------------------------------------------------
-class MelOwnership(MelGroup):
-    """Handles XOWN, XRNK, and XGLB for cells and cell children."""
-
-    def __init__(self, attr=u'ownership'):
-        super(MelOwnership, self).__init__(attr,
-            MelOptFid(b'XOWN', u'owner'),
-            # None here is on purpose - rank == 0 is a valid value, but XRNK
-            # does not have to be present
-            MelOptSInt32(b'XRNK', u'rank', None),
-        )
-
-    def dumpData(self,record,out):
-        if record.ownership and record.ownership.owner:
-            super(MelOwnership, self).dumpData(record, out)
 
 #------------------------------------------------------------------------------
 class MelRaceHeadPart(MelGroup):
