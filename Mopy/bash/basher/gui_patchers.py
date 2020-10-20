@@ -960,11 +960,10 @@ class _AListPanelCsv(_ListPatcherPanel):
 # Do _not_ rename the gui patcher classes or you will break existing BP configs
 #------------------------------------------------------------------------------
 from ..patcher.patchers import base
-from ..patcher.patchers import mergers, preservers
+from ..patcher.patchers import checkers, mergers, preservers
 from ..patcher.patchers import multitweak_actors, multitweak_assorted, \
     multitweak_clothes, multitweak_names, multitweak_settings, \
     races_multitweaks
-from ..patcher.patchers import special
 
 # Patchers 10 -----------------------------------------------------------------
 class AliasesPatcher(_AliasesPatcherPanel):
@@ -1281,7 +1280,7 @@ class _AListsMerger(_ListsMergerPanel):
                                  defaultdict(tuple, self.configChoices))
 
 class ListsMerger(_AListsMerger):
-    patcher_type = special.ListsMerger
+    patcher_type = mergers.ListsMerger
     show_empty_sublist_checkbox = True
 
 class FidListsMerger(_AListsMerger):
@@ -1291,7 +1290,7 @@ class FidListsMerger(_AListsMerger):
         _(u'Advanced users may override Deflst tags for any mod (active or '
           u'inactive) using the list below.')])
     autoKey = {u'Deflst'}
-    patcher_type = special.FidListsMerger
+    patcher_type = mergers.FidListsMerger
     listLabel = _(u'Override Deflst Tags')
     forceItemCheck = False #--Force configChecked to True for all items
     choiceMenu = (u'Auto', u'----', u'Deflst')
@@ -1310,7 +1309,7 @@ class ContentsChecker(_PatcherPanel):
     _patcher_txt = _(u'Checks contents of leveled lists, inventories and '
                      u'containers for correct types.')
     default_isEnabled = True
-    patcher_type = special.ContentsChecker
+    patcher_type = checkers.ContentsChecker
 
 #------------------------------------------------------------------------------
 # Game specific GUI Patchers --------------------------------------------------

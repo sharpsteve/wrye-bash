@@ -24,10 +24,9 @@
 """This package contains the Oblivion specific patchers. This module
 contains the data structures that are dynamically set on a per game basis in
 bush."""
+from .checkers import AlchemicalCatalogs, SEWorldEnforcer
+from .preservers import CoblExhaustion, MFactMarker, RoadImporter
 from ....patcher import PatcherInfo as pi
-from .preservers import RoadImporter
-from .special import AlchemicalCatalogs, SEWorldEnforcer, CoblExhaustion, \
-    MFactMarker
 
 _special_patchers = (
     (b'AlchemicalCatalogs', AlchemicalCatalogs),
