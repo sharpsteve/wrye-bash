@@ -1553,7 +1553,7 @@ class MreRace(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFull(),
-        MelDescription(u'text'),
+        MelDescription(),
         MelSpells(),
         MelGroups('relations',
             MelStruct('XNAM', 'Ii', (FID, 'faction'), 'mod'),

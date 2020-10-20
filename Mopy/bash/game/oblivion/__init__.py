@@ -171,12 +171,12 @@ class OblivionGameInfo(GameInfo):
         u'CoblExhaustion', u'ContentsChecker', u'DeathItemPatcher',
         u'GmstTweaker', u'GraphicsPatcher', u'ImportActorsSpells',
         u'ImportEffectsStats', u'ImportEnchantmentStats', u'ImportFactions',
-        u'ImportInventory', u'ImportRelations', u'ImportScripts',
-        u'KFFZPatcher', u'ListsMerger', u'MFactMarker', u'NamesPatcher',
-        u'NamesTweaker', u'NPCAIPackagePatcher', u'NpcFacePatcher',
-        u'RacePatcher', u'RoadImporter', u'SEWorldEnforcer', u'SoundPatcher',
-        u'SpellsPatcher', u'StatsPatcher', u'TextImporter', u'TweakActors',
-        u'UpdateReferences',
+        u'ImportInventory', u'ImportRaces', u'ImportRelations',
+        u'ImportScripts', u'KFFZPatcher', u'ListsMerger', u'MFactMarker',
+        u'NamesPatcher', u'NamesTweaker', u'NPCAIPackagePatcher',
+        u'NpcFacePatcher', u'RacePatcher', u'RoadImporter', u'SEWorldEnforcer',
+        u'SoundPatcher', u'SpellsPatcher', u'StatsPatcher', u'TextImporter',
+        u'TweakActors', u'UpdateReferences',
     )
 
     weaponTypes = (

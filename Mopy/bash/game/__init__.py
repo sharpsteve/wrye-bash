@@ -634,7 +634,7 @@ class GameInfo(object):
         u'statsHeaders', u'statsTypes', u'text_types',
         u'assorted_tweaks', u'staff_condition', u'static_attenuation_rec_type',
         u'nonplayable_biped_flags', u'not_playable_flag',
-        # FIXME(inf) format right before merge!
+        ##: Maybe just keep this out of order? Avoids tons of conflicts...
     }
 
     @classmethod

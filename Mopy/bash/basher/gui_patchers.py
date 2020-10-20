@@ -1117,6 +1117,16 @@ class StatsPatcher(_ImporterPatcherPanel, _AListPanelCsv):
     patcher_type = preservers.StatsPatcher
 
 # -----------------------------------------------------------------------------
+class ImportRaces(_ImporterPatcherPanel):
+    """Imports race-related data."""
+    patcher_name = _(u'Import Races')
+    _patcher_txt = _(u'Import race eyes, hair, body, voice, etc. from source '
+                     u'mods.')
+    autoKey = set(chain.from_iterable(
+        d.iterkeys() for d in preservers.ImportRaces.rec_attrs.itervalues()))
+    patcher_type = preservers.ImportRaces
+
+# -----------------------------------------------------------------------------
 class ImportScripts(_ImporterPatcherPanel):
     """Imports attached scripts on objects."""
     patcher_name = _(u'Import Scripts')
@@ -1240,11 +1250,7 @@ class RacePatcher(_DoublePatcherPanel):
           u'active mods.  It will also randomly assign hairs and eyes to '
           u'npcs that are otherwise missing them.')]
     )
-    autoKey = {u'R.Head', u'R.Ears', u'Eyes',
-               u'Voice-F', u'R.ChangeSpells', u'R.Teeth', u'Voice-M',
-               u'R.Attributes-M', u'R.Attributes-F', u'Body-F', u'Body-M',
-               u'R.Mouth', u'R.Description', u'R.AddSpells', u'Body-Size-F',
-               u'R.Relations', u'Body-Size-M', u'R.Skills', u'Hair'}
+    autoKey = {u'R.ChangeSpells', u'R.AddSpells', u'R.Relations'}
     patcher_type = _race_records.RacePatcher
 
     @property
