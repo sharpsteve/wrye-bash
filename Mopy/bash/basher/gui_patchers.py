@@ -962,8 +962,8 @@ class _AListPanelCsv(_ListPatcherPanel):
 from ..patcher.patchers import base
 from ..patcher.patchers import checkers, mergers, preservers
 from ..patcher.patchers import multitweak_actors, multitweak_assorted, \
-    multitweak_clothes, multitweak_names, multitweak_settings, \
-    races_multitweaks
+    multitweak_clothes, multitweak_names, multitweak_settings
+from ..patcher.patchers import _race_records
 
 # Patchers 10 -----------------------------------------------------------------
 class AliasesPatcher(_AliasesPatcherPanel):
@@ -1245,7 +1245,7 @@ class RacePatcher(_DoublePatcherPanel):
                u'R.Attributes-M', u'R.Attributes-F', u'Body-F', u'Body-M',
                u'R.Mouth', u'R.Description', u'R.AddSpells', u'Body-Size-F',
                u'R.Relations', u'Body-Size-M', u'R.Skills', u'Hair'}
-    patcher_type = races_multitweaks.RacePatcher
+    patcher_type = _race_records.RacePatcher
 
     @property
     def patcher_tip(self):

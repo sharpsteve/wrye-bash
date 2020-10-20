@@ -34,7 +34,7 @@ mergers.py
 preservers.py
 
 # Patchers: 30 ----------------------------------------------------------------
-# MultiTweakItem and MultiTweaker classes except from races_multitweaks
+# MultiTweakItem and MultiTweaker classes except from multitweak_races
 multitweak_actors.py
 multitweak_assorted.py
 multitweak_clothes.py
@@ -43,6 +43,6 @@ multitweak_settings.py
 
 # Patchers: 40 ----------------------------------------------------------------
 # SpecialPatcher is used in those
-races_multitweaks.py
+_race_records.py
 special.py
 """
