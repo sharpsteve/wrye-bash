@@ -107,10 +107,6 @@ class RacePatcher(AMultiTweaker, ListPatcher):
             for race in srcFile.RACE.getActiveRecords():
                 tempRaceData = self.tempRaceData.setdefault(race.fid,{})
                 raceData = self.raceData.setdefault(race.fid,{})
-                if u'R.Relations' in bashTags:
-                    relations = raceData.setdefault('relations',{})
-                    for x in race.relations:
-                        relations[x.faction] = x.mod
                 if u'R.AddSpells' in bashTags:
                     tempRaceData['AddSpells'] = race.spells
                 if u'R.ChangeSpells' in bashTags:
@@ -233,19 +229,6 @@ class RacePatcher(AMultiTweaker, ListPatcher):
                 for spell in raceData['AddSpells']:
                     raceData['spells'].append(spell)
                 race.spells = raceData['spells']
-            #--Relations
-            if 'relations' in raceData:
-                relations = raceData['relations']
-                oldRelations = set((x.faction,x.mod) for x in race.relations)
-                newRelations = set(relations.iteritems())
-                if newRelations != oldRelations:
-                    del race.relations[:]
-                    for faction,mod in newRelations:
-                        entry = MelObject()
-                        entry.faction = faction
-                        entry.mod = mod
-                        race.relations.append(entry)
-                    raceChanged = True
             #--Changed
             if raceChanged:
                 racesPatched.append(race.eid)

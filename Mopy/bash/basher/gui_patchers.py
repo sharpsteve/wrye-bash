@@ -1127,6 +1127,15 @@ class ImportRaces(_ImporterPatcherPanel):
     patcher_type = preservers.ImportRaces
 
 # -----------------------------------------------------------------------------
+class ImportRacesRelations(_ImporterPatcherPanel):
+    """Imports race-faction relations."""
+    patcher_name = _(u'Import Races: Relations')
+    _patcher_txt = _(u'Import race-faction relations from source mods.')
+    autoKey = {u'R.Relations.Add', u'R.Relations.Change',
+               u'R.Relations.Remove'}
+    patcher_type = mergers.ImportRacesRelations
+
+# -----------------------------------------------------------------------------
 class ImportScripts(_ImporterPatcherPanel):
     """Imports attached scripts on objects."""
     patcher_name = _(u'Import Scripts')
@@ -1250,7 +1259,7 @@ class RacePatcher(_DoublePatcherPanel):
           u'active mods.  It will also randomly assign hairs and eyes to '
           u'npcs that are otherwise missing them.')]
     )
-    autoKey = {u'R.ChangeSpells', u'R.AddSpells', u'R.Relations'}
+    autoKey = {u'R.ChangeSpells', u'R.AddSpells'}
     patcher_type = _race_records.RacePatcher
 
     @property

@@ -158,10 +158,11 @@ class OblivionGameInfo(GameInfo):
         u'Names', u'NoMerge', u'NPC.Class', u'NPC.Eyes', u'NPC.FaceGen',
         u'NPC.Hair', u'NPC.Race', u'NpcFacesForceFullImport', u'R.AddSpells',
         u'R.Attributes-F', u'R.Attributes-M', u'R.ChangeSpells',
-        u'R.Description', u'R.Ears', u'R.Head', u'R.Mouth', u'R.Relations',
-        u'R.Skills', u'R.Teeth', u'Relations.Add', u'Relations.Change',
-        u'Relations.Remove', u'Relev', u'Roads', u'Scripts', u'Sound',
-        u'SpellStats', u'Stats', u'Text', u'Voice-F', u'Voice-M',
+        u'R.Description', u'R.Ears', u'R.Head', u'R.Mouth', u'R.Relations.Add',
+        u'R.Relations.Change', u'R.Relations.Remove', u'R.Skills', u'R.Teeth',
+        u'Relations.Add', u'Relations.Change', u'Relations.Remove', u'Relev',
+        u'Roads', u'Scripts', u'Sound', u'SpellStats', u'Stats', u'Text',
+        u'Voice-F', u'Voice-M',
     }
 
     patchers = (
@@ -171,12 +172,12 @@ class OblivionGameInfo(GameInfo):
         u'CoblExhaustion', u'ContentsChecker', u'DeathItemPatcher',
         u'GmstTweaker', u'GraphicsPatcher', u'ImportActorsSpells',
         u'ImportEffectsStats', u'ImportEnchantmentStats', u'ImportFactions',
-        u'ImportInventory', u'ImportRaces', u'ImportRelations',
-        u'ImportScripts', u'KFFZPatcher', u'ListsMerger', u'MFactMarker',
-        u'NamesPatcher', u'NamesTweaker', u'NPCAIPackagePatcher',
-        u'NpcFacePatcher', u'RacePatcher', u'RoadImporter', u'SEWorldEnforcer',
-        u'SoundPatcher', u'SpellsPatcher', u'StatsPatcher', u'TextImporter',
-        u'TweakActors', u'UpdateReferences',
+        u'ImportInventory', u'ImportRaces', u'ImportRacesRelations',
+        u'ImportRelations', u'ImportScripts', u'KFFZPatcher', u'ListsMerger',
+        u'MFactMarker', u'NamesPatcher', u'NamesTweaker',
+        u'NPCAIPackagePatcher', u'NpcFacePatcher', u'RacePatcher',
+        u'RoadImporter', u'SEWorldEnforcer', u'SoundPatcher', u'SpellsPatcher',
+        u'StatsPatcher', u'TextImporter', u'TweakActors', u'UpdateReferences',
     )
 
     weaponTypes = (

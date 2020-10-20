@@ -869,6 +869,8 @@ tag_aliases = {
     u'Npc.EyesOnly': {u'NPC.Eyes'},
     u'Npc.HairOnly': {u'NPC.Hair'},
     u'NpcFaces': {u'NPC.Eyes', u'NPC.Hair', u'NPC.FaceGen'},
+    u'R.Relations': {u'R.Relations.Add', u'R.Relations.Change',
+                     u'R.Relations.Remove'},
     u'Relations': {u'Relations.Add', u'Relations.Change'},
 }
 

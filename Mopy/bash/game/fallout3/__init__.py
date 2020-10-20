@@ -127,7 +127,8 @@ class Fallout3GameInfo(GameInfo):
     # Remaining to add:
     # 'Body-F', 'Body-M', 'Body-Size-F', 'Body-Size-M', 'Eyes', 'Hair',
     # 'R.Attributes-F', 'R.Attributes-M', 'R.Description', 'R.Ears', 'R.Head',
-    # 'R.Mouth', 'R.Relations', 'R.Skills', 'R.Teeth', 'Voice-F', 'Voice-M'
+    # 'R.Mouth', 'R.Relations.Add', 'R.Relations.Change', 'R.Relations.Remove',
+    # 'R.Skills', 'R.Teeth', 'Voice-F', 'Voice-M'
     allTags = {
         u'Actors.ACBS', u'Actors.AIData', u'Actors.AIPackages',
         u'Actors.AIPackagesForceAdd', u'Actors.Anims', u'Actors.CombatStyle',

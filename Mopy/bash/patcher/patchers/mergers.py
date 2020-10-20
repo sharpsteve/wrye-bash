@@ -262,6 +262,16 @@ class ImportOutfits(_AMerger):
     _wanted_subrecord = {b'OTFT': u'items'}
 
 #------------------------------------------------------------------------------
+class ImportRacesRelations(_AMerger):
+    _add_tag = u'R.Relations.Add'
+    _change_tag = u'R.Relations.Change'
+    _remove_tag = u'R.Relations.Remove'
+    _wanted_subrecord = {b'RACE': u'relations'}
+
+    def _entry_key(self, subrecord_entry):
+        return subrecord_entry.faction
+
+#------------------------------------------------------------------------------
 class ImportRelations(_AMerger):
     logMsg = u'\n=== ' + _(u'Modified Factions') + u': %d'
     _add_tag = u'Relations.Add'
