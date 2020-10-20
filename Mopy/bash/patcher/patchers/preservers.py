@@ -442,21 +442,6 @@ class TextImporter(_APreserver):
     rec_attrs = bush.game.text_types
 
 #------------------------------------------------------------------------------
-# TODO(inf) Currently FNV-only, but don't move to game/falloutnv/patcher yet -
-#  this could potentially be refactored and reused for FO4's modifications
-class WeaponModsPatcher(_APreserver):
-    """Merge changes to weapon modifications for FalloutNV."""
-    scanOrder = 27
-    editOrder = 27
-    rec_attrs = {b'WEAP': (
-        u'modelWithMods', u'firstPersonModelWithMods', u'weaponMods',
-        u'soundMod1Shoot3Ds', u'soundMod1Shoot2D', u'effectMod1',
-        u'effectMod2', u'effectMod3', u'valueAMod1', u'valueAMod2',
-        u'valueAMod3', u'valueBMod1', u'valueBMod2', u'valueBMod3',
-        u'reloadAnimationMod', u'vatsModReqiured', u'scopeModel',
-        u'dnamFlags1.hasScope', u'dnamFlags2.scopeFromMod')}
-
-#------------------------------------------------------------------------------
 # Patchers to absorb ----------------------------------------------------------
 #------------------------------------------------------------------------------
 ##: absorbing this one will be hard - hint: getActiveRecords only exists on

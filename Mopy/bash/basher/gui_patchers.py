@@ -1146,13 +1146,6 @@ class DestructiblePatcher(_ImporterPatcherPanel):
     patcher_type = preservers.DestructiblePatcher
 
 # -----------------------------------------------------------------------------
-class WeaponModsPatcher(_ImporterPatcherPanel):
-    patcher_name = _(u'Import Weapon Modifications')
-    _patcher_txt = _(u'Merges changes to weapon modifications.')
-    autoKey = {u'WeaponMods'}
-    patcher_type = preservers.WeaponModsPatcher
-
-# -----------------------------------------------------------------------------
 class KeywordsImporter(_ImporterPatcherPanel):
     patcher_name = _(u'Import Keywords')
     _patcher_txt = _(u'Import keyword changes from source mods.')

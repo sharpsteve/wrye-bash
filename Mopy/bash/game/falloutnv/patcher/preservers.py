@@ -20,24 +20,19 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
+from ....patcher.patchers.preservers import _APreserver
 
-"""This package contains the Fallout New Vegas specific patchers. This module
-contains the data structures that are dynamically set on a per game basis in
-bush."""
-
-from .preservers import WeaponModsPatcher
-from ....patcher import PatcherInfo as pi
-
-gameSpecificPatchers = {}
-gameSpecificListPatchers = {}
-
-_import_patchers = (
-    (b'WeaponModsPatcher', WeaponModsPatcher),
-)
-
-game_specific_import_patchers = {
-    pname: pi(ptype,
-              {u'patcher_type': ptype, u'_patcher_txt': ptype.patcher_text,
-               u'patcher_name': ptype.patcher_name, u'autoKey': ptype.autoKey})
-    for pname, ptype in _import_patchers
-}
+class WeaponModsPatcher(_APreserver):
+    """Merge changes to weapon modifications for FalloutNV."""
+    patcher_name = _(u'Import Weapon Modifications')
+    patcher_text = _(u'Merges changes to weapon modifications.')
+    autoKey = {u'WeaponMods'}
+    scanOrder = 27
+    editOrder = 27
+    rec_attrs = {b'WEAP': (
+        u'modelWithMods', u'firstPersonModelWithMods', u'weaponMods',
+        u'soundMod1Shoot3Ds', u'soundMod1Shoot2D', u'effectMod1',
+        u'effectMod2', u'effectMod3', u'valueAMod1', u'valueAMod2',
+        u'valueAMod3', u'valueBMod1', u'valueBMod2', u'valueBMod3',
+        u'reloadAnimationMod', u'vatsModReqiured', u'scopeModel',
+        u'dnamFlags1.hasScope', u'dnamFlags2.scopeFromMod')}
