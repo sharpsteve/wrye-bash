@@ -23,7 +23,7 @@
 """This module contains the Oblivion MultiTweakItem classes that tweak RACE
 records. As opposed to the rest of the multitweak items these are not grouped
 by a MultiTweaker but by the RacePatcher (see _race_records.py)."""
-from .base import MultiTweakItem
+from .base import MultiTweakItem, MultiTweaker
 
 _vanilla_races = [u'argonian', u'breton', u'dremora', u'dark elf',
                   u'dark seducer', u'golden saint', u'high elf', u'imperial',
@@ -34,7 +34,7 @@ class _ARaceTweak(MultiTweakItem):
     """ABC for race tweaks."""
     tweak_read_classes = b'RACE',
     tweak_log_msg = _(u'Races Tweaked: %(total_changed)d')
-    _tweak_races_data = None # sentinel, set in RacePatcher.buildPatch
+    tweak_race_data = None # sentinel, set by TweakRaces
 
     def _calc_changed_face_parts(self, face_attr, collected_races_data):
         """Calculates a changes dictionary for the specified face attribute,
@@ -80,7 +80,7 @@ class _ARaceTweak(MultiTweakItem):
             return self._cached_changed_eyes
         except AttributeError:
             self._cached_changed_eyes = self._calc_changed_face_parts(
-                u'eyes', self._tweak_races_data)
+                u'eyes', self.tweak_race_data)
             return self._cached_changed_eyes
 
     def _get_changed_hairs(self):
@@ -90,13 +90,10 @@ class _ARaceTweak(MultiTweakItem):
             return self._cached_changed_hairs
         except AttributeError:
             self._cached_changed_hairs = self._calc_changed_face_parts(
-               u'hairs', self._tweak_races_data)
+               u'hairs', self.tweak_race_data)
             return self._cached_changed_hairs
 
-    def prepare_for_tweaking(self, patch_file):
-        self._tweak_races_data = patch_file.races_data
-
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_BiggerOrcsAndNords(_ARaceTweak):
     """Adjusts the Orc and Nord race records to be taller/heavier."""
     tweak_read_classes = b'RACE',
@@ -131,7 +128,7 @@ class RaceTweaker_BiggerOrcsAndNords(_ARaceTweak):
                 self.choiceValues[self.chosen][0][is_orc]):
             setattr(record, tweak_attr, tweak_val)
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_MergeSimilarRaceHairs(_ARaceTweak):
     """Merges similar race's hairs (kinda specifically designed for SOVVM's
     bearded races)."""
@@ -147,7 +144,7 @@ class RaceTweaker_MergeSimilarRaceHairs(_ARaceTweak):
         if not record.full: return False
         # If this is None, we don't have race data yet and have to blindly
         # forward records until the patcher sends it to us
-        elif self._tweak_races_data is None: return True
+        elif self.tweak_race_data is None: return True
         # Cached, so calling this over and over is fine
         changed_hairs = self._get_changed_hairs()
         rec_full = record.full.lower()
@@ -157,7 +154,7 @@ class RaceTweaker_MergeSimilarRaceHairs(_ARaceTweak):
     def tweak_record(self, record):
         record.hairs = self._get_changed_hairs()[record.full.lower()]
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_MergeSimilarRaceEyes(_ARaceTweak):
     """Merges similar race's eyes."""
     tweak_name = _(u'Merge Eyes from similar races')
@@ -171,7 +168,7 @@ class RaceTweaker_MergeSimilarRaceEyes(_ARaceTweak):
         if not record.full: return False
         # If this is None, we don't have race data yet and have to blindly
         # forward records until the patcher sends it to us
-        if self._tweak_races_data is None: return True
+        if self.tweak_race_data is None: return True
         # Cached, so calling this over and over is fine
         changed_eyes = self._get_changed_eyes()
         rec_full = record.full.lower()
@@ -181,7 +178,7 @@ class RaceTweaker_MergeSimilarRaceEyes(_ARaceTweak):
     def tweak_record(self, record):
         record.eyes = self._get_changed_eyes()[record.full.lower()]
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class _ARUnblockTweak(_ARaceTweak):
     """Shared code of 'races have all X' tweaks."""
     # First item is the record signature to retrieve race data for, second item
@@ -192,15 +189,15 @@ class _ARUnblockTweak(_ARaceTweak):
         race_sig, race_attr = self._sig_and_attr
         # If this is None, we don't have race data yet and have to blindly
         # forward records until the patcher sends it to us
-        tweak_data = self._tweak_races_data
+        tweak_data = self.tweak_race_data
         return tweak_data is None or getattr(
             record, race_attr) != tweak_data[race_sig]
 
     def tweak_record(self, record):
         race_sig, race_attr = self._sig_and_attr
-        setattr(record, race_attr, self._tweak_races_data[race_sig])
+        setattr(record, race_attr, self.tweak_race_data[race_sig])
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_AllHairs(_ARUnblockTweak):
     """Gives all races ALL hairs."""
     tweak_name = _(u'Races Have All Hairs')
@@ -209,7 +206,7 @@ class RaceTweaker_AllHairs(_ARUnblockTweak):
     tweak_choices = [(u'get down tonight', 1)]
     _sig_and_attr = (b'HAIR', u'hairs')
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_AllEyes(_ARUnblockTweak):
     """Gives all races ALL eyes."""
     tweak_name = _(u'Races Have All Eyes')
@@ -218,7 +215,7 @@ class RaceTweaker_AllEyes(_ARUnblockTweak):
     tweak_choices = [(u'what a lot of eyes you have dear', 1)]
     _sig_and_attr = (b'EYES', u'eyes')
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class _ARPlayableTweak(_ARaceTweak):
     """Shared code of playable hair/eyes tweaks."""
     def wants_record(self, record):
@@ -227,7 +224,7 @@ class _ARPlayableTweak(_ARaceTweak):
     def tweak_record(self, record):
         record.flags.playable = True
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_PlayableEyes(_ARPlayableTweak):
     """Sets all eyes to be playable."""
     tweak_read_classes = b'EYES',
@@ -237,7 +234,7 @@ class RaceTweaker_PlayableEyes(_ARPlayableTweak):
     tweak_choices = [(u'Get it done', 1)]
     tweak_log_msg = _(u'Eyes Tweaked: %(total_changed)d')
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_PlayableHairs(_ARPlayableTweak):
     """Sets all hairs to be playable."""
     tweak_read_classes = b'HAIR',
@@ -247,7 +244,7 @@ class RaceTweaker_PlayableHairs(_ARPlayableTweak):
     tweak_choices = [(u'Get it done', 1)]
     tweak_log_msg = _(u'Hairs Tweaked: %(total_changed)d')
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class RaceTweaker_SexlessHairs(_ARaceTweak):
     """Sets all hairs to be playable by both males and females."""
     tweak_read_classes = b'HAIR',
@@ -263,3 +260,33 @@ class RaceTweaker_SexlessHairs(_ARaceTweak):
     def tweak_record(self, record):
         record.flags.notMale = False
         record.flags.notFemale = False
+
+#------------------------------------------------------------------------------
+class TweakRaces(MultiTweaker):
+    """Tweaks race things."""
+    ##: scanOrder & editOrder? 40?
+    _tweak_classes = [
+        RaceTweaker_AllEyes, RaceTweaker_AllHairs,
+        RaceTweaker_BiggerOrcsAndNords, RaceTweaker_MergeSimilarRaceEyes,
+        RaceTweaker_MergeSimilarRaceHairs, RaceTweaker_PlayableEyes,
+        RaceTweaker_PlayableHairs, RaceTweaker_SexlessHairs]
+
+    def scanModFile(self, modFile, progress):
+        # Need to gather EYES/HAIR data for the tweaks
+        self.collected_tweak_data = {b'EYES': [], b'HAIR': []}
+        for race_tweak in self.enabled_tweaks:
+            race_tweak.tweak_race_data = self.collected_tweak_data
+        for tweak_type in (b'EYES', b'HAIR'):
+            if not tweak_type in modFile.tops: continue
+            for record in modFile.tops[tweak_type].getActiveRecords():
+                self.collected_tweak_data[tweak_type].append(record.fid)
+        super(TweakRaces, self).scanModFile(modFile, progress)
+
+    def buildPatch(self, log, progress):
+        # Need to gather RACE data for the tweaks
+        for record in self.patchFile.RACE.getActiveRecords():
+            if record.full:
+                self.collected_tweak_data[record.full.lower()] = {
+                    u'hairs': record.hairs, u'eyes': record.eyes,
+                    u'relations': record.relations}
+        super(TweakRaces, self).buildPatch(log, progress)

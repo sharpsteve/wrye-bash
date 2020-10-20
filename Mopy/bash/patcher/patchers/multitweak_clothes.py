@@ -110,7 +110,7 @@ class ClothesTweak_Unblock(_AUnblockTweak, ClothesTweak):
         record.biped_flags &= ~self.unblock_flags
 
 #------------------------------------------------------------------------------
-class _AClothesTweaker(AMultiTweaker):
+class ClothesTweaker(AMultiTweaker):
     """Patches clothes in miscellaneous ways."""
     _read_write_records = (b'CLOT',)
     _unblock = ((_(u'Unlimited Amulets'),
@@ -157,7 +157,6 @@ class _AClothesTweaker(AMultiTweaker):
     scanOrder = 31
     editOrder = 31
 
-class ClothesTweaker(_AClothesTweaker,MultiTweaker):
     @classmethod
     def tweak_instances(cls):
         return sorted(itertools.chain(

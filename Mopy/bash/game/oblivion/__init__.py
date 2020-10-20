@@ -177,7 +177,8 @@ class OblivionGameInfo(GameInfo):
         u'MFactMarker', u'NamesPatcher', u'NamesTweaker',
         u'NPCAIPackagePatcher', u'NpcFacePatcher', u'RacePatcher',
         u'RoadImporter', u'SEWorldEnforcer', u'SoundPatcher', u'SpellsPatcher',
-        u'StatsPatcher', u'TextImporter', u'TweakActors', u'UpdateReferences',
+        u'StatsPatcher', u'TextImporter', u'TweakActors', u'TweakRaces',
+        u'UpdateReferences',
     )
 
     weaponTypes = (

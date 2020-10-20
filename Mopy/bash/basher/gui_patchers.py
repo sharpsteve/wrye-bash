@@ -785,36 +785,6 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         return self.patcher_type(self.patcher_name, patch_file, enabledTweaks)
 
 #------------------------------------------------------------------------------
-class _DoublePatcherPanel(_TweakPatcherPanel, _ListPatcherPanel):
-    """Only used in Race Patcher which features a double panel (source mods
-    and tweaks)."""
-    listLabel = _(u'Race Mods')
-    tweak_label = _(u'Race Tweaks')
-    # CONFIG DEFAULTS
-    default_isEnabled = True # isActive will be set to True in initPatchFile
-
-    def GetConfigPanel(self, parent, config_layout, gTipText):
-        """Show config."""
-        if self.gConfigPanel: return self.gConfigPanel
-        gConfigPanel = super(_DoublePatcherPanel, self).GetConfigPanel(parent,
-            config_layout, gTipText)
-        return gConfigPanel
-
-    #--Config Phase -----------------------------------------------------------
-    def _log_config(self, conf, config, clip, log):
-        _ListPatcherPanel._log_config(self, conf, config, clip, log)
-        log.setHeader(u'== ' + self.tweak_label)
-        clip.write(u'\n')
-        clip.write(u'== ' + self.tweak_label + u'\n')
-        _TweakPatcherPanel._log_config(self, conf, config, clip, log)
-
-    def get_patcher_instance(self, patch_file):
-        enabledTweaks = [t for t in self._all_tweaks if t.isEnabled]
-        patcher_sources = [x for x in self.configItems if self.configChecks[x]]
-        return self.patcher_type(self.patcher_name, patch_file,
-                                 patcher_sources, enabledTweaks)
-
-#------------------------------------------------------------------------------
 class _ImporterPatcherPanel(_ListPatcherPanel):
 
     def saveConfig(self, configs):
@@ -962,7 +932,7 @@ class _AListPanelCsv(_ListPatcherPanel):
 from ..patcher.patchers import base
 from ..patcher.patchers import checkers, mergers, preservers
 from ..patcher.patchers import multitweak_actors, multitweak_assorted, \
-    multitweak_clothes, multitweak_names, multitweak_settings
+    multitweak_clothes, multitweak_names, multitweak_settings, multitweak_races
 from ..patcher.patchers import _race_records
 
 # Patchers 10 -----------------------------------------------------------------
@@ -1235,6 +1205,12 @@ class TweakActors(_TweakPatcherPanel):
     _patcher_txt = _(u'Tweak NPC and Creatures records in specified ways.')
     patcher_type = multitweak_actors.TweakActors
 
+# -----------------------------------------------------------------------------
+class TweakRaces(_TweakPatcherPanel):
+    patcher_name = _(u'Tweak Races')
+    _patcher_txt = _(u'Tweak race records in specified ways.')
+    patcher_type = multitweak_races.TweakRaces
+
 # Patchers 40 -----------------------------------------------------------------
 class UpdateReferences(_AListPanelCsv):
     """Imports Form Id replacers into the Bashed Patch."""
@@ -1247,7 +1223,7 @@ class UpdateReferences(_AListPanelCsv):
     canAutoItemCheck = False #--GUI: Whether new items are checked by default.
 
 # -----------------------------------------------------------------------------
-class RacePatcher(_DoublePatcherPanel):
+class RacePatcher(_ImporterPatcherPanel):
     """Merged leveled lists mod file."""
     patcher_name = _(u'Race Records')
     _patcher_txt = u'\n\n'.join([

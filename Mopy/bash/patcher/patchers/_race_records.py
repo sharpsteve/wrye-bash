@@ -20,21 +20,18 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-"""Temp module, contains the Race Records patcher. It imports the tweak classes
-from multitweak_races.py."""
+"""Temp module, contains the Race Records patcher."""
 from __future__ import print_function
 import random
 import re
-from collections import defaultdict, Counter
+from collections import defaultdict
 # Internal
 from .base import ListPatcher
-from .multitweak_races import *
 from ... import bosh, bush
 from ...bolt import GPath, deprint
-from ...brec import MreRecord, MelObject, strFid
+from ...brec import MreRecord, strFid
 from ...exception import BoltError
 from ...mod_files import ModFile, LoadFactory
-from ...patcher.base import AMultiTweaker
 
 # Utilities & Constants -------------------------------------------------------
 def _find_vanilla_eyes():
@@ -53,21 +50,15 @@ _main_master = GPath(bush.game.master_file)
 #------------------------------------------------------------------------------
 # Race Patcher ----------------------------------------------------------------
 #------------------------------------------------------------------------------
-class RacePatcher(AMultiTweaker, ListPatcher):
-    """Race patcher - we inherit from AMultiTweaker to use tweak_instances."""
+class RacePatcher(ListPatcher):
+    """Race patcher."""
     group = _(u'Special')
     scanOrder = 40
     editOrder = 40
     _read_write_records = ('RACE', 'EYES', 'HAIR', 'NPC_',)
-    _tweak_classes = [RaceTweaker_BiggerOrcsAndNords,
-        RaceTweaker_MergeSimilarRaceHairs, RaceTweaker_MergeSimilarRaceEyes,
-        RaceTweaker_PlayableEyes, RaceTweaker_PlayableHairs,
-        RaceTweaker_SexlessHairs, RaceTweaker_AllEyes, RaceTweaker_AllHairs, ]
 
-    def __init__(self, p_name, p_file, p_sources, enabled_tweaks):
-        # NB: call the ListPatcher __init__ not the AMultiTweaker one!
-        super(AMultiTweaker, self).__init__(p_name, p_file, p_sources)
-        self.races_data = {'EYES':[],'HAIR':[]}
+    def __init__(self, p_name, p_file, p_sources):
+        super(RacePatcher, self).__init__(p_name, p_file, p_sources)
         self.raceData = {} #--Race eye meshes, hair,eyes
         self.tempRaceData = {}
         #--Restrict srcs to active/merged mods.
@@ -76,17 +67,9 @@ class RacePatcher(AMultiTweaker, ListPatcher):
         self.eye_mesh = {}
         self.scanTypes = {'RACE', 'EYES', 'HAIR', 'NPC_'}
         self.vanilla_eyes = _find_vanilla_eyes()
-        self.enabled_tweaks = enabled_tweaks
 
     def initData(self,progress):
         """Get data from source files."""
-        # HACK - wholesale copy of MultiTweaker.initData, see #494
-        # Has to come before the srcs check, because of isActive nonsense this
-        # patcher will still run and blow up in scanModFile otherwise
-        self._tweak_dict = t_dict = defaultdict(lambda: ([], []))
-        for tweak in self.enabled_tweaks: # type: MultiTweakItem
-            for read_sig in tweak.getReadClasses():
-                t_dict[read_sig][tweak.supports_pooling].append(tweak)
         if not self.isActive or not self.srcs: return
         loadFactory = LoadFactory(False,MreRecord.type_class['RACE'])
         progress.setFull(len(self.srcs))
@@ -140,7 +123,6 @@ class RacePatcher(AMultiTweaker, ListPatcher):
 
     def scanModFile(self, modFile, progress):
         """Add appropriate records from modFile."""
-        races_data = self.races_data
         eye_mesh = self.eye_mesh
         modName = modFile.fileInfo.name
         if not (set(modFile.tops) & self.scanTypes): return
@@ -151,7 +133,6 @@ class RacePatcher(AMultiTweaker, ListPatcher):
             patchBlock = getattr(self.patchFile,type)
             id_records = patchBlock.id_records
             for record in getattr(modFile,type).getActiveRecords():
-                races_data[type].append(record.fid)
                 if record.fid not in id_records:
                     patchBlock.setRecord(record.getTypeCopy())
         #--Npcs with unassigned eyes
@@ -177,33 +158,10 @@ class RacePatcher(AMultiTweaker, ListPatcher):
                 if eye in srcEyes:
                     eye_mesh[eye] = (record.rightEye.modPath.lower(),
                                      record.leftEye.modPath.lower())
-        # HACK - wholesale copy of MultiTweaker.scanModFile, see #494
-        rec_pool = defaultdict(set)
-        common_tops = set(modFile.tops) & set(self._tweak_dict)
-        for curr_top in common_tops:
-            # Need to give other tweaks a chance to do work first
-            for o_tweak in self._tweak_dict[curr_top][0]:
-                o_tweak.tweak_scan_file(modFile, self.patchFile)
-            # Now we can collect all records that poolable tweaks are
-            # interested in
-            pool_record = rec_pool[curr_top].add
-            poolable_tweaks = self._tweak_dict[curr_top][1]
-            if not poolable_tweaks: continue # likely complex type, e.g. CELL
-            for record in modFile.tops[curr_top].getActiveRecords():
-                for p_tweak in poolable_tweaks: # type: MultiTweakItem
-                    if p_tweak.wants_record(record):
-                        pool_record(record)
-                        break # Exit as soon as a tweak is interested
-        # Finally, copy all pooled records in one fell swoop
-        for rsig, pooled_records in rec_pool.iteritems():
-            if pooled_records: # only copy if we could pool
-                getattr(self.patchFile, rsig.decode(u'ascii')).copy_records(
-                    pooled_records)
 
     def buildPatch(self,log,progress):
         """Updates races as needed."""
         debug = False
-        tweak_data = self.races_data
         if not self.isActive: return
         patchFile = self.patchFile
         keep = patchFile.getKeeper()
@@ -317,46 +275,6 @@ class RacePatcher(AMultiTweaker, ListPatcher):
             if raceChanged:
                 racesFiltered.append(race.eid)
                 keep(race.fid)
-            if race.full:
-                tweak_data[race.full.lower()] = {'hairs': race.hairs,
-                                                 'eyes': race.eyes,
-                                                 'relations': race.relations}
-        # HACK - wholesale copy of MultiTweaker.buildPatch, see #494, plus
-        # lightly edited for race patcher nonsense
-        self.patchFile.races_data = tweak_data
-        for tweak in self.enabled_tweaks: # type: MultiTweakItem
-            tweak.prepare_for_tweaking(self.patchFile)
-        common_tops = set(self.patchFile.tops) & set(self._tweak_dict)
-        keep = self.patchFile.getKeeper()
-        tweak_counter = defaultdict(Counter)
-        for curr_top in common_tops:
-            top_dict = self._tweak_dict[curr_top]
-            # Need to give other tweaks a chance to do work first
-            for o_tweak in top_dict[False]:
-                o_tweak.tweak_build_patch(log, tweak_counter[o_tweak],
-                                          self.patchFile)
-            poolable_tweaks = top_dict[True]
-            if not poolable_tweaks: continue  # likely complex type, e.g. CELL
-            for record in self.patchFile.tops[curr_top].getActiveRecords():
-                for p_tweak in poolable_tweaks:  # type: MultiTweakItem
-                    # Check if this tweak can actually change the record - just
-                    # relying on the check in scanModFile is *not* enough.
-                    # After all, another tweak or patcher could have made a
-                    # copy of an entirely unrelated record that *it* was
-                    # interested in that just happened to have the same record
-                    # type
-                    if p_tweak.wants_record(record):
-                        # Give the tweak a chance to do its work, and remember
-                        # that we now want to keep the record. Note that we
-                        # can't break early here, because more than one tweak
-                        # may want to touch this record
-                        p_tweak.tweak_record(record)
-                        keep(record.fid)
-                        tweak_counter[p_tweak][record.fid[0]] += 1
-        # We're done with all tweaks, give them a chance to clean up and do any
-        # finishing touches (e.g. injecting records for GMST tweaks)
-        for tweak in self.enabled_tweaks:
-            tweak.finish_tweaking(self.patchFile)
         #--Sort Eyes/Hair
         final_eyes = {}
         defaultMaleHair = {}
@@ -434,5 +352,3 @@ class RacePatcher(AMultiTweaker, ListPatcher):
             log(u'\n=== ' + _(u'Eyes/Hair Assigned for NPCs'))
             for srcMod in sorted(mod_npcsFixed):
                 log(u'* %s: %d' % (srcMod.s,len(mod_npcsFixed[srcMod])))
-        for tweak in self.enabled_tweaks: # type: MultiTweakItem
-            tweak.tweak_log(log, tweak_counter[tweak])
