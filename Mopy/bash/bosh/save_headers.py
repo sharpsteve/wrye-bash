@@ -41,12 +41,15 @@ from .. import bolt
 from ..bolt import decoder, cstrip, unpack_string, unpack_int, unpack_str8, \
     unpack_short, unpack_float, unpack_str16, unpack_byte, struct_pack, \
     unpack_str_int_delim, unpack_str16_delim_null, unpack_str_byte_delim, \
-    unpack_many, encode, struct_unpack, pack_int, pack_byte, pack_short
-from ..exception import SaveHeaderError, raise_bolt_error
+    unpack_many, encode, struct_unpack, pack_int, pack_byte, pack_short, \
+    pack_float, pack_string, pack_str8, pack_bzstr8
+from ..brec import null1
+from ..exception import SaveHeaderError, raise_bolt_error, AbstractError
 
 # Utilities -------------------------------------------------------------------
 def _pack_c(out, value, __pack=struct.Struct(u'=c').pack):
     out.write(__pack(value))
+unpack_fstr16 = partial(unpack_string, string_len=16)
 
 class SaveFileHeader(object):
     save_magic = 'OVERRIDE'
@@ -59,16 +62,19 @@ class SaveFileHeader(object):
     # seek relative to ins.tell(), otherwise to the beginning of the file
     unpackers = OrderedDict()
 
-    def __init__(self, save_path):
+    def __init__(self, save_path, load_image=False, ins=None):
         self._save_path = save_path
         self.ssData = None # lazily loaded at runtime
-        self.read_save_header()
+        self.read_save_header(load_image, ins)
 
-    def read_save_header(self, load_image=False):
+    def read_save_header(self, load_image=False, ins=None):
         """Fully reads this save header, optionally loading the image as
         well."""
         try:
-            with self._save_path.open(u'rb') as ins:
+            if ins is None:
+                with self._save_path.open(u'rb') as ins:
+                    self.load_header(ins, load_image)
+            else:
                 self.load_header(ins, load_image)
         #--Errors
         except (OSError, struct.error, OverflowError):
@@ -82,11 +88,8 @@ class SaveFileHeader(object):
         if save_magic != self.__class__.save_magic:
             raise SaveHeaderError(u'Magic wrong: %r (expected %r)' % (
                 save_magic, self.__class__.save_magic))
-        for attr, unp in self.__class__.unpackers.iteritems():
-            if unp[0]:
-                if unp[0] > 0: ins.seek(unp[0])
-                else: ins.seek(ins.tell() - unp[0])
-            self.__setattr__(attr, unp[1](ins))
+        for attr, (__pack, _unpack) in self.__class__.unpackers.iteritems():
+            setattr(self, attr, _unpack(ins))
         self.load_image_data(ins, load_image)
         self.load_masters(ins)
         # additional calculations - TODO(ut): rework decoding
@@ -97,6 +100,9 @@ class SaveFileHeader(object):
         self.masters = [bolt.GPath_no_norm(decoder(
             x, bolt.pluginEncoding, avoidEncodings=(u'utf8', u'utf-8')))
             for x in self.masters]
+
+    def dump_header(self, out):
+        raise AbstractError
 
     def load_image_data(self, ins, load_image=False):
         bpp = (4 if self.has_alpha else 3)
@@ -134,7 +140,7 @@ class SaveFileHeader(object):
         out.write(ins.read(self._mastersStart))
         oldMasters = self._write_masters(ins, out)
         #--Copy the rest
-        for block in iter(partial(ins.read, 0x5000000), ''):
+        for block in iter(partial(ins.read, 0x5000000), b''):
             out.write(block)
         return oldMasters
 
@@ -163,7 +169,7 @@ class SaveFileHeader(object):
         pack_byte(out, len(self.masters))
         for master in self.masters:
             pack_short(out, len(master))
-            out.write(master.s)
+            out.write(encode(master.s))
         return oldMasters
 
     def _master_block_size(self):
@@ -175,20 +181,33 @@ class SaveFileHeader(object):
         be read and displayed, but the Save/Cancel buttons will be disabled."""
         return True
 
+def _pack_str8_1(out, val): # TODO: val = val.reencode(...)
+    val = encode(val)
+    pack_bzstr8(out, val)
+    return len(val) + 2
 class OblivionSaveHeader(SaveFileHeader):
-    save_magic = 'TES4SAVEGAME'
-    __slots__ = ('gameTime', 'ssSize')
+    save_magic = b'TES4SAVEGAME'
+    __slots__ = (u'major_version', u'minor_version', u'exe_time',
+                 u'header_version', u'saveNum', u'gameTime', u'ssSize')
+
+    ##: exe_time and gameTime are SYSTEMTIME structs, as described here:
+    # https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
     unpackers = OrderedDict([
-        ('header_size', (34, unpack_int)),
-        ('pcName',      (42, unpack_str8)),
-        ('pcLevel',     (00, unpack_short)),
-        ('pcLocation',  (00, unpack_str8)),
-        ('gameDays',    (00, unpack_float)),
-        ('gameTicks',   (00, unpack_int)),
-        ('gameTime',    (00, lambda ins: unpack_string(ins, 16))),
-        ('ssSize',      (00, unpack_int)),
-        ('ssWidth',     (00, unpack_int)),
-        ('ssHeight',    (00, unpack_int)),
+        (u'major_version',  (pack_byte, unpack_byte)),
+        (u'minor_version',  (pack_byte, unpack_byte)),
+        (u'exe_time',       (pack_string, unpack_fstr16)),
+        (u'header_version', (pack_int, unpack_int)),
+        (u'header_size',    (pack_int, unpack_int)),
+        (u'saveNum',        (pack_int, unpack_int)),
+        (u'pcName',         (_pack_str8_1, unpack_str8)),
+        (u'pcLevel',        (pack_short, unpack_short)),
+        (u'pcLocation',     (_pack_str8_1, unpack_str8)),
+        (u'gameDays',       (pack_float, unpack_float)),
+        (u'gameTicks',      (pack_int, unpack_int)),
+        (u'gameTime',       (pack_string, unpack_fstr16)),
+        (u'ssSize',         (pack_int, unpack_int)),
+        (u'ssWidth',        (pack_int, unpack_int)),
+        (u'ssHeight',       (pack_int, unpack_int)),
     ])
 
     def _write_masters(self, ins, out):
@@ -198,15 +217,37 @@ class OblivionSaveHeader(SaveFileHeader):
         for x in xrange(numMasters):
             oldMasters.append(unpack_str8(ins))
         #--Write new masters
-        pack_byte(out, len(self.masters))
-        for master in self.masters:
-            pack_byte(out, len(master))
-            out.write(master.s)
+        self.__write_masters_ob(out)
         #--Fids Address
         offset = out.tell() - ins.tell()
         fidsAddress = unpack_int(ins)
         pack_int(out, fidsAddress + offset)
         return oldMasters
+
+    def __write_masters_ob(self, out):
+        pack_byte(out, len(self.masters))
+        for master in self.masters:
+            pack_str8(out, encode(master.s))
+
+    def dump_header(self, out):
+        out.write(self.__class__.save_magic)
+        var_fields_size = 0
+        for attr, (_pack, __unpack) in self.unpackers.iteritems():
+            ret = _pack(out, getattr(self, attr))
+            if ret is not None:
+                var_fields_size += ret
+        # Update the header size before writing it out. Note that all fields
+        # before saveNum do not count towards this
+        # TODO(inf) We need a nicer way to do this (query size before dump) -
+        #  ut: we need the binary string size here, header size must be
+        #  updated when var fields change (like pcName)
+        self.header_size = var_fields_size + 42 + len(self.ssData)
+        self._mastersStart = out.tell()
+        out.seek(34)
+        self.unpackers[u'header_size'][0](out, self.header_size)
+        out.seek(self._mastersStart)
+        out.write(self.ssData)
+        self.__write_masters_ob(out)
 
 class SkyrimSaveHeader(SaveFileHeader):
     """Valid Save Game Versions 8, 9, 12 (?)"""
@@ -577,7 +618,7 @@ class FalloutNVSaveHeader(SaveFileHeader):
         for master in self.masters:
             pack_short(out, len(master))
             _pack_c(out, b'|')
-            out.write(master.s)
+            out.write(encode(master.s))
             _pack_c(out, b'|')
         return oldMasters
 
