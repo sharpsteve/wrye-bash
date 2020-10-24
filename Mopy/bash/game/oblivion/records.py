@@ -1407,7 +1407,9 @@ class MreNpc(MreActorBase):
         MelFid('HNAM','hair'),
         # None here is on purpose, for race patcher
         MelOptFloat(b'LNAM', (u'hairLength', None)),
-        MelFid('ENAM','eye'), ####fid Array
+        ##: This is actually an array, but changing it would break the race
+        # patcher (hilariously enough). Fix that and change this.
+        MelFid('ENAM','eye'),
         MelStruct('HCLR', '3Bs', 'hairRed', 'hairBlue', 'hairGreen',
                   ('unused3', null1)),
         MelFid('ZNAM','combatStyle'),

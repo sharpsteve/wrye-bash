@@ -1106,6 +1106,14 @@ class ImportRacesRelations(_ImporterPatcherPanel):
     patcher_type = mergers.ImportRacesRelations
 
 # -----------------------------------------------------------------------------
+class ImportRacesSpells(_ImporterPatcherPanel):
+    """Imports race spells/abilities."""
+    patcher_name = _(u'Import Races: Spells')
+    _patcher_txt = _(u'Import race abilities and spells from source mods.')
+    autoKey = {u'R.AddSpells', u'R.ChangeSpells'}
+    patcher_type = mergers.ImportRacesSpells
+
+# -----------------------------------------------------------------------------
 class ImportScripts(_ImporterPatcherPanel):
     """Imports attached scripts on objects."""
     patcher_name = _(u'Import Scripts')
@@ -1223,24 +1231,13 @@ class UpdateReferences(_AListPanelCsv):
     canAutoItemCheck = False #--GUI: Whether new items are checked by default.
 
 # -----------------------------------------------------------------------------
-class RacePatcher(_ImporterPatcherPanel):
-    """Merged leveled lists mod file."""
+class RacePatcher(_PatcherPanel):
     patcher_name = _(u'Race Records')
-    _patcher_txt = u'\n\n'.join([
-        _(u'Merge race eyes, hair, body, voice from ACTIVE AND/OR MERGED '
-          u'mods.  Any non-active, non-merged mods in the following list '
-          u'will be IGNORED.'),
-        _(u'Even if none of the below mods are checked, this will sort '
-          u'hairs and eyes and attempt to remove googly eyes from all '
-          u'active mods.  It will also randomly assign hairs and eyes to '
-          u'npcs that are otherwise missing them.')]
-    )
-    autoKey = {u'R.ChangeSpells', u'R.AddSpells'}
+    _patcher_txt = _(u'This will sort hairs and eyes and attempt to remove '
+                     u'googly eyes from all active mods. It will also '
+                     u'randomly assign hairs and eyes to NPCs that are '
+                     u'otherwise missing them.')
     patcher_type = _race_records.RacePatcher
-
-    @property
-    def patcher_tip(self):
-        return _(u'Merge race eyes, hair, body, voice from mods.')
 
 # -----------------------------------------------------------------------------
 class _AListsMerger(_ListsMergerPanel):

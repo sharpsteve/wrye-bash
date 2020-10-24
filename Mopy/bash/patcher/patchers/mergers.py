@@ -33,7 +33,7 @@ from .base import ImportPatcher, ListPatcher
 from ... import bush
 from ...bolt import GPath
 from ...brec import MreRecord
-from ...exception import AbstractError, ModSigMismatchError
+from ...exception import AbstractError, BoltError, ModSigMismatchError
 from ...mod_files import ModFile, LoadFactory
 
 #------------------------------------------------------------------------------
@@ -881,3 +881,103 @@ class FidListsMerger(_AListsMerger):
 
     def _get_entries(self, target_list):
         return target_list.formIDInList
+
+#------------------------------------------------------------------------------
+class ImportRacesSpells(ImportPatcher):
+    _read_write_records = (b'RACE',)
+
+    def __init__(self, p_name, p_file, p_sources):
+        super(ImportRacesSpells, self).__init__(p_name, p_file, p_sources)
+        self.raceData = {} #--Race eye meshes, hair,eyes
+        self.tempRaceData = {}
+
+    def initData(self, progress):
+        if not self.isActive or not self.srcs: return
+        loadFactory = LoadFactory(False,MreRecord.type_class['RACE'])
+        progress.setFull(len(self.srcs))
+        cachedMasters = {}
+        minfs = self.patchFile.p_file_minfos
+        for index,srcMod in enumerate(self.srcs):
+            if srcMod not in minfs: continue
+            srcInfo = minfs[srcMod]
+            srcFile = ModFile(srcInfo,loadFactory)
+            srcFile.load(True)
+            bashTags = srcInfo.getBashTags()
+            if 'RACE' not in srcFile.tops: continue
+            self.tempRaceData = {} #so as not to carry anything over!
+            if u'R.ChangeSpells' in bashTags and u'R.AddSpells' in bashTags:
+                raise BoltError(
+                    u'WARNING mod %s has both R.AddSpells and R.ChangeSpells '
+                    u'tags - only one of those tags should be on a mod at '
+                    u'one time' % srcMod.s)
+            for race in srcFile.RACE.getActiveRecords():
+                tempRaceData = self.tempRaceData.setdefault(race.fid,{})
+                raceData = self.raceData.setdefault(race.fid,{})
+                if u'R.AddSpells' in bashTags:
+                    tempRaceData['AddSpells'] = race.spells
+                if u'R.ChangeSpells' in bashTags:
+                    raceData['spellsOverride'] = race.spells
+            for master in srcInfo.masterNames:
+                if master not in minfs: continue  # or break
+                # filter mods
+                if master in cachedMasters:
+                    masterFile = cachedMasters[master]
+                else:
+                    masterInfo = minfs[master]
+                    masterFile = ModFile(masterInfo,loadFactory)
+                    masterFile.load(True)
+                    if 'RACE' not in masterFile.tops: continue
+                    cachedMasters[master] = masterFile
+                for race in masterFile.RACE.getActiveRecords():
+                    if race.fid not in self.tempRaceData: continue
+                    tempRaceData = self.tempRaceData[race.fid]
+                    raceData = self.raceData[race.fid]
+                    if 'AddSpells' in tempRaceData:
+                        raceData.setdefault('AddSpells', [])
+                        for spell in tempRaceData['AddSpells']:
+                            if spell not in race.spells:
+                                if spell not in raceData['AddSpells']:
+                                    raceData['AddSpells'].append(spell)
+                        del tempRaceData['AddSpells']
+                    for race_key in tempRaceData:
+                        if tempRaceData[race_key] != getattr(race, race_key):
+                            raceData[race_key] = tempRaceData[race_key]
+            progress.plus()
+
+    def scanModFile(self, modFile, progress):
+        if b'RACE' not in modFile.tops: return
+        patchBlock = self.patchFile.RACE
+        id_records = patchBlock.id_records
+        for record in modFile.RACE.getActiveRecords():
+            if record.fid not in id_records:
+                patchBlock.setRecord(record.getTypeCopy())
+
+    def buildPatch(self, log, progress):
+        patchFile = self.patchFile
+        if 'RACE' not in patchFile.tops: return
+        keep = patchFile.getKeeper()
+        racesPatched = []
+        for race in patchFile.RACE.records:
+            raceData = self.raceData.get(race.fid,None)
+            if not raceData: continue
+            raceChanged = False
+            if 'spellsOverride' in raceData:
+                race.spells = raceData['spellsOverride']
+            if 'AddSpells' in raceData:
+                raceData['spells'] = race.spells
+                for spell in raceData['AddSpells']:
+                    raceData['spells'].append(spell)
+                race.spells = raceData['spells']
+            #--Changed
+            if raceChanged:
+                racesPatched.append(race.eid)
+                keep(race.fid)
+        #--Done
+        log.setHeader(u'= ' + self._patcher_name)
+        self._srcMods(log)
+        log(u'\n=== ' + _(u'Merged'))
+        if not racesPatched:
+            log(u'. ~~%s~~' % _(u'None'))
+        else:
+            for eid in sorted(racesPatched):
+                log(u'* ' + eid)

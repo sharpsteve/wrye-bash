@@ -26,12 +26,10 @@ import random
 import re
 from collections import defaultdict
 # Internal
-from .base import ListPatcher
-from ... import bosh, bush
+from .base import Patcher
+from ... import bush
 from ...bolt import GPath, deprint
-from ...brec import MreRecord, strFid
-from ...exception import BoltError
-from ...mod_files import ModFile, LoadFactory
+from ...brec import strFid
 
 # Utilities & Constants -------------------------------------------------------
 def _find_vanilla_eyes():
@@ -50,76 +48,19 @@ _main_master = GPath(bush.game.master_file)
 #------------------------------------------------------------------------------
 # Race Patcher ----------------------------------------------------------------
 #------------------------------------------------------------------------------
-class RacePatcher(ListPatcher):
+class RacePatcher(Patcher):
     """Race patcher."""
     group = _(u'Special')
     scanOrder = 40
     editOrder = 40
     _read_write_records = ('RACE', 'EYES', 'HAIR', 'NPC_',)
 
-    def __init__(self, p_name, p_file, p_sources):
-        super(RacePatcher, self).__init__(p_name, p_file, p_sources)
-        self.raceData = {} #--Race eye meshes, hair,eyes
-        self.tempRaceData = {}
-        #--Restrict srcs to active/merged mods.
-        self.srcs = [x for x in self.srcs if x in p_file.allSet]
+    def __init__(self, p_name, p_file):
+        super(RacePatcher, self).__init__(p_name, p_file)
         self.isActive = True #--Always enabled to support eye filtering
         self.eye_mesh = {}
         self.scanTypes = {'RACE', 'EYES', 'HAIR', 'NPC_'}
         self.vanilla_eyes = _find_vanilla_eyes()
-
-    def initData(self,progress):
-        """Get data from source files."""
-        if not self.isActive or not self.srcs: return
-        loadFactory = LoadFactory(False,MreRecord.type_class['RACE'])
-        progress.setFull(len(self.srcs))
-        cachedMasters = {}
-        for index,srcMod in enumerate(self.srcs):
-            if srcMod not in bosh.modInfos: continue
-            srcInfo = bosh.modInfos[srcMod]
-            srcFile = ModFile(srcInfo,loadFactory)
-            srcFile.load(True)
-            bashTags = srcInfo.getBashTags()
-            if 'RACE' not in srcFile.tops: continue
-            self.tempRaceData = {} #so as not to carry anything over!
-            if u'R.ChangeSpells' in bashTags and u'R.AddSpells' in bashTags:
-                raise BoltError(
-                    u'WARNING mod %s has both R.AddSpells and R.ChangeSpells '
-                    u'tags - only one of those tags should be on a mod at '
-                    u'one time' % srcMod.s)
-            for race in srcFile.RACE.getActiveRecords():
-                tempRaceData = self.tempRaceData.setdefault(race.fid,{})
-                raceData = self.raceData.setdefault(race.fid,{})
-                if u'R.AddSpells' in bashTags:
-                    tempRaceData['AddSpells'] = race.spells
-                if u'R.ChangeSpells' in bashTags:
-                    raceData['spellsOverride'] = race.spells
-            for master in srcInfo.masterNames:
-                if not master in bosh.modInfos: continue  # or break
-                # filter mods
-                if master in cachedMasters:
-                    masterFile = cachedMasters[master]
-                else:
-                    masterInfo = bosh.modInfos[master]
-                    masterFile = ModFile(masterInfo,loadFactory)
-                    masterFile.load(True)
-                    if 'RACE' not in masterFile.tops: continue
-                    cachedMasters[master] = masterFile
-                for race in masterFile.RACE.getActiveRecords():
-                    if race.fid not in self.tempRaceData: continue
-                    tempRaceData = self.tempRaceData[race.fid]
-                    raceData = self.raceData[race.fid]
-                    if 'AddSpells' in tempRaceData:
-                        raceData.setdefault('AddSpells', [])
-                        for spell in tempRaceData['AddSpells']:
-                            if spell not in race.spells:
-                                if spell not in raceData['AddSpells']:
-                                    raceData['AddSpells'].append(spell)
-                        del tempRaceData['AddSpells']
-                    for race_key in tempRaceData:
-                        if tempRaceData[race_key] != getattr(race, race_key):
-                            raceData[race_key] = tempRaceData[race_key]
-            progress.plus()
 
     def scanModFile(self, modFile, progress):
         """Add appropriate records from modFile."""
@@ -166,31 +107,12 @@ class RacePatcher(ListPatcher):
         patchFile = self.patchFile
         keep = patchFile.getKeeper()
         if 'RACE' not in patchFile.tops: return
-        racesPatched = []
         racesSorted = []
         racesFiltered = []
         mod_npcsFixed = defaultdict(set)
         reProcess = re.compile(
             u'(?:dremora)|(?:akaos)|(?:lathulet)|(?:orthe)|(?:ranyu)',
             re.I | re.U)
-        #--Import race info
-        for race in patchFile.RACE.records:
-            #~~print 'Building',race.eid
-            raceData = self.raceData.get(race.fid,None)
-            if not raceData: continue
-            raceChanged = False
-            #--spells
-            if 'spellsOverride' in raceData:
-                race.spells = raceData['spellsOverride']
-            if 'AddSpells' in raceData:
-                raceData['spells'] = race.spells
-                for spell in raceData['AddSpells']:
-                    raceData['spells'].append(spell)
-                race.spells = raceData['spells']
-            #--Changed
-            if raceChanged:
-                racesPatched.append(race.eid)
-                keep(race.fid)
         #--Eye Mesh filtering
         eye_mesh = self.eye_mesh
         try:
@@ -327,13 +249,6 @@ class RacePatcher(ListPatcher):
                 keep(npc.fid)
         #--Done
         log.setHeader(u'= ' + self._patcher_name)
-        self._srcMods(log)
-        log(u'\n=== ' + _(u'Merged'))
-        if not racesPatched:
-            log(u'. ~~%s~~' % _(u'None'))
-        else:
-            for eid in sorted(racesPatched):
-                log(u'* ' + eid)
         log(u'\n=== ' + _(u'Eyes/Hair Sorted'))
         if not racesSorted:
             log(u'. ~~%s~~' % _(u'None'))
