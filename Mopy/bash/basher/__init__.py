@@ -2126,7 +2126,6 @@ class SaveDetails(_ModsSavesDetails):
         self.saveInfo = None
         self.fileStr = u''
         self.playerNameStr = u''
-        self.curCellStr = u''
         self.playerLevel = 0
         self.gameDays = 0
         self.playMinutes = 0
@@ -2139,7 +2138,6 @@ class SaveDetails(_ModsSavesDetails):
             #--Remember values for edit checks
             self.fileStr = saveInfo.name.s
             self.playerNameStr = saveInfo.header.pcName
-            self.curCellStr = saveInfo.header.pcLocation
             self.gameDays = saveInfo.header.gameDays
             self.playMinutes = saveInfo.header.gameTicks//60000
             self.playerLevel = saveInfo.header.pcLevel
@@ -2171,7 +2169,7 @@ class SaveDetails(_ModsSavesDetails):
             _(u'Level') + u' %d, ' + _(u'Day') + u' %d, ' +
             _(u'Play') + u' %d:%02d\n%s') % (
             self.playerLevel, int(self.gameDays), self.playMinutes // 60,
-            (self.playMinutes % 60), self.curCellStr)
+            (self.playMinutes % 60), self.saveInfo.header.pcLocation)
 
     def _update_masters_warning(self):
         """Show or hide the 'inaccurate masters' warning."""
