@@ -32,8 +32,7 @@ from itertools import izip
 from .utils_constants import FID, null1, _make_hashable, _int_unpacker, \
     get_structs
 from .. import bolt, exception
-from ..bolt import structs_cache, struct_calcsize, struct_error, PluginStr, \
-    ChardetStr
+from ..bolt import structs_cache, struct_calcsize, struct_error, PluginStr
 
 #------------------------------------------------------------------------------
 class MelObject(object):
@@ -106,6 +105,8 @@ class Subrecord(object):
     # Size of sub-record headers. Morrowind has a different one.
     sub_header_size = 6
     __slots__ = (u'mel_sig',)
+    ##: TODO: actually there are MelBasse subclasses that do not have a mel_sig
+    #    -> refactor using __init__ and API overrides
 
     def packSub(self, out, binary_data):
         # type: (file, bytes) -> None
@@ -411,7 +412,7 @@ class MelSequential(MelBase):
         slots_ret = set()
         for element in self.elements:
             slots_ret.update(element.getSlotsUsed())
-        return tuple(slots_ret)
+        return tuple(slots_ret) ##: list??
 
     def hasFids(self, formElements):
         for element in self.elements:
@@ -420,7 +421,7 @@ class MelSequential(MelBase):
 
     def load_mel(self, record, ins, sub_type, size_, *debug_strs):
         # This will only ever be called if we're used in a distributor, regular
-        # MelSet will just bypass us entirely. So just redirect to the right
+        # MelSet will just bypass us entirely as getLoaders returns elements' load_data()s . So just redirect to the right
         # sub-loader that we found in getLoaders
         self._sub_loaders[sub_type].load_mel(record, ins, sub_type, size_,
                                              *debug_strs)
@@ -615,7 +616,7 @@ class _MelString(MelBase):
         respecting max_size, min_size."""
         byte_string = string_val.reencode(
             force_encoding or bolt.pluginEncoding, self.maxSize, self.minSize)
-        # len of data will be recalculated in MelString._dump_bytes
+        # len of data will be recalculated in _MelString._dump_bytes
         super(_MelString, self).packSub(out, byte_string)
 
 #------------------------------------------------------------------------------
