@@ -350,3 +350,89 @@ class EyeChecker(Patcher):
             log(u'\n=== ' + _(u'Eyes Assigned for NPCs'))
             for srcMod in sorted(eyes_fixed):
                 log(u'* %s: %d' % (srcMod.s,len(eyes_fixed[srcMod])))
+
+#------------------------------------------------------------------------------
+class HairChecker(Patcher):
+    """Checks and fixes hair-related problems."""
+    group = _(u'Special')
+    scanOrder = 40
+    editOrder = 40
+    _read_write_records = (b'RACE', b'HAIR', b'NPC_',)
+
+    def __init__(self, p_name, p_file):
+        super(HairChecker, self).__init__(p_name, p_file)
+        self.isActive = True ##: Always enabled to support hair filtering?
+
+    def scanModFile(self, modFile, progress):
+        if not (set(modFile.tops) & set(self._read_write_records)): return
+        #--Hair
+        patchBlock = self.patchFile.HAIR
+        id_records = patchBlock.id_records
+        for record in modFile.HAIR.getActiveRecords():
+            if record.fid not in id_records:
+                patchBlock.setRecord(record.getTypeCopy())
+        #--Npcs with missing hair
+        patchBlock = self.patchFile.NPC_
+        id_records = patchBlock.id_records
+        for record in modFile.NPC_.getActiveRecords():
+            if (not record.hair or not record.hairLength and
+                    record.fid not in id_records):
+                patchBlock.setRecord(record.getTypeCopy())
+
+    def buildPatch(self,log,progress):
+        """Updates races as needed."""
+        if not self.isActive: return
+        patchFile = self.patchFile
+        keep = patchFile.getKeeper()
+        if b'RACE' not in patchFile.tops: return
+        racesSorted = []
+        hair_fixed = defaultdict(set)
+        #--Sort Hair
+        defaultMaleHair = {}
+        defaultFemaleHair = {}
+        hairNames = dict((x.fid,x.full) for x in patchFile.HAIR.records)
+        maleHairs = set(
+            x.fid for x in patchFile.HAIR.records if not x.flags.notMale)
+        femaleHairs = set(
+            x.fid for x in patchFile.HAIR.records if not x.flags.notFemale)
+        for race in patchFile.RACE.records:
+            if race.flags.playable or race.fid == _dremora_race:
+                defaultMaleHair[race.fid] = [x for x in race.hairs if
+                                             x in maleHairs]
+                defaultFemaleHair[race.fid] = [x for x in race.hairs if
+                                               x in femaleHairs]
+                sorted_hairs = sorted(race.hairs,
+                    key=lambda x: hairNames.get(x))
+                if sorted_hairs != race.hairs:
+                    race.hairs = sorted_hairs
+                    racesSorted.append(race.eid)
+                    keep(race.fid)
+        #--Npcs with unassigned hair
+        for npc in patchFile.NPC_.records:
+            if npc.fid == _player_rec: continue  # skip player
+            if (npc.full is not None and npc.race == _dremora_race and
+                    not _re_process.search(npc.full)): continue
+            random.seed(npc.fid[1]) # make it deterministic
+            raceHair = (
+                (defaultMaleHair, defaultFemaleHair)[npc.flags.female]).get(
+                npc.race)
+            if not npc.hair and raceHair:
+                npc.hair = random.choice(raceHair)
+                hair_fixed[npc.fid[0]].add(npc.fid)
+                keep(npc.fid)
+            if not npc.hairLength:
+                npc.hairLength = random.random()
+                hair_fixed[npc.fid[0]].add(npc.fid)
+                keep(npc.fid)
+        #--Done
+        log.setHeader(u'= ' + self._patcher_name)
+        log(u'\n=== ' + _(u'Hair Sorted'))
+        if not racesSorted:
+            log(u'. ~~%s~~' % _(u'None'))
+        else:
+            for eid in sorted(racesSorted):
+                log(u'* ' + eid)
+        if hair_fixed:
+            log(u'\n=== ' + _(u'Hair Assigned for NPCs'))
+            for srcMod in sorted(hair_fixed):
+                log(u'* %s: %d' % (srcMod.s,len(hair_fixed[srcMod])))

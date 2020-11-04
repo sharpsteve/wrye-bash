@@ -933,7 +933,6 @@ from ..patcher.patchers import base
 from ..patcher.patchers import checkers, mergers, preservers
 from ..patcher.patchers import multitweak_actors, multitweak_assorted, \
     multitweak_clothes, multitweak_names, multitweak_settings, multitweak_races
-from ..patcher.patchers import _race_records
 
 # Patchers 10 -----------------------------------------------------------------
 class AliasesPatcher(_AliasesPatcherPanel):
@@ -1231,15 +1230,6 @@ class UpdateReferences(_AListPanelCsv):
     canAutoItemCheck = False #--GUI: Whether new items are checked by default.
 
 # -----------------------------------------------------------------------------
-class RacePatcher(_PatcherPanel):
-    patcher_name = _(u'Race Records')
-    _patcher_txt = _(u'This will sort hairs and eyes and attempt to remove '
-                     u'googly eyes from all active mods. It will also '
-                     u'randomly assign hairs and eyes to NPCs that are '
-                     u'otherwise missing them.')
-    patcher_type = _race_records.RacePatcher
-
-# -----------------------------------------------------------------------------
 class _AListsMerger(_ListsMergerPanel):
     """Merged leveled lists mod file."""
     patcher_name = _(u'Leveled Lists')
@@ -1301,6 +1291,15 @@ class EyeChecker(_PatcherPanel):
                      u'eyes to NPCs that are otherwise missing them.')
     default_isEnabled = True
     patcher_type = checkers.EyeChecker
+
+# -----------------------------------------------------------------------------
+class HairChecker(_PatcherPanel):
+    """Checks and fixes hair-related problems."""
+    patcher_name = _(u'Hair Checker')
+    _patcher_txt = _(u'This will sort hairs and randomly assign hairs to NPCs '
+                     u'that are otherwise missing them.')
+    default_isEnabled = True
+    patcher_type = checkers.HairChecker
 
 #------------------------------------------------------------------------------
 # Game specific GUI Patchers --------------------------------------------------

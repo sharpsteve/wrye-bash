@@ -42,7 +42,5 @@ multitweak_names.py
 multitweak_settings.py
 
 # Patchers: 40 ----------------------------------------------------------------
-# SpecialPatcher is used in those
-_race_records.py
-special.py
+checkers.py
 """

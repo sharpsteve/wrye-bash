@@ -21,8 +21,7 @@
 #
 # =============================================================================
 """This module contains the Oblivion MultiTweakItem classes that tweak RACE
-records. As opposed to the rest of the multitweak items these are not grouped
-by a MultiTweaker but by the RacePatcher (see _race_records.py)."""
+records."""
 from .base import MultiTweakItem, MultiTweaker
 
 _vanilla_races = [u'argonian', u'breton', u'dremora', u'dark elf',
