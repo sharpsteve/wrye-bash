@@ -263,7 +263,8 @@ class RaceTweaker_SexlessHairs(_ARaceTweak):
 #------------------------------------------------------------------------------
 class TweakRaces(MultiTweaker):
     """Tweaks race things."""
-    ##: scanOrder & editOrder? 40?
+    scanOrder = 41 # Run after eye & hair checkers
+    editOrder = 41
     _tweak_classes = [
         RaceTweaker_AllEyes, RaceTweaker_AllHairs,
         RaceTweaker_BiggerOrcsAndNords, RaceTweaker_MergeSimilarRaceEyes,
