@@ -2522,8 +2522,9 @@ class MreRace(MelRecord):
         MelOptStruct('DNAM','2I',(FID,'defaultHairMale',0),(FID,'defaultHairFemale',0)),
         # Int corresponding to GMST sHairColorNN
         MelStruct('CNAM','2B','defaultHairColorMale','defaultHairColorFemale'),
-        MelOptFloat('PNAM', 'mainClamp'),
-        MelOptFloat('UNAM', 'faceClamp'),
+        # None here is on purpose - some mods explicitly set it to 0.0
+        MelOptFloat(b'PNAM', (u'mainClamp', None)),
+        MelOptFloat(b'UNAM', (u'faceClamp', None)),
         MelStruct('ATTR','2B','maleBaseAttribute','femaleBaseAttribute'),
         MelBase('NAM0', 'head_data_marker', ''),
         MelBase('MNAM', 'male_head_data_marker', ''),

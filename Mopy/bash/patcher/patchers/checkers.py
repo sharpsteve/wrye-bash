@@ -314,6 +314,11 @@ class EyeChecker(Patcher):
                                         if x in race.eyes]
                 if not final_eyes[race.fid]:
                     final_eyes[race.fid] = [race.eyes[0]]
+                # NOTE: This shows up as an ITM in xEdit, because the eyes are
+                # marked as sorted. The game does *not* actually sort them, but
+                # a bunch of mods would show up as conflicts if we made the
+                # eyes unsorted in xEdit. Rest assured, this is *not* an ITM,
+                # and eye sorting *does* have the desired effect ingame.
                 sorted_eyes = sorted(race.eyes, key=lambda x: eyeNames.get(x))
                 if sorted_eyes != race.eyes:
                     race.eyes = sorted_eyes
@@ -401,6 +406,11 @@ class HairChecker(Patcher):
                                              x in maleHairs]
                 defaultFemaleHair[race.fid] = [x for x in race.hairs if
                                                x in femaleHairs]
+                # NOTE: This shows up as an ITM in xEdit, because the hairs are
+                # marked as sorted. The game does *not* actually sort them, but
+                # a bunch of mods would show up as conflicts if we made the
+                # hairs unsorted in xEdit. Rest assured, this is *not* an ITM,
+                # and hair sorting *does* have the desired effect ingame.
                 sorted_hairs = sorted(race.hairs,
                     key=lambda x: hairNames.get(x))
                 if sorted_hairs != race.hairs:

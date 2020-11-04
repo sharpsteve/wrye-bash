@@ -1571,8 +1571,9 @@ class MreRace(MelRecord):
                      (FID, 'defaultHairFemale', 0)),
         # Corresponds to GMST sHairColorNN
         MelUInt8('CNAM', 'defaultHairColor'),
-        MelOptFloat('PNAM', 'mainClamp'),
-        MelOptFloat('UNAM', 'faceClamp'),
+        # None here is on purpose - some mods explicitly set it to 0.0
+        MelOptFloat(b'PNAM', (u'mainClamp', None)),
+        MelOptFloat(b'UNAM', (u'faceClamp', None)),
         MelStruct('ATTR', '16B', 'maleStrength', 'maleIntelligence',
                   'maleWillpower', 'maleAgility', 'maleSpeed', 'maleEndurance',
                   'malePersonality', 'maleLuck', 'femaleStrength',
