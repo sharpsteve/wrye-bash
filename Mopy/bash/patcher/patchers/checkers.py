@@ -23,11 +23,16 @@
 """This module houses checkers. A checker is a patcher that verifies certain
 properties about records and either notifies the user or attempts a fix when it
 notices a problem."""
+from __future__ import print_function
+import random
+import re
 from collections import defaultdict
 from itertools import chain
 
 from .base import Patcher
 from ... import bush
+from ...bolt import GPath, deprint
+from ...brec import strFid
 
 #------------------------------------------------------------------------------
 class ContentsChecker(Patcher):
@@ -145,3 +150,203 @@ class ContentsChecker(Patcher):
                         for removedId in sorted(id_removed[contId]):
                             log(u'  . %s: %06X' % (removedId[0].s,
                                                    removedId[1]))
+
+#------------------------------------------------------------------------------
+def _find_vanilla_eyes():
+    """Converts vanilla default_eyes to use long FormIDs and returns the
+    result."""
+    def _conv_fid(rc_fid): return GPath(rc_fid[0]), rc_fid[1]
+    ret = {}
+    for race_fid, race_eyes in bush.game.default_eyes.iteritems():
+        new_key = _conv_fid(race_fid)
+        new_val = [_conv_fid(e) for e in race_eyes]
+        ret[new_key] = new_val
+    return ret
+
+_main_master = GPath(bush.game.master_file)
+_dremora_race = (_main_master, 0x038010)
+_player_rec = (_main_master, 0x000007)
+_re_process = re.compile(
+    u'(?:dremora)|(?:akaos)|(?:lathulet)|(?:orthe)|(?:ranyu)',
+    re.I | re.U)
+
+class EyeChecker(Patcher):
+    """Checks and fixes eye-related problems."""
+    group = _(u'Special')
+    scanOrder = 40 ##: Taken unaltered from race patcher
+    editOrder = 40
+    _read_write_records = (b'EYES', b'NPC_', b'RACE')
+
+    def __init__(self, p_name, p_file):
+        self.isActive = True ##: Always enabled to support eye filtering?
+        super(EyeChecker, self).__init__(p_name, p_file)
+        self._eye_mesh = {}
+        self._vanilla_eyes = _find_vanilla_eyes()
+
+    def scanModFile(self, modFile, progress):
+        eye_mesh = self._eye_mesh
+        modName = modFile.fileInfo.name
+        if not (set(modFile.tops) & set(self._read_write_records)): return
+        srcEyes = set()
+        patchBlock = self.patchFile.EYES
+        id_records = patchBlock.id_records
+        #--Eyes
+        for record in modFile.EYES.getActiveRecords():
+            eye_fid = record.fid
+            srcEyes.add(eye_fid)
+            if eye_fid not in id_records:
+                patchBlock.setRecord(record.getTypeCopy())
+        #--Race block
+        patchBlock = self.patchFile.RACE
+        id_records = patchBlock.id_records
+        for record in modFile.RACE.getActiveRecords():
+            if record.fid not in id_records:
+                patchBlock.setRecord(record.getTypeCopy())
+            if not record.rightEye or not record.leftEye:
+                # Don't complain if the FULL is missing, that probably means
+                # it's an internal or unused RACE
+                if record.full:
+                    deprint(u'No right and/or no left eye recorded in race '
+                            u'%s, from mod %s' % (record.full, modName))
+                continue
+            for eye in record.eyes:
+                if eye in srcEyes:
+                    eye_mesh[eye] = (record.rightEye.modPath.lower(),
+                                     record.leftEye.modPath.lower())
+        #--Npcs with unassigned eyes
+        patchBlock = self.patchFile.NPC_
+        id_records = patchBlock.id_records
+        for record in modFile.NPC_.getActiveRecords():
+            if not record.eye and record.fid not in id_records:
+                patchBlock.setRecord(record.getTypeCopy())
+
+    def buildPatch(self, log, progress):
+        if not self.isActive: return
+        patchFile = self.patchFile
+        keep = patchFile.getKeeper()
+        if b'RACE' not in patchFile.tops: return
+        eye_mesh = self._eye_mesh
+        racesSorted = []
+        racesFiltered = []
+        eyes_fixed = defaultdict(set)
+        #--Eye Mesh filtering
+        try:
+            blueEyeMesh = eye_mesh[(_main_master, 0x27308)]
+        except KeyError:
+            print(u'error getting blue eye mesh:')
+            print(u'eye meshes:', eye_mesh)
+            raise
+        argonianEyeMesh = eye_mesh[(_main_master, 0x3e91e)]
+        for eye in (
+            (_main_master, 0x1a), #--Reanimate
+            (_main_master, 0x54bb9), #--Dark Seducer
+            (_main_master, 0x54bba), #--Golden Saint
+            (_main_master, 0x5fa43), #--Ordered
+            ):
+            eye_mesh.setdefault(eye,blueEyeMesh)
+        def setRaceEyeMesh(target_race, rightPath, leftPath):
+            target_race.rightEye.modPath = rightPath
+            target_race.leftEye.modPath = leftPath
+        for race in patchFile.RACE.records:
+            if not race.eyes: continue  #--Sheogorath. Assume is handled
+            # correctly.
+            if not race.rightEye or not race.leftEye: continue #--WIPZ race?
+            if re.match(u'^117[a-zA-Z]', race.eid, flags=re.U): continue  #--
+            #  x117 race?
+            raceChanged = False
+            mesh_eye = {}
+            for eye in race.eyes:
+                if eye not in eye_mesh:
+                    deprint(
+                        _(u'Mesh undefined for eye %s in race %s, eye removed '
+                          u'from race list.') % (
+                            strFid(eye), race.eid,))
+                    continue
+                mesh = eye_mesh[eye]
+                if mesh not in mesh_eye:
+                    mesh_eye[mesh] = []
+                mesh_eye[mesh].append(eye)
+            currentMesh = (
+                race.rightEye.modPath.lower(), race.leftEye.modPath.lower())
+            try:
+                maxEyesMesh = \
+                    sorted(mesh_eye.keys(), key=lambda a: len(mesh_eye[a]),
+                           reverse=True)[0]
+            except IndexError:
+                maxEyesMesh = blueEyeMesh
+            #--Single eye mesh, but doesn't match current mesh?
+            if len(mesh_eye) == 1 and currentMesh != maxEyesMesh:
+                setRaceEyeMesh(race,*maxEyesMesh)
+                raceChanged = True
+            #--Multiple eye meshes (and playable)?
+            if len(mesh_eye) > 1 and (race.flags.playable or
+                                      race.fid == _dremora_race):
+                #--If blueEyeMesh (mesh used for vanilla eyes) is present,
+                # use that.
+                if blueEyeMesh in mesh_eye and currentMesh != argonianEyeMesh:
+                    setRaceEyeMesh(race,*blueEyeMesh)
+                    race.eyes = mesh_eye[blueEyeMesh]
+                    raceChanged = True
+                elif argonianEyeMesh in mesh_eye:
+                    setRaceEyeMesh(race,*argonianEyeMesh)
+                    race.eyes = mesh_eye[argonianEyeMesh]
+                    raceChanged = True
+                #--Else figure that current eye mesh is the correct one
+                elif currentMesh in mesh_eye:
+                    race.eyes = mesh_eye[currentMesh]
+                    raceChanged = True
+                #--Else use most popular eye mesh
+                else:
+                    setRaceEyeMesh(race,*maxEyesMesh)
+                    race.eyes = mesh_eye[maxEyesMesh]
+                    raceChanged = True
+            if raceChanged:
+                racesFiltered.append(race.eid)
+                keep(race.fid)
+        final_eyes = {}
+        eyeNames  = {x.fid: x.full for x in patchFile.EYES.records}
+        #--Sort Eyes
+        for race in patchFile.RACE.records:
+            if (race.flags.playable or
+                race.fid == _dremora_race) and race.eyes:
+                final_eyes[race.fid] = [x for x in
+                                        self._vanilla_eyes.get(race.fid, [])
+                                        if x in race.eyes]
+                if not final_eyes[race.fid]:
+                    final_eyes[race.fid] = [race.eyes[0]]
+                sorted_eyes = sorted(race.eyes, key=lambda x: eyeNames.get(x))
+                if sorted_eyes != race.eyes:
+                    race.eyes = sorted_eyes
+                    racesSorted.append(race.eid)
+                    keep(race.fid)
+        #--Npcs with unassigned eyes
+        for npc in patchFile.NPC_.records:
+            if npc.fid == _player_rec: continue  # skip player
+            if (npc.full is not None and npc.race == _dremora_race and
+                    not _re_process.search(npc.full)): continue
+            raceEyes = final_eyes.get(npc.race)
+            random.seed(npc.fid[1]) # make it deterministic
+            if not npc.eye and raceEyes:
+                npc.eye = random.choice(raceEyes)
+                eyes_fixed[npc.fid[0]].add(npc.fid)
+                keep(npc.fid)
+        #--Done
+        log.setHeader(u'= ' + self._patcher_name)
+        log(u'\n=== ' + _(u'Eyes Sorted'))
+        if not racesSorted:
+            log(u'. ~~%s~~' % _(u'None'))
+        else:
+            for eid in sorted(racesSorted):
+                log(u'* ' + eid)
+        log(u'\n=== ' + _(u'Eye Meshes Filtered'))
+        if not racesFiltered:
+            log(u'. ~~%s~~' % _(u'None'))
+        else:
+            log(_(u"In order to prevent 'googly eyes', incompatible eyes have "
+                  u"been removed from the following races."))
+            for eid in sorted(racesFiltered):
+                log(u'* ' + eid)
+        if eyes_fixed:
+            log(u'\n=== ' + _(u'Eyes Assigned for NPCs'))
+            for srcMod in sorted(eyes_fixed):
+                log(u'* %s: %d' % (srcMod.s,len(eyes_fixed[srcMod])))

@@ -1292,6 +1292,16 @@ class ContentsChecker(_PatcherPanel):
     default_isEnabled = True
     patcher_type = checkers.ContentsChecker
 
+# -----------------------------------------------------------------------------
+class EyeChecker(_PatcherPanel):
+    """Checks and fixes eye-related problems."""
+    patcher_name = _(u'Eye Checker')
+    _patcher_txt = _(u'This will sort eyes and attempt to remove googly eyes '
+                     u'from all active mods. It will also randomly assign '
+                     u'eyes to NPCs that are otherwise missing them.')
+    default_isEnabled = True
+    patcher_type = checkers.EyeChecker
+
 #------------------------------------------------------------------------------
 # Game specific GUI Patchers --------------------------------------------------
 #------------------------------------------------------------------------------
