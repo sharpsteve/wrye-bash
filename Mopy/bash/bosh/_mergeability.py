@@ -120,7 +120,7 @@ def _join_sigs(modFile):
 def _dependent(modInfo, minfos):
     """Get mods for which modInfo is a master mod (excluding BPs and
     mergeable)."""
-    dependent = [mname.s for mname, info in minfos.iteritems() if
+    dependent = [mname for mname, info in minfos.iteritems() if
                  not info.isBP() and modInfo.name in info.masterNames and
                  mname not in minfos.mergeable]
     return dependent

@@ -43,7 +43,8 @@ from . import bush, load_order
 from .balt import Progress
 from .bass import dirs, inisettings
 from .bolt import GPath, decoder, deprint, csvFormat, floats_equal, \
-    setattr_deep, attrgetter_cache, struct_unpack, struct_pack
+    setattr_deep, attrgetter_cache, struct_unpack, struct_pack, CIstr, \
+    DefaultLowerDict
 from .brec import MreRecord, MelObject, genFid, RecHeader
 from .exception import AbstractError
 from .mod_files import ModFile, LoadFactory
@@ -114,9 +115,9 @@ def _key_sort(di, id_eid_=None, keys_dex=(), values_dex=(), by_value=False):
         for k in sorted(di, key=key_f):
             yield k, di[k], id_eid_[k]
     else:
-        if keys_dex or values_dex: # TODO(ut): drop below when keys are CIStr
-            key_f = lambda k: tuple((u'%s' % k[x]).lower() for x in keys_dex
-                        ) + tuple(di[k][x].lower() for x in values_dex)
+        if keys_dex or values_dex: # TODO(ut) lower needed??
+            key_f = lambda k: tuple(k[x].lower() for x in keys_dex) + tuple(
+                di[k][x].lower() for x in values_dex)
         elif by_value:
             key_f = lambda k: di[k].lower()
         else:
@@ -173,8 +174,8 @@ class _HandleAliases(CsvParser):
     def _get_alias(self, modname):
         """Encapsulate getting alias for modname returned from _CsvReader."""
         ##: inline once parsers are refactored (and document also the csv format)
-        modname = GPath(modname)
-        return GPath(self.aliases.get(modname, modname)) ##: drop GPath?
+        modname = CIstr(modname)
+        return self.aliases.get(modname, modname)  # type: CIstr
 
     def _coerce_fid(self, modname, hex_fid):
         """Create a long formid from a unicode modname and a unicode
@@ -224,7 +225,7 @@ class _AParser(_HandleAliases):
         self._fp_types = ()
         # Internal variable, keeps track of mods we've already processed during
         # the first pass to avoid repeating work
-        self._fp_mods = set()
+        self._fp_mods = set() # TODO (paths): need compare in lowercase?
         # The name of the mod that is currently being loaded. Some parsers need
         # this to change their behavior when loading a mod file. This is a
         # unicode string matching the name of the mod being loaded, or None if
@@ -520,7 +521,7 @@ class ActorLevels(_HandleAliases):
 
     def __init__(self, aliases_=None):
         super(ActorLevels, self).__init__(aliases_)
-        self.mod_id_levels = defaultdict(dict) #--levels = mod_id_levels[mod][longid]
+        self.mod_id_levels = DefaultLowerDict(dict) #--levels = mod_id_levels[mod][longid]
         self.gotLevels = set()
         self.types = [b'NPC_']
 
@@ -545,8 +546,7 @@ class ActorLevels(_HandleAliases):
         modFile = self._load_plugin(modInfo)
         changed = 0
         id_levels = mod_id_levels.get(modInfo.name,
-                                      mod_id_levels.get(GPath(u'Unknown'),
-                                                        None))
+                                      mod_id_levels.get(u'Unknown', None))
         if id_levels:
             for record in modFile.tops[b'NPC_'].records:
                 fid = record.fid
@@ -562,11 +562,11 @@ class ActorLevels(_HandleAliases):
         if changed: modFile.safeSave()
         return changed
 
-    def _parse_line(self, csv_fields):
+    def _parse_line(self, csv_fields, __lower_skips=frozenset(
+            {u'none', bush.game.master_file.lower()})):
         source, eid, fidMod, fidObject, offset, calcMin, calcMax = csv_fields[:7]
-        if source.lower() in (u'none', bush.game.master_file.lower()): # yak!!
-            raise TypeError
-        if fidMod.lower() == u'none': raise TypeError
+        if source.lower() in __lower_skips or fidMod.lower() == u'none':
+            raise TypeError # will be caught and skip the line
         fid = self._coerce_fid(fidMod, fidObject)
         offset = _coerce(offset, int)
         calcMin = _coerce(calcMin, int)
@@ -578,15 +578,15 @@ class ActorLevels(_HandleAliases):
         extendedRowFormat = u',"%d","%d","%d","%d"\n'
         blankExtendedRow = u',,,,\n'
         #Sorted based on mod, then editor ID
-        obId_levels = self.mod_id_levels[GPath(bush.game.master_file)]
-        for mod, id_levels in _key_sort(self.mod_id_levels):
-            if mod.s.lower() == bush.game.master_file.lower(): continue
+        obId_levels = self.mod_id_levels[bush.game.master_file]
+        for ci_mod, id_levels in _key_sort(self.mod_id_levels):
+            if ci_mod.lower() == bush.game.master_file.lower(): continue
             sor = _key_sort(id_levels, keys_dex=[0], values_dex=[0])
             for (fidMod, fidObject), (
                     eid, isOffset, offset, calcMin, calcMax) in sor:
                 if isOffset:
                     out.write(self._row_fmt_str % (
-                        mod, eid, fidMod, fidObject, offset, calcMin,
+                        ci_mod, eid, fidMod, fidObject, offset, calcMin,
                         calcMax))
                     oldLevels = obId_levels.get((fidMod, fidObject),None)
                     if oldLevels:
