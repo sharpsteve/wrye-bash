@@ -654,7 +654,7 @@ class MelBptdParts(MelGroups):
     def dumpData(self, record, out):
         for bp_target in getattr(record, self.attr):
             for bp_element in self.elements:
-                if bp_element.subType == b'BPTN' and getattr(
+                if bp_element.mel_sig == b'BPTN' and getattr(
                         bp_target, bp_element.attr) is None:
                     continue # unnamed body part, skip
                 bp_element.dumpData(bp_target, out)
@@ -965,8 +965,8 @@ class MreCrea(MreActor):
         MelFloat('TNAM', 'turningSpeed'),
         MelFloat('BNAM', 'baseScale'),
         MelFloat('WNAM', 'footWeight'),
-        MelUInt32('NAM4', ('impactMaterialType', 0)),
-        MelUInt32('NAM5', ('soundLevel', 0)),
+        MelUInt32(b'NAM4', u'impactMaterialType'),
+        MelUInt32(b'NAM5', u'soundLevel'),
         MelFid('CSCR','inheritsSoundsFrom'),
         MelGroups('sounds',
             MelUInt32('CSDT', 'type'),
@@ -2059,13 +2059,13 @@ class MreNpc(MreActor):
         MelFid('ENAM','eye'), ####fid Array
         MelStruct('HCLR','3Bs','hairRed','hairBlue','hairGreen',('unused3',null1)),
         MelFid('ZNAM','combatStyle'),
-        MelUInt32('NAM4', ('impactMaterialType', 0)),
+        MelUInt32(b'NAM4', u'impactMaterialType'),
         MelBase('FGGS','fggs_p'), ####FaceGen Geometry-Symmetric
         MelBase('FGGA','fgga_p'), ####FaceGen Geometry-Asymmetric
         MelBase('FGTS','fgts_p'), ####FaceGen Texture-Symmetric
-        MelUInt16('NAM5', ('unknown', 0)),
-        MelFloat('NAM6', ('height', 0)),
-        MelFloat('NAM7', ('weight', 0)),
+        MelUInt16(b'NAM5', u'unknown'),
+        MelFloat(b'NAM6', u'height'),
+        MelFloat(b'NAM7', u'weight'),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3048,7 +3048,7 @@ class MreWatr(MelRecord):
                 raise ModSizeError(ins.inName, readId, (186, 2), size_)
 
         def dumpData(self,record,out):
-            out.packSub(self.subType,'H',record.damage)
+            out.packSub(self.mel_sig, 'H', record.damage)
 
     class MelWatrDnam(MelTruncatedStruct):
         # TODO(inf) Why do we do this?

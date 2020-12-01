@@ -1211,7 +1211,7 @@ class MelVmad(MelBase):
             out_data += self._get_special_handler(record.recType).dump_data(
                 vmad.special_data)
         # Finally, write out the subrecord header, followed by the dumped data
-        out.packSub(self.subType, out_data)
+        out.packSub(self.mel_sig, out_data)
 
     def hasFids(self, formElements):
         # Unconditionally add ourselves - see comment above
@@ -3471,7 +3471,7 @@ class MreMust(MelRecord):
         MelString('ANAM','trackFilename'),
         MelString('BNAM','finaleFilename'),
         MelArray('points',
-            MelFloat('FNAM', ('cuePoints', 0.0)),
+            MelFloat(b'FNAM', u'cuePoints'),
         ),
         MelOptStruct('LNAM','2fI','loopBegins','loopEnds','loopCount',),
         MelConditionCounter(),
@@ -4619,7 +4619,7 @@ class MreSlgm(MelRecord):
         MelDropSound(),
         MelKeywords(),
         MelStruct('DATA','If','value','weight'),
-        MelUInt8('SOUL', ('soul',0)),
+        MelUInt8(b'SOUL', u'soul'),
         MelUInt8('SLCP', ('capacity',1)),
         MelFid('NAM0','linkedTo'),
     )
