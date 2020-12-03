@@ -237,68 +237,68 @@ class MelCounter(MelBase):
     Does not support anything that seems at odds with that goal, in particular
     fids and defaulters. See also MelPartialCounter, which targets mixed
     structs."""
-    def __init__(self, element, counts):
+    def __init__(self, counter_mel, counts):
         """Creates a new MelCounter.
 
-        :param element: The element that stores the counter's value.
-        :type element: MelStruct
+        :param counter_mel: The element that stores the counter's value.
+        :type counter_mel: _MelField
         :param counts: The attribute name that this counter counts.
         :type counts: unicode"""
-        self.element = element
+        self._counter_mel = counter_mel
         self.counted_attr = counts
 
     def getSlotsUsed(self):
-        return self.element.getSlotsUsed()
+        return self._counter_mel.getSlotsUsed()
 
     def getLoaders(self, loaders):
-        loaders[self.element.mel_sig] = self
+        loaders[self._counter_mel.mel_sig] = self
 
     def setDefault(self, record):
-        self.element.setDefault(record)
+        self._counter_mel.setDefault(record)
 
     def loadData(self, record, ins, sub_type, size_, readId):
-        self.element.loadData(record, ins, sub_type, size_, readId)
+        self._counter_mel.loadData(record, ins, sub_type, size_, readId)
 
     def dumpData(self, record, out):
         # Count the counted type first, then check if we should even dump
         val_len = len(getattr(record, self.counted_attr, []))
         if val_len:
             # We should dump, so update the counter and do it
-            setattr(record, self.element.attrs[0], val_len)
-            self.element.dumpData(record, out)
+            setattr(record, self._counter_mel.attr, val_len)
+            self._counter_mel.dumpData(record, out)
 
     @property
     def signatures(self):
-        return self.element.signatures
+        return self._counter_mel.signatures
 
     @property
     def static_size(self):
-        return self.element.static_size
+        return self._counter_mel.static_size
 
 class MelPartialCounter(MelCounter):
     """Extends MelCounter to work for MelStruct's that contain more than just a
     counter. This means adding behavior for mapping fids, but dropping the
     conditional dumping behavior."""
-    def __init__(self, element, counter, counts):
+    def __init__(self, counter_mel, counter, counts):
         """Creates a new MelPartialCounter.
 
-        :param element: The element that stores the counter's value.
-        :type element: MelStruct
+        :param counter_mel: The element that stores the counter's value.
+        :type counter_mel: MelStruct
         :param counter: The attribute name of the counter.
         :type counter: unicode
         :param counts: The attribute name that this counter counts.
         :type counts: unicode"""
-        super(MelPartialCounter, self).__init__(element, counts)
+        super(MelPartialCounter, self).__init__(counter_mel, counts)
         self.counter_attr = counter
 
     def hasFids(self, formElements):
-        self.element.hasFids(formElements)
+        self._counter_mel.hasFids(formElements)
 
     def dumpData(self, record, out):
         # Count the counted type, then update and dump unconditionally
         setattr(record, self.counter_attr,
                 len(getattr(record, self.counted_attr, [])))
-        self.element.dumpData(record, out)
+        self._counter_mel.dumpData(record, out)
 
 #------------------------------------------------------------------------------
 # TODO(inf) DEPRECATED! - don't use for new usages -> MelGroups(MelFid)
@@ -837,10 +837,10 @@ class MelOptNum(_MelNum):
 class MelOptFloat(MelOptNum, MelFloat):
     """Optional float."""
 
-# Unused right now - keeping around for completeness' sake and to make future
-# usage simpler.
 class MelOptSInt8(MelOptNum, MelSInt8):
     """Optional signed 8-bit integer."""
+    # Unused right now - keeping around for completeness' sake and to make
+    # future usage simpler.
 
 class MelOptSInt16(MelOptNum, MelSInt16):
     """Optional signed 16-bit integer."""
@@ -857,7 +857,9 @@ class MelOptUInt16(MelOptNum, MelUInt16):
 class MelOptUInt32(MelOptNum, MelUInt32):
     """Optional unsigned 32-bit integer."""
 
-class MelOptFid(MelFid, MelOptUInt32):
+class MelOptFid(MelFid, MelOptUInt32):  # TODO(ut): as it stands it could be
+    #   MelOptFid(MelFid) -> that's because MelFid is also used for optional
+    #   fids all over the place
     """Optional FormID. Wrapper around MelOptUInt32 to avoid having to
     constantly specify the format."""
 
