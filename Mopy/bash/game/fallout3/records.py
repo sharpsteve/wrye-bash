@@ -44,7 +44,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelRefScale, MelMapMarker, MelActionFlags, MelEnchantment, MelScript, \
     MelDecalData, MelDescription, MelLists, MelPickupSound, MelDropSound, \
     MelActivateParents, BipedFlags, MelSpells, MelUInt8Flags, MelUInt16Flags, \
-    MelUInt32Flags
+    MelUInt32Flags, MelOptUInt32Flags, MelOptUInt8Flags
 from ...exception import ModError, ModSizeError
 # Set MelModel in brec but only if unset
 if brec.MelModel is None:
@@ -76,9 +76,8 @@ if brec.MelModel is None:
             # No MODD/MOSD equivalent for MOD2 and MOD4
             if len(types) == 5 and with_facegen_flags:
                 model_elements += [
-                    MelOptUInt8(types[4], (_MelModel._facegen_model_flags,
-                                           u'facegen_model_flags'))
-                ]
+                    MelOptUInt8Flags(types[4], u'facegen_model_flags',
+                                     _MelModel._facegen_model_flags)]
             super(_MelModel, self).__init__(attr, *model_elements)
 
     brec.MelModel = _MelModel
@@ -253,7 +252,7 @@ class MelOwnership(MelGroup):
             MelOptFid(b'XOWN', u'owner'),
             # None here is on purpose - rank == 0 is a valid value, but XRNK
             # does not have to be present
-            MelOptSInt32(b'XRNK', (u'rank', None)),
+            MelOptSInt32(b'XRNK', u'rank', None),
         )
 
     def dumpData(self,record,out):
@@ -746,7 +745,7 @@ class MreCell(MelRecord):
                            old_versions={'3Bs3Bs3Bs2f2i2f'}),
         MelBase('IMPF','footstepMaterials'), #--todo rewrite specific class.
         MelFid('LTMP','lightTemplate'),
-        MelOptUInt32('LNAM', (inheritFlags, 'lightInheritFlags', 0)),
+        MelOptUInt32Flags(b'LNAM', u'lightInheritFlags', inheritFlags),
         # GECK default for water is -2147483648, but by setting default here to
         # -2147483649, we force the Bashed Patch to retain the value of the
         # last mod.
@@ -1897,7 +1896,7 @@ class MreNavi(MelRecord):
 
     melSet = MelSet(
         MelEdid(),
-        MelUInt32('NVER', ('version', 11)),
+        MelUInt32(b'NVER', u'version', 11),
         MelGroups('nav_map_infos',
             # Contains fids, but we probably won't ever be able to merge NAVI,
             # so leaving this as MelBase for now
@@ -1914,7 +1913,7 @@ class MreNavm(MelRecord):
 
     melSet = MelSet(
         MelEdid(),
-        MelUInt32('NVER', ('version', 11)),
+        MelUInt32(b'NVER', u'version', 11),
         MelStruct('DATA','I5I',(FID,'cell'),'vertexCount','triangleCount','enternalConnectionsCount','nvcaCount','doorsCount'),
         MelArray('vertices',
             MelStruct('NVVX', '3f', 'vertexX', 'vertexY', 'vertexZ'),
@@ -2261,7 +2260,7 @@ class MrePerk(MelRecord):
                     3: MelFid(b'EPFD', u'param1'),
                 }, decider=AttrValDecider(u'function_parameter_type')),
                 MelString('EPF2','buttonLabel'),
-                MelUInt16('EPF3', (_PerkScriptFlags, 'script_flags', 0)),
+                MelUInt16Flags(b'EPF3', u'script_flags', _PerkScriptFlags),
                 MelEmbeddedScript(),
             ),
             MelBase('PRKF','footer'),

@@ -40,7 +40,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelObject, MreWithItems, MelRef3D, MelXlod, MelNull, MelEnableParent, \
     MelRefScale, MelMapMarker, MelActionFlags, MelEnchantment, MelScript, \
     MelDecalData, MelDescription, MelPickupSound, MelDropSound, \
-    MelActivateParents, MelUInt8Flags
+    MelActivateParents, MelUInt8Flags, MelOptUInt32Flags
 from ...exception import ModSizeError
 
 #------------------------------------------------------------------------------
@@ -404,7 +404,7 @@ class MreCell(MelRecord):
                            old_versions={'3Bs3Bs3Bs2f2i2f'}),
         MelBase('IMPF','footstepMaterials'), #--todo rewrite specific class.
         MelFid('LTMP','lightTemplate'),
-        MelOptUInt32('LNAM', (inheritFlags, 'lightInheritFlags', 0)),
+        MelOptUInt32Flags(b'LNAM', u'lightInheritFlags', inheritFlags),
         # GECK default for water is -2147483648, but by setting default here to
         # -2147483649, we force the Bashed Patch to retain the value of the
         # last mod.
@@ -1464,7 +1464,7 @@ class MreStat(MelRecord):
         MelEdid(),
         MelBounds(),
         MelModel(),
-        MelSInt8('BRUS', ('passthroughSound', -1)),
+        MelSInt8(b'BRUS', u'passthroughSound', -1),
         MelFid('RNAM','soundRandomLooping'),
     )
     __slots__ = melSet.getSlotsUsed()

@@ -42,7 +42,7 @@ from ...brec import MelRecord, MelObject, MelGroups, MelStruct, FID, \
     MelEnchantment, MelDecalData, MelDescription, MelSInt16, MelSkipInterior, \
     MelPickupSound, MelDropSound, MelActivateParents, BipedFlags, MelColor, \
     MelColorO, MelSpells, MelFixedString, MelUInt8Flags, MelUInt16Flags, \
-    MelUInt32Flags
+    MelUInt32Flags, MelOptUInt16Flags
 from ...exception import ModError, ModSizeError, StateError
 # Set MelModel in brec but only if unset, otherwise we are being imported from
 # fallout4.records
@@ -304,7 +304,7 @@ class MelOwnership(MelGroup):
             MelFid(b'XOWN', u'owner'),
             # None here is on purpose - rank == 0 is a valid value, but XRNK
             # does not have to be present
-            MelOptSInt32(b'XRNK', (u'rank', None)),
+            MelOptSInt32(b'XRNK', u'rank', None),
         )
 
     def dumpData(self,record,out):
@@ -1336,7 +1336,7 @@ class MreActi(MelRecord):
         MelOptFid(b'VNAM', u'soundActivation'),
         MelOptFid('WNAM', 'water'),
         MelLString('RNAM', 'activate_text_override'),
-        MelOptUInt16('FNAM', (ActivatorFlags, 'flags', 0)),
+        MelOptUInt16Flags(b'FNAM', u'flags', ActivatorFlags),
         MelOptFid('KNAM', 'keyword'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1639,7 +1639,7 @@ class MreBook(MelRecord):
                 (u'unused1', null2), (FID, u'book_spell'), u'value',
                 u'weight'),
         }, decider=PartialLoadDecider(
-            loader=MelUInt8(b'DATA', (_book_type_flags, u'book_flags')),
+            loader=MelUInt8Flags(b'DATA', u'book_flags', _book_type_flags),
             decider=FlagDecider(u'book_flags', u'teaches_spell'),
         )),
         MelFid('INAM','inventoryArt'),
@@ -2367,7 +2367,7 @@ class MreFact(MelRecord):
             MelStruct(b'XNAM', u'IiI', (FID, u'faction'), u'mod',
                       u'group_combat_reaction'),
         ),
-        MelUInt32(b'DATA', (_general_flags, u'general_flags')),
+        MelUInt32Flags(b'DATA', u'general_flags', _general_flags),
         MelFid(b'JAIL', u'exterior_jail_marker'),
         MelFid(b'WAIT', u'follower_wait_marker'),
         MelFid(b'STOL', u'stolen_goods_container'),
@@ -2508,7 +2508,7 @@ class MreFurn(MelRecord):
         MelDestructible(),
         MelKeywords(),
         MelBase('PNAM','pnam_p'),
-        MelUInt16(b'FNAM', (FurnGeneralFlags, u'general_f')),
+        MelUInt16Flags(b'FNAM', u'general_f', FurnGeneralFlags),
         MelFid('KNAM','interactionKeyword'),
         MelUInt32Flags(b'MNAM', u'activeMarkers', FurnActiveMarkerFlags),
         MelStruct('WBDT','Bb','benchType','usesSkill',),
@@ -3155,7 +3155,7 @@ class MreLtex(MelRecord):
         MelStruct('HNAM', '2B', 'friction', 'restitution',),
         MelUInt8('SNAM', 'textureSpecularExponent'),
         MelFids('GNAM','grasses'),
-        MelSSEOnly(MelUInt32('INAM', (_SnowFlags, 'snow_flags')))
+        MelSSEOnly(MelUInt32Flags(b'INAM', u'snow_flags', _SnowFlags))
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3772,7 +3772,7 @@ class MrePack(MelRecord):
             MelGroups.__init__(self, attr,
                 MelSInt8('UNAM', 'input_index'),
                 MelString('BNAM', 'input_name'),
-                MelUInt32('PNAM', (self._DataInputFlags, 'input_flags', 0)),
+                MelUInt32Flags(b'PNAM', u'input_flags', self._DataInputFlags),
             ),
 
     melSet = MelSet(
@@ -3836,7 +3836,7 @@ class MrePack(MelRecord):
             MelOptStruct('PRCB', '2I', 'sub_branch_count',
                          (_SubBranchFlags, 'sub_branch_flags', 0)),
             MelString('PNAM', 'procedure_type'),
-            MelUInt32('FNAM', (_BranchFlags, 'branch_flags', 0)),
+            MelUInt32Flags(b'FNAM', u'branch_flags', _BranchFlags),
             MelGroups('data_input_indices',
                 MelUInt8('PKC2', 'input_index'),
             ),
@@ -4115,7 +4115,7 @@ class MreQust(MelRecord):
             # None here is on purpose - ALFI is an alias ID, and 0 is a
             # perfectly valid alias ID. However, it does not have to be
             # present, and so needs to be an optional element -> None.
-            MelOptSInt32(b'ALFI', (u'forcedIntoAlias', None)),
+            MelOptSInt32(b'ALFI', u'forcedIntoAlias', None),
             MelFid('ALFL','specificLocation'),
             MelFid('ALFR','forcedReference'),
             MelFid('ALUA','uniqueActor'),
@@ -4479,7 +4479,7 @@ class MreScen(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelVmad(),
-        MelUInt32('FNAM', (ScenFlags1, 'flags', 0)),
+        MelUInt32Flags(b'FNAM', u'flags', ScenFlags1),
         MelGroups('phases',
             MelNull('HNAM'),
             MelString('NAM0','name',),
@@ -4511,8 +4511,8 @@ class MreScen(MelRecord):
         ),
         MelGroups('actors',
             MelUInt32('ALID', 'actorID'),
-            MelUInt32('LNAM', (ScenFlags2, 'scenFlags2', 0)),
-            MelUInt32('DNAM', (ScenFlags3, 'flags3', 0)),
+            MelUInt32Flags(b'LNAM', u'scenFlags2', ScenFlags2),
+            MelUInt32Flags(b'DNAM', u'flags3', ScenFlags3),
         ),
         MelGroups('actions',
             MelUInt16('ANAM', 'actionType'),
@@ -4520,7 +4520,7 @@ class MreScen(MelRecord):
             MelUInt32('ALID', 'actorID',),
             MelBase('LNAM','lnam_p',),
             MelUInt32('INAM', 'index'),
-            MelUInt32('FNAM', (ScenFlags5,'flags',0)),
+            MelUInt32Flags(b'FNAM', u'flags', ScenFlags5),
             MelUInt32('SNAM', 'startPhase'),
             MelUInt32('ENAM', 'endPhase'),
             MelFloat('SNAM', 'timerSeconds'),
@@ -4620,7 +4620,7 @@ class MreSlgm(MelRecord):
         MelKeywords(),
         MelStruct('DATA','If','value','weight'),
         MelUInt8(b'SOUL', u'soul'),
-        MelUInt8('SLCP', ('capacity',1)),
+        MelUInt8(b'SLCP', u'capacity', 1),
         MelFid('NAM0','linkedTo'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -5191,7 +5191,7 @@ class MreWrld(MelRecord):
         MelStruct('ONAM','4f','worldMapScale','cellXOffset','cellYOffset',
                   'cellZOffset',),
         MelFloat('NAMA', 'distantLODMultiplier'),
-        MelUInt8('DATA', (WrldFlags2, 'dataFlags', 0)),
+        MelUInt8Flags(b'DATA', u'dataFlags', WrldFlags2),
         MelWorldBounds(),
         MelFid('ZNAM','music',),
         MelString('NNAM','canopyShadowunused'),
@@ -5317,7 +5317,7 @@ class MreWthr(MelRecord):
                   (WthrFlags1,'wthrFlags1',0),'red','green','blue',
                   'visualEffectBegin','visualEffectEnd',
                   'windDirection','windDirectionRange',),
-        MelUInt32('NAM1', (WthrFlags2, 'wthrFlags2', 0)),
+        MelUInt32Flags(b'NAM1', u'wthrFlags2', WthrFlags2),
         MelGroups('sounds',
             MelStruct('SNAM', '2I', (FID, 'sound'), 'type'),
         ),

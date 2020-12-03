@@ -759,9 +759,9 @@ class _MelFlags(_MelNum):
         value = record.__getattribute__(self.attr)
         return self._packer(value.dump())
 
-class MelUInt8Flags(_MelFlags, MelUInt8): pass
-class MelUInt16Flags(_MelFlags, MelUInt16): pass
-class MelUInt32Flags(_MelFlags, MelUInt32): pass
+class MelUInt8Flags(MelUInt8, _MelFlags): pass
+class MelUInt16Flags(MelUInt16, _MelFlags): pass
+class MelUInt32Flags(MelUInt32, _MelFlags): pass
 
 #------------------------------------------------------------------------------
 class MelXXXX(MelUInt32):
@@ -794,7 +794,7 @@ class MelFid(MelUInt32):
             ##: struct.error raised when trying to pack None (so the default,
             # meaning the subrecord was not present) - AttributeError should
             # never be raised due to brec.record_structs.MelSet.initRecord
-            # calling setDefault
+            # calling setDefault on the record
             return None
 
     def mapFids(self,record,function,save=False):
@@ -834,33 +834,33 @@ class MelOptNum(_MelNum):
             return super(MelOptNum, self).pack_subrecord_data(record)
         return None
 
-class MelOptFloat(MelFloat, MelOptNum):
+class MelOptFloat(MelOptNum, MelFloat):
     """Optional float."""
 
 # Unused right now - keeping around for completeness' sake and to make future
 # usage simpler.
-class MelOptSInt8(MelSInt8, MelOptNum):
+class MelOptSInt8(MelOptNum, MelSInt8):
     """Optional signed 8-bit integer."""
 
-class MelOptSInt16(MelSInt16, MelOptNum):
+class MelOptSInt16(MelOptNum, MelSInt16):
     """Optional signed 16-bit integer."""
 
-class MelOptSInt32(MelSInt32, MelOptNum):
+class MelOptSInt32(MelOptNum, MelSInt32):
     """Optional signed 32-bit integer."""
 
-class MelOptUInt8(MelUInt8, MelOptNum):
+class MelOptUInt8(MelOptNum, MelUInt8):
     """Optional unsigned 8-bit integer."""
 
-class MelOptUInt16(MelUInt16, MelOptNum):
+class MelOptUInt16(MelOptNum, MelUInt16):
     """Optional unsigned 16-bit integer."""
 
-class MelOptUInt32(MelUInt32, MelOptNum):
+class MelOptUInt32(MelOptNum, MelUInt32):
     """Optional unsigned 32-bit integer."""
 
-class MelOptFid(MelOptUInt32):
+class MelOptFid(MelFid, MelOptUInt32):
     """Optional FormID. Wrapper around MelOptUInt32 to avoid having to
     constantly specify the format."""
-    def __init__(self, mel_sig, attr):
-        """:type mel_sig: bytes
-        :type attr: unicode"""
-        super(MelOptFid, self).__init__(mel_sig, (FID, attr))
+
+class MelOptUInt8Flags(MelOptUInt8, _MelFlags): pass
+class MelOptUInt16Flags(MelOptUInt16, _MelFlags): pass
+class MelOptUInt32Flags(MelOptUInt32, _MelFlags): pass

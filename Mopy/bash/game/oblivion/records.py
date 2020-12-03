@@ -51,11 +51,11 @@ if brec.MelModel is None:
 
         def __init__(self, attr=u'model', index=0):
             """Initialize. Index is 0,2,3,4 for corresponding type id."""
-            types = self.__class__.typeSets[(0,index-1)[index>0]]
+            types = self.__class__.typeSets[index - 1 if index > 1 else 0]
             super(_MelModel, self).__init__(attr,
                 MelString(types[0], u'modPath'),
                 # None here is on purpose - 0 is a legitimate value
-                MelOptFloat(types[1], (u'modb', None)),
+                MelOptFloat(types[1], u'modb', None),
                 # Texture File Hashes
                 MelBase(types[2], u'modt_p')
             )
@@ -374,7 +374,7 @@ class MelOwnership(MelGroup):
             MelFid(b'XOWN', u'owner'),
             # None here is on purpose - rank == 0 is a valid value, but XRNK
             # does not have to be present
-            MelOptSInt32(b'XRNK', (u'rank', None)),
+            MelOptSInt32(b'XRNK', u'rank', None),
             MelFid(b'XGLB', u'global'),
         )
 
@@ -587,7 +587,7 @@ class MreArmo(MelRecord):
         MelScript(),
         MelFid('ENAM','enchantment'),
         MelOptUInt16('ANAM', 'enchantPoints'),
-        MelUInt32(b'BMDT', (_flags, u'biped_flags')),
+        MelUInt32Flags(b'BMDT', u'biped_flags', _flags),
         MelModel(u'maleBody', 0),
         MelModel(u'maleWorld', 2),
         MelIcon(u'maleIconPath'),
@@ -740,7 +740,7 @@ class MreClot(MelRecord):
         MelScript(),
         MelFid('ENAM','enchantment'),
         MelOptUInt16('ANAM', 'enchantPoints'),
-        MelUInt32(b'BMDT', (_flags, u'biped_flags')),
+        MelUInt32Flags(b'BMDT', u'biped_flags', _flags),
         MelModel(u'maleBody', 0),
         MelModel(u'maleWorld', 2),
         MelIcon(u'maleIconPath'),
@@ -1018,9 +1018,9 @@ class MreFact(MelRecord):
         MelGroups(u'relations',
             MelStruct(b'XNAM', u'Ii', (FID, u'faction'), u'mod'),
         ),
-        MelUInt8(b'DATA', (_general_flags, u'general_flags')),
+        MelUInt8Flags(b'DATA', u'general_flags', _general_flags),
         # None here is on purpose! See AssortedTweak_FactioncrimeGoldMultiplier
-        MelOptFloat(b'CNAM', (u'crime_gold_multiplier', None)),
+        MelOptFloat(b'CNAM', u'crime_gold_multiplier', None),
         MelGroups(u'ranks',
             MelSInt32(b'RNAM', u'rank_level'),
             MelString(b'MNAM', u'male_title'),
@@ -1835,7 +1835,7 @@ class MreSlgm(MelRecord):
         MelScript(),
         MelStruct('DATA','If','value','weight'),
         MelUInt8(b'SOUL', u'soul'),
-        MelUInt8('SLCP', ('capacity', 1)),
+        MelUInt8(b'SLCP', u'capacity', 1),
     )
     __slots__ = melSet.getSlotsUsed()
 
