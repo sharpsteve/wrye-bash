@@ -190,8 +190,7 @@ class MelEmbeddedScript(MelSequential):
 class MelEquipmentType(MelSInt32):
     """Handles the common ETYP subrecord."""
     def __init__(self):
-        super(MelEquipmentType, self).__init__(b'ETYP',
-            (u'equipment_type', -1)),
+        super(MelEquipmentType, self).__init__(b'ETYP', u'equipment_type', -1)
 
 #------------------------------------------------------------------------------
 class MelItems(MelGroups):
@@ -751,7 +750,7 @@ class MreCell(MelRecord):
         # GECK default for water is -2147483648, but by setting default here to
         # -2147483649, we force the Bashed Patch to retain the value of the
         # last mod.
-        MelOptFloat('XCLW', ('waterHeight', -2147483649)),
+        MelOptFloat(b'XCLW', u'waterHeight', -2147483649),
         MelString('XNAM','waterNoiseTexture'),
         MelFidList('XCLR','regions'),
         MelFid('XCIM','imageSpace'),
@@ -1695,7 +1694,7 @@ class MreLigh(MelRecord):
                   ('unused1',null1),(_flags,'flags',0),'falloff','fov','value',
                   'weight'),
         # None here is on purpose! See AssortedTweak_LightFadeValueFix
-        MelOptFloat(b'FNAM', (u'fade', None)),
+        MelOptFloat(b'FNAM', u'fade', None),
         MelFid('SNAM','sound'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -2053,7 +2052,7 @@ class MreNpc(MreActor):
                    (u'skillOffsets', [0] * 14)),
         MelFid('HNAM','hair'),
         # None here is on purpose, for race patcher
-        MelOptFloat(b'LNAM', (u'hairLength', None)),
+        MelOptFloat(b'LNAM', u'hairLength', None),
         MelFid('ENAM','eye'), ####fid Array
         MelStruct('HCLR','3Bs','hairRed','hairBlue','hairGreen',('unused3',null1)),
         MelFid('ZNAM','combatStyle'),

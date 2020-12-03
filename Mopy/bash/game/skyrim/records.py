@@ -1788,7 +1788,7 @@ class MreCell(MelRecord):
         # leftover flags, they are now in XCLC
         MelBase('LNAM','unknown_LNAM'),
         # Drop in interior cells for Skyrim, see #302 for discussion on this
-        MelSkipInterior(MelOptFloat(b'XCLW', (u'waterHeight', -2147483649))),
+        MelSkipInterior(MelOptFloat(b'XCLW', u'waterHeight', -2147483649)),
         MelString('XNAM','waterNoiseTexture'),
         MelFidList('XCLR','regions'),
         MelFid('XLCN','location',),
@@ -3115,7 +3115,7 @@ class MreLigh(MelRecord):
                   'nearClip','fePeriod','feIntensityAmplitude',
                   'feMovementAmplitude','value','weight',),
         # None here is on purpose! See AssortedTweak_LightFadeValueFix
-        MelOptFloat(b'FNAM', (u'fade', None)),
+        MelOptFloat(b'FNAM', u'fade', None),
         MelFid('SNAM','sound'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -5177,7 +5177,7 @@ class MreWrld(MelRecord):
         MelFid('CNAM','climate',),
         MelFid('NAM2','water',),
         MelFid('NAM3','lODWaterType',),
-        MelOptFloat('NAM4', ('lODWaterHeight', 0.0)),
+        MelOptFloat(b'NAM4', u'lODWaterHeight', 0.0),
         MelOptStruct('DNAM','2f',('defaultLandHeight', 0.0),
                      ('defaultWaterHeight', 0.0),),
         MelIcon(u'mapImage'),

@@ -597,7 +597,7 @@ class MelRef3D(MelOptStruct):
 class MelRefScale(MelOptFloat):
     """Scale for a reference record (REFR, ACHR, etc.)."""
     def __init__(self):
-        super(MelRefScale, self).__init__(b'XSCL', (u'ref_scale', 1.0))
+        super(MelRefScale, self).__init__(b'XSCL', u'ref_scale', 1.0)
 
 #------------------------------------------------------------------------------
 class MelSpells(MelFids):

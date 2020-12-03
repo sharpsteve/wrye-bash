@@ -664,7 +664,7 @@ class MreCell(MelRecord):
         # CS default for water is -2147483648, but by setting default here
         # to -2147483649, we force the bashed patch to retain the value of
         # the last mod.
-        MelOptFloat(b'XCLW', (u'waterHeight', -2147483649)),
+        MelOptFloat(b'XCLW', u'waterHeight', -2147483649),
         MelFid(b'XCCM', u'climate'),
         MelFid(b'XCWT', u'water'),
         MelOwnership(),
@@ -1189,7 +1189,7 @@ class MreLigh(MelRecord):
                            (_flags, 'flags', 0), 'falloff', 'fov', 'value',
                            'weight', old_versions={'iI3BsI2f'}),
         # None here is on purpose! See AssortedTweak_LightFadeValueFix
-        MelOptFloat(b'FNAM', (u'fade', None)),
+        MelOptFloat(b'FNAM', u'fade', None),
         MelFid('SNAM','sound'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1406,7 +1406,7 @@ class MreNpc(MreActorBase):
                    (u'attributes', [0 for _y in range(8)])),
         MelFid('HNAM','hair'),
         # None here is on purpose, for race patcher
-        MelOptFloat(b'LNAM', (u'hairLength', None)),
+        MelOptFloat(b'LNAM', u'hairLength', None),
         MelFid('ENAM','eye'), ####fid Array
         MelStruct('HCLR', '3Bs', 'hairRed', 'hairBlue', 'hairGreen',
                   ('unused3', null1)),
@@ -1596,7 +1596,7 @@ class MreRace(MelRecord):
             #  that code and change it
             MelString('MODL', 'modPath'),
             # None here is on purpose - 0 is a legitimate value
-            MelOptFloat(b'MODB', (u'modb', None)),
+            MelOptFloat(b'MODB', u'modb', None),
             MelBase('MODT', 'modt_p'),
             MelIcon(),
         )),
