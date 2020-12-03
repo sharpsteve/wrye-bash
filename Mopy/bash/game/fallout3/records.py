@@ -43,7 +43,8 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelCtdaFo3, MelRef3D, MelXlod, MelNull, MelWorldBounds, MelEnableParent, \
     MelRefScale, MelMapMarker, MelActionFlags, MelEnchantment, MelScript, \
     MelDecalData, MelDescription, MelLists, MelPickupSound, MelDropSound, \
-    MelActivateParents, BipedFlags, MelSpells
+    MelActivateParents, BipedFlags, MelSpells, MelUInt8Flags, MelUInt16Flags, \
+    MelUInt32Flags
 from ...exception import ModError, ModSizeError
 # Set MelModel in brec but only if unset
 if brec.MelModel is None:
@@ -231,7 +232,7 @@ class MreLeveledList(MreLeveledListBase):
         MelEdid(),
         MelBounds(),
         MelLevListLvld(b'LVLD', u'chanceNone'),
-        MelUInt8(b'LVLF', (MreLeveledListBase._flags, u'flags')),
+        MelUInt8Flags(b'LVLF', u'flags', MreLeveledListBase._flags),
         MelFid(b'LVLG', u'glob'),
         MelGroups(u'entries',
             MelLevListLvlo(b'LVLO', u'h2sIh2s', u'level', (u'unused1', null2),
@@ -729,7 +730,7 @@ class MreCell(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFull(),
-        MelUInt8('DATA', (cellFlags, 'flags', 0)),
+        MelUInt8Flags(b'DATA', u'flags', cellFlags),
         # None defaults here are on purpose - XCLC does not necessarily exist,
         # but 0 is a valid value for both coordinates (duh)
         MelSkipInterior(MelTruncatedStruct(b'XCLC', u'2iI', (u'posX', None),
@@ -1111,7 +1112,7 @@ class MreDoor(MelRecord):
         MelFid('SNAM','soundOpen'),
         MelFid('ANAM','soundClose'),
         MelFid('BNAM','soundLoop'),
-        MelUInt8('FNAM', (_flags, 'flags', 0)),
+        MelUInt8Flags(b'FNAM', u'flags', _flags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1247,7 +1248,7 @@ class MreEyes(MelRecord):
         MelEdid(),
         MelFull(),
         MelIcon(),
-        MelUInt8('DATA', (_flags, 'flags')),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1296,7 +1297,7 @@ class MreFurn(MelRecord):
         MelModel(),
         MelScript(),
         MelDestructible(),
-        MelUInt32(b'MNAM', (_flags, u'activeMarkers')),
+        MelUInt32Flags(b'MNAM', u'activeMarkers', _flags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1335,7 +1336,7 @@ class MreHair(MelRecord):
         MelFull(),
         MelModel(),
         MelIcon(),
-        MelUInt8('DATA', (_flags, 'flags')),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1350,7 +1351,7 @@ class MreHdpt(MelRecord):
         MelEdid(),
         MelFull(),
         MelModel(),
-        MelUInt8('DATA', (_flags, 'flags')),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
         MelFids('HNAM','extraParts'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1381,7 +1382,7 @@ class MreIdlm(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelBounds(),
-        MelUInt8('IDLF', (_flags, 'flags')),
+        MelUInt8Flags(b'IDLF', u'flags', _flags),
         MelPartialCounter(MelTruncatedStruct(
             'IDLC', 'B3s', 'animation_count', ('unused', null3),
             old_versions={'B'}),
@@ -1773,7 +1774,7 @@ class MreMesg(MelRecord):
         MelBase('NAM7', 'unused_7'),
         MelBase('NAM8', 'unused_8'),
         MelBase('NAM9', 'unused_9'),
-        MelUInt32('DNAM', (MesgTypeFlags, 'flags', 0)),
+        MelUInt32Flags(b'DNAM', u'flags', MesgTypeFlags),
         MelUInt32('TNAM', 'displayTime'),
         MelGroups('menuButtons',
             MelString('ITXT','buttonText'),
@@ -2456,7 +2457,7 @@ class MreQust(MelRecord):
         MelGroups('stages',
             MelSInt16('INDX', 'stage'),
             MelGroups('entries',
-                MelUInt8('QSDT', (stageFlags, 'flags')),
+                MelUInt8Flags(b'QSDT', u'flags', stageFlags),
                 MelConditions(),
                 MelString('CNAM','text'),
                 MelEmbeddedScript(),
@@ -2949,7 +2950,7 @@ class MreTerm(MelRecord):
         MelGroups('menuItems',
             MelString('ITXT','itemText'),
             MelString('RNAM','resultText'),
-            MelUInt8('ANAM', (_menuFlags, 'menuFlags')),
+            MelUInt8Flags(b'ANAM', u'menuFlags', _menuFlags),
             MelFid('INAM','displayNote'),
             MelFid('TNAM','subMenu'),
             MelEmbeddedScript(),
@@ -3003,7 +3004,7 @@ class MreTxst(MelRecord):
         MelString('TX04','parallaxMap'),
         MelString('TX05','environmentMap'),
         MelDecalData(),
-        MelUInt16('DNAM', (TxstTypeFlags, 'flags', 0)),
+        MelUInt16Flags(b'DNAM', u'flags', TxstTypeFlags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3016,7 +3017,7 @@ class MreVtyp(MelRecord):
 
     melSet = MelSet(
         MelEdid(),
-        MelUInt8('DNAM', (_flags, 'flags')),
+        MelUInt8Flags(b'DNAM', u'flags', _flags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3060,7 +3061,7 @@ class MreWatr(MelRecord):
         MelFull(),
         MelString('NNAM','texture'),
         MelUInt8('ANAM', 'opacity'),
-        MelUInt8('FNAM', (_flags, 'flags', 0)),
+        MelUInt8Flags(b'FNAM', u'flags', _flags),
         MelString('MNAM','material'),
         MelFid('SNAM','sound',),
         MelFid('XNAM','effect'),
@@ -3231,7 +3232,7 @@ class MreWrld(MelRecord):
                   u'SECellX', u'SECellY'),
         MelStruct('ONAM','fff','worldMapScale','cellXOffset','cellYOffset'),
         MelFid('INAM','imageSpace'),
-        MelUInt8('DATA', (_flags, 'flags', 0)),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
         MelWorldBounds(),
         MelFid('ZNAM','music'),
         MelString('NNAM','canopyShadow'),

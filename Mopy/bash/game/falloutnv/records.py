@@ -40,7 +40,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelObject, MreWithItems, MelRef3D, MelXlod, MelNull, MelEnableParent, \
     MelRefScale, MelMapMarker, MelActionFlags, MelEnchantment, MelScript, \
     MelDecalData, MelDescription, MelPickupSound, MelDropSound, \
-    MelActivateParents
+    MelActivateParents, MelUInt8Flags
 from ...exception import ModSizeError
 
 #------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ class MreCell(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFull(),
-        MelUInt8('DATA', (cellFlags, 'flags', 0)),
+        MelUInt8Flags(b'DATA', u'flags', cellFlags),
         # None defaults here are on purpose - XCLC does not necessarily exist,
         # but 0 is a valid value for both coordinates (duh)
         MelSkipInterior(MelTruncatedStruct(b'XCLC', u'2iI', (u'posX', None),
@@ -690,7 +690,7 @@ class MreHdpt(MelRecord):
         MelEdid(),
         MelFull(),
         MelModel(),
-        MelUInt8('DATA', (_flags, 'flags')),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
         MelFids('HNAM','extraParts'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1022,7 +1022,7 @@ class MreMset(MelRecord):
         MelFloat('MNAM', 'mnam'),
         MelFloat('NNAM', 'nnam'),
         MelFloat('ONAM', 'onam'),
-        MelUInt8('PNAM', (_flags, 'enableFlags')),
+        MelUInt8Flags(b'PNAM', u'enableFlags', _flags),
         MelFloat('DNAM', 'dnam'),
         MelFloat('ENAM', 'enam'),
         MelFloat('FNAM', 'fnam'),

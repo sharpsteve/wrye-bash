@@ -210,38 +210,21 @@ def _get_structs(struct_format):
     _struct = struct.Struct(struct_format)
     return _struct.unpack, _struct.pack, _struct.size
 
-class _MelField(MelBase):
-    """A simple static subrecord. `action` is usually a Flags type object.
-    TODO: MelFlags??"""
+class _MelNum(MelBase):
+    """A simple static subrecord representing an element of the real field,
+    aka a number."""
     _unpacker, _packer, static_size = _get_structs(u'I')
-    __slots__ = (u'action', u'formAttrs')
+    __slots__ = ()
 
-    def __init__(self, mel_sig, element):
-        attrs, defaults, actions, self.formAttrs = parseElements(element)
-        self.mel_sig, self.attr, self.default = mel_sig, attrs[0], defaults[0]
-        self.action = actions[0]
-
-    def hasFids(self,formElements):
-        if self.formAttrs: formElements.add(self)
-
-    def setDefault(self, record):
-        record.__setattr__(self.attr,
-            self.action(self.default) if self.action else self.default)
+    def __init__(self, mel_sig, attr, default=0): # set default to zero
+        super(_MelNum, self).__init__(mel_sig, attr, default)
 
     def loadData(self, record, ins, sub_type, size_, readId):
         value, = ins.unpack(self._unpacker, size_, readId)
-        record.__setattr__(self.attr,
-            self.action(value) if self.action else value)
+        record.__setattr__(self.attr, value)
 
     def pack_subrecord_data(self, record):
-        value = record.__getattribute__(self.attr)
-        return self._packer(value.dump() if self.action else value)
-
-    def mapFids(self,record,function,save=False):
-        if self.formAttrs:
-            form_attr = next(iter(self.formAttrs))
-            result = function(record.__getattribute__(form_attr))
-            if save: record.__setattr__(form_attr, result)
+        return self._packer(record.__getattribute__(self.attr))
 
 #------------------------------------------------------------------------------
 class MelCounter(MelBase):
@@ -729,33 +712,56 @@ class MelFixedString(MelStruct):
             (FixedString(str_length, default), attr))
 
 # Simple primitive type wrappers ----------------------------------------------
-class MelFloat(_MelField):
+class MelFloat(_MelNum):
     """Float."""
     _unpacker, _packer, static_size = _get_structs(u'=f')
 
-class MelSInt8(_MelField):
+class MelSInt8(_MelNum):
     """Signed 8-bit integer."""
     _unpacker, _packer, static_size = _get_structs(u'=b')
 
-class MelSInt16(_MelField):
+class MelSInt16(_MelNum):
     """Signed 16-bit integer."""
     _unpacker, _packer, static_size = _get_structs(u'=h')
 
-class MelSInt32(_MelField):
+class MelSInt32(_MelNum):
     """Signed 32-bit integer."""
     _unpacker, _packer, static_size = _get_structs(u'=i')
 
-class MelUInt8(_MelField):
+class MelUInt8(_MelNum):
     """Unsigned 8-bit integer."""
     _unpacker, _packer, static_size = _get_structs(u'=B')
 
-class MelUInt16(_MelField):
+class MelUInt16(_MelNum):
     """Unsigned 16-bit integer."""
     _unpacker, _packer, static_size = _get_structs(u'=H')
 
-class MelUInt32(_MelField):
+class MelUInt32(_MelNum):
     """Unsigned 32-bit integer."""
     _unpacker, _packer, static_size = _get_structs(u'=I')
+
+class _MelFlags(_MelNum):
+    """Integer flag field."""
+    __slots__ = (u'_flag_type',)
+
+    def __init__(self, mel_sig, attr, flags_type):
+        super(_MelFlags, self).__init__(mel_sig, attr, default=flags_type(0))
+        self._flag_type = flags_type
+
+    def setDefault(self, record):
+        record.__setattr__(self.attr, self._flag_type(self.default))
+
+    def loadData(self, record, ins, sub_type, size_, readId):
+        value, = ins.unpack(self._unpacker, size_, readId)
+        record.__setattr__(self.attr, self._flag_type(value))
+
+    def pack_subrecord_data(self, record):
+        value = record.__getattribute__(self.attr)
+        return self._packer(value.dump())
+
+class MelUInt8Flags(_MelFlags, MelUInt8): pass
+class MelUInt16Flags(_MelFlags, MelUInt16): pass
+class MelUInt32Flags(_MelFlags, MelUInt32): pass
 
 #------------------------------------------------------------------------------
 class MelXXXX(MelUInt32):
@@ -775,8 +781,7 @@ class MelXXXX(MelUInt32):
 class MelFid(MelUInt32):
     """Represents a mod record fid element."""
     def __init__(self, mel_sig, attr):
-        self.mel_sig, self.attr, self.default, self.action = mel_sig, attr, \
-                                                             None, 0
+        super(MelFid, self).__init__(mel_sig, attr, None) ##: aaand reset default to None
 
     def hasFids(self,formElements):
         formElements.add(self)
@@ -819,37 +824,37 @@ class MelOptStruct(MelStruct):
 
 #------------------------------------------------------------------------------
 # 'Opt' versions of the type wrappers above
-class MelOptField(_MelField):
+class MelOptNum(_MelNum):
     """Represents an optional field that is only dumped if at least one
     value is not equal to the default."""
 
     def pack_subrecord_data(self, record):
         oldValue = record.__getattribute__(self.attr)
         if oldValue is not None and oldValue != self.default:
-            return super(MelOptField, self).pack_subrecord_data(record)
+            return super(MelOptNum, self).pack_subrecord_data(record)
         return None
 
-class MelOptFloat(MelFloat, MelOptField):
+class MelOptFloat(MelFloat, MelOptNum):
     """Optional float."""
 
 # Unused right now - keeping around for completeness' sake and to make future
 # usage simpler.
-class MelOptSInt8(MelSInt8, MelOptField):
+class MelOptSInt8(MelSInt8, MelOptNum):
     """Optional signed 8-bit integer."""
 
-class MelOptSInt16(MelSInt16, MelOptField):
+class MelOptSInt16(MelSInt16, MelOptNum):
     """Optional signed 16-bit integer."""
 
-class MelOptSInt32(MelSInt32, MelOptField):
+class MelOptSInt32(MelSInt32, MelOptNum):
     """Optional signed 32-bit integer."""
 
-class MelOptUInt8(MelUInt8, MelOptField):
+class MelOptUInt8(MelUInt8, MelOptNum):
     """Optional unsigned 8-bit integer."""
 
-class MelOptUInt16(MelUInt16, MelOptField):
+class MelOptUInt16(MelUInt16, MelOptNum):
     """Optional unsigned 16-bit integer."""
 
-class MelOptUInt32(MelUInt32, MelOptField):
+class MelOptUInt32(MelUInt32, MelOptNum):
     """Optional unsigned 32-bit integer."""
 
 class MelOptFid(MelOptUInt32):

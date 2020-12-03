@@ -34,7 +34,7 @@ from ...brec import MelBase, MelSet, MelString, MelStruct, MelArray, \
     MelOptFloat, MelOptUInt32, MelIcons, MelFloat, null1, null3, MelSInt32, \
     MelFixedString, FixedString, AutoFixedString, MreGmstBase, MelOptUInt8, \
     MreLeveledListBase, MelUInt16, null4, SizeDecider, MelLists, null2, \
-    MelTruncatedStruct, MelColor, MelStrings
+    MelTruncatedStruct, MelColor, MelStrings, MelUInt32Flags
 if brec.MelModel is None:
 
     class _MelModel(MelGroup):
@@ -237,7 +237,7 @@ class MreLeveledList(MreLeveledListBase):
     # Bad names to mirror the other games (needed by MreLeveledListBase)
     melSet = MelSet(
         MelMWId(),
-        MelUInt32(b'DATA', (_lvl_flags, u'flags')),
+        MelUInt32Flags(b'DATA', u'flags', _lvl_flags),
         MelUInt8(b'NNAM', u'chanceNone'),
         MelCounter(MelUInt32(b'INDX', u'entry_count'), counts=u'entries'),
         MelGroups(u'entries',

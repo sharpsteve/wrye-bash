@@ -38,7 +38,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelArray, MelWthrColors, MelObject, MreActorBase, MreWithItems, \
     MelReadOnly, MelCtda, MelRef3D, MelXlod, MelWorldBounds, MelEnableParent, \
     MelRefScale, MelMapMarker, MelActionFlags, MelPartialCounter, MelScript, \
-    MelDescription, BipedFlags, MelSpells
+    MelDescription, BipedFlags, MelSpells, MelUInt8Flags, MelUInt32Flags
 # Set brec MelModel to the one for Oblivion
 if brec.MelModel is None:
 
@@ -329,7 +329,7 @@ class MreLeveledList(MreLeveledListBase):
     melSet = MelSet(
         MelEdid(),
         MelLevListLvld(),
-        MelUInt8('LVLF', (MreLeveledListBase._flags, 'flags', 0)),
+        MelUInt8Flags(b'LVLF', u'flags', MreLeveledListBase._flags),
         MelScript(), # LVLC only
         MelFid('TNAM','template'),
         MelGroups('entries',
@@ -648,7 +648,7 @@ class MreCell(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFull(),
-        MelUInt8(b'DATA', (cellFlags, u'flags')),
+        MelUInt8Flags(b'DATA', u'flags', cellFlags),
         # None defaults here are on purpose - XCLC does not necessarily exist,
         # but 0 is a valid value for both coordinates (duh)
         MelSkipInterior(MelOptStruct(b'XCLC', u'2i', (u'posX', None),
@@ -929,7 +929,7 @@ class MreDoor(MelRecord):
         MelFid('SNAM','soundOpen'),
         MelFid('ANAM','soundClose'),
         MelFid('BNAM','soundLoop'),
-        MelUInt8('FNAM', (_flags, 'flags', 0)),
+        MelUInt8Flags(b'FNAM', u'flags', _flags),
         MelFids('TNAM','destinations'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1001,7 +1001,7 @@ class MreEyes(MelRecord):
         MelEdid(),
         MelFull(),
         MelIcon(),
-        MelUInt8('DATA', (_flags, 'flags')),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1056,7 +1056,7 @@ class MreFurn(MelRecord):
         MelFull(),
         MelModel(),
         MelScript(),
-        MelUInt32(b'MNAM', (_flags, u'activeMarkers')), # ByteArray in xEdit
+        MelUInt32Flags(b'MNAM', u'activeMarkers', _flags), # ByteArray in xEdit
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1090,7 +1090,7 @@ class MreHair(MelRecord):
         MelFull(),
         MelModel(),
         MelIcon(),
-        MelUInt8('DATA', (_flags, 'flags')),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1520,7 +1520,7 @@ class MreQust(MelRecord):
         MelGroups('stages',
             MelSInt16('INDX', 'stage'),
             MelGroups('entries',
-                MelUInt8('QSDT', (stageFlags, 'flags')),
+                MelUInt8Flags(b'QSDT', u'flags', stageFlags),
                 MelConditions(),
                 MelString('CNAM','text'),
                 MelEmbeddedScript(),
@@ -1934,7 +1934,7 @@ class MreWatr(MelRecord):
         MelEdid(),
         MelString('TNAM','texture'),
         MelUInt8('ANAM', 'opacity'),
-        MelUInt8('FNAM', (_flags, 'flags', 0)),
+        MelUInt8Flags(b'FNAM', u'flags', _flags),
         MelString('MNAM','material'),
         MelFid('SNAM','sound'),
         MelWatrData(
@@ -1992,7 +1992,7 @@ class MreWrld(MelRecord):
         MelIcon(u'mapPath'),
         MelStruct(b'MNAM', u'2i4h', u'dimX', u'dimY', u'NWCellX', u'NWCellY',
                   u'SECellX', u'SECellY'),
-        MelUInt8('DATA', (_flags, 'flags', 0)),
+        MelUInt8Flags(b'DATA', u'flags', _flags),
         MelWorldBounds(),
         MelOptUInt32('SNAM', 'sound'),
         MelNull(b'OFST'), # Not even CK/xEdit can recalculate these right now
