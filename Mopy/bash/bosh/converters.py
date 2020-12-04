@@ -267,17 +267,21 @@ class InstallerConverter(object):
 
     def __getstate__(self):
         """Used by pickler to save object state. Used for Converters.dat"""
-        return tuple(map(self.__getattribute__, self.persistBCF + self.persistDAT + self.addedPersistDAT))
+        return tuple(getattr(self, a) for a in
+                     self.persistBCF + self.persistDAT + self.addedPersistDAT)
 
     def __setstate__(self, values):
         """Used by unpickler to recreate object. Used for Converters.dat"""
         self.__init__()
-        map(self.__setattr__,self.persistBCF + self.persistDAT + self.addedPersistDAT, values)
+        for a, v in zip(self.persistBCF + self.persistDAT +
+                        self.addedPersistDAT, values):
+            setattr(self, a, v)
 
     def __reduce__(self):
         from . import InstallerConverter as boshInstallerConverter
-        return boshInstallerConverter, (), tuple(map(self.__getattribute__,
-                self.persistBCF + self.persistDAT + self.addedPersistDAT))
+        return boshInstallerConverter, (), tuple(
+            getattr(self, a) for a in
+            self.persistBCF + self.persistDAT + self.addedPersistDAT)
 
     def load(self, fullLoad=False):
         """Load BCF.dat. Called once when a BCF is first installed, during a
@@ -299,9 +303,13 @@ class InstallerConverter(object):
                         return re.sub(u'^(bolt|bosh)$', u'' r'bash.\1', s,
                                       flags=re.U)
                 translator = _Translator(stream)
-                map(self.__setattr__, self.persistBCF, pickle.load(translator))
+                for a, v in zip(self.persistBCF, pickle.load(translator)):
+                    setattr(self, a, v)
                 if fullLoad:
-                    map(self.__setattr__, self._converter_settings + self.volatile + self.addedSettings, pickle.load(translator))
+                    for a, v in zip(self._converter_settings + self.volatile +
+                                    self.addedSettings,
+                            pickle.load(translator)):
+                        setattr(self, a, v)
         with self.fullPath.unicodeSafe() as converter_path:
             # Temp rename if its name wont encode correctly
             command = u'"%s" x "%s" BCF.dat -y -so -sccUTF-8' % (
@@ -312,7 +320,7 @@ class InstallerConverter(object):
     def save(self, destInstaller):
         #--Dump settings into BCF.dat
         def _dump(att, dat):
-            pickle.dump(tuple(map(self.__getattribute__, att)), dat, -1)
+            pickle.dump(tuple(getattr(self, a) for a in att), dat, -1)
         try:
             with bass.getTempDir().join(u'BCF.dat').open('wb') as f:
                 _dump(self.persistBCF, f)
@@ -375,8 +383,8 @@ class InstallerConverter(object):
 
     def applySettings(self, destInstaller):
         """Applies the saved settings to an Installer"""
-        map(destInstaller.__setattr__, self._converter_settings + self.addedSettings,
-            map(self.__getattribute__, self._converter_settings + self.addedSettings))
+        for a in self._converter_settings + self.addedSettings:
+            setattr(destInstaller, a, getattr(self, a))
 
     def _arrangeFiles(self,progress):
         """Copy and/or move extracted files into their proper arrangement."""
@@ -444,7 +452,8 @@ class InstallerConverter(object):
         lastStep = 0
         #--Get settings
         attrs = self._converter_settings
-        map(self.__setattr__, attrs, map(destInstaller.__getattribute__,attrs))
+        for a in attrs:
+            setattr(self, a, getattr(destInstaller, a))
         #--Make list of source files
         for installer in [idata[x] for x in srcArchives]:
             installerCRC = installer.crc

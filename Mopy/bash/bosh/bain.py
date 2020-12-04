@@ -293,7 +293,7 @@ class Installer(object):
 
     def __getstate__(self):
         """Used by pickler to save object state.""" ##: __reduce__ is called instead
-        getter = object.__getattribute__
+        getter = object.__getattribute__ ##: is the object. necessary?
         return tuple(getter(self,x) for x in self.persistent)
 
     def _fixme_drop__for_loading_in_previous_versions(self):
@@ -329,7 +329,8 @@ class Installer(object):
 
     def __setstate(self,values):
         self.initDefault() # runs on __init__ called by __reduce__
-        map(self.__setattr__,self.persistent,values)
+        for a, v in zip(self.persistent, values):
+            setattr(self, a, v)
         rescan = False
         if not isinstance(self.extras_dict, dict):
             self.extras_dict = {}
@@ -358,8 +359,8 @@ class Installer(object):
         subclasses don't add new data members)."""
         clone = self.__class__(GPath(self.archive))
         copier = copy.copy
-        getter = object.__getattribute__
-        setter = object.__setattr__
+        getter = object.__getattribute__ ##: is the object. necessary?
+        setter = object.__setattr__ ##: is the object. necessary?
         for attr in Installer.__slots__:
             setter(clone,attr,copier(getter(self,attr)))
         return clone
@@ -624,6 +625,7 @@ class Installer(object):
         self.hasWizard = self.hasBCF = self.hasReadme = False
         self.packageDoc = self.packagePic = None # = self.extras_dict['readMe']
         for attr in {'skipExtFiles','skipDirFiles','espms'}:
+            ##: is the object. necessary?
             object.__getattribute__(self,attr).clear()
         dest_src = bolt.LowerDict()
         #--Bad archive?
@@ -1232,7 +1234,7 @@ class InstallerMarker(Installer):
         from . import InstallerMarker as boshInstallerMarker
         self._fixme_drop__for_loading_in_previous_versions()
         return boshInstallerMarker, (GPath(self.archive),), tuple(
-            imap(self.__getattribute__, self.persistent))
+            getattr(self, a) for a in self.persistent)
 
     @property
     def num_of_files(self): return -1
@@ -1278,7 +1280,7 @@ class InstallerArchive(Installer):
         from . import InstallerArchive as boshInstallerArchive
         self._fixme_drop__for_loading_in_previous_versions()
         return boshInstallerArchive, (GPath(self.archive),), tuple(
-            imap(self.__getattribute__, self.persistent))
+            getattr(self, a) for a in self.persistent)
 
     #--File Operations --------------------------------------------------------
     def _refreshSource(self, progress, recalculate_project_crc):
@@ -1491,7 +1493,7 @@ class InstallerProject(Installer):
         from . import InstallerProject as boshInstallerProject
         self._fixme_drop__for_loading_in_previous_versions()
         return boshInstallerProject, (GPath(self.archive),), tuple(
-            imap(self.__getattribute__, self.persistent))
+            getattr(self, a) for a in self.persistent)
 
     def _refresh_from_project_dir(self, progress=None,
                                   recalculate_all_crcs=False):
@@ -2469,7 +2471,7 @@ class InstallersData(DataStore):
             for folder in sorted(testDirs, key=len, reverse=True):
                 # Sorting by length, descending, ensure we always
                 # are processing the deepest directories first
-                files = set(imap(folder.join, folder.list()))
+                files = {folder.join(x) for x in folder.list()}
                 remaining = files - allRemoves
                 if not remaining: # If all items in this directory will be
                     # removed, this directory is also safe to remove.
