@@ -26,7 +26,7 @@ from collections import defaultdict
 
 from ._mergeability import is_esl_capable
 from .. import balt, bolt, bush, bass, load_order
-from ..bolt import GPath, deprint, sio, struct_pack, struct_unpack
+from ..bolt import GPath, deprint, sio
 from ..brec import ModReader, MreRecord, RecordHeader, SubrecordBlob, null1
 from ..exception import CancelError, ModError
 
@@ -325,7 +325,7 @@ class ModCleaner(object):
     @staticmethod
     def scan_Many(modInfos, what=DEFAULT, progress=bolt.Progress(),
         detailed=False, __unpacker=struct.Struct(u'=12s2f2l2f').unpack,
-        __wrld_types=_wrld_types):
+        __wrld_types=_wrld_types, __unpacker2=struct.Struct(u'2i').unpack):
         """Scan multiple mods for dirty edits"""
         if len(modInfos) == 0: return []
         if not (what & (ModCleaner.UDR|ModCleaner.FOG)):
@@ -434,7 +434,7 @@ class ModCleaner(object):
                                             if subrec.mel_sig == b'EDID':
                                                 eid = bolt.decoder(subrec.mel_data)
                                             elif subrec.mel_sig == b'XCLC':
-                                                pos = struct_unpack(u'=2i',
+                                                pos = __unpacker2(
                                                     subrec.mel_data[:8])
                                         for udrFid in parents_to_scan[fid]:
                                             if rtype == b'CELL':
@@ -463,7 +463,8 @@ class NvidiaFogFixer(object):
         self.fixedCells = set()
 
     def fix_fog(self, progress, __unpacker=struct.Struct(u'=12s2f2l2f').unpack,
-                __wrld_types=_wrld_types):
+                __wrld_types=_wrld_types,
+                __packer=struct.Struct(u'12s2f2l2f').pack):
         """Duplicates file, then walks through and edits file as necessary."""
         progress.setFull(self.modInfo.size)
         fixedCells = self.fixedCells
@@ -471,8 +472,8 @@ class NvidiaFogFixer(object):
         #--File stream
         minfo_path = self.modInfo.getPath()
         #--Scan/Edit
-        with ModReader(self.modInfo.name,minfo_path.open('rb')) as ins:
-            with minfo_path.temp.open('wb') as  out:
+        with ModReader(self.modInfo.name,minfo_path.open(u'rb')) as ins:
+            with minfo_path.temp.open(u'wb') as  out:
                 def copy(size):
                     buff = ins.read(size)
                     out.write(buff)
@@ -497,9 +498,8 @@ class NvidiaFogFixer(object):
                                     __unpacker(subrec.mel_data)
                                 if not (near or far or clip):
                                     near = 0.0001
-                                    subrec.mel_data = struct_pack(
-                                        u'=12s2f2l2f', color, near, far, rotXY,
-                                        rotZ, fade, clip)
+                                    subrec.mel_data = __packer(color, near,
+                                        far, rotXY, rotZ, fade, clip)
                                     fixedCells.add(header.fid)
                             subrec.packSub(out, subrec.mel_data)
                     #--Non-Cells
@@ -519,7 +519,8 @@ class ModDetails(object):
     def __init__(self):
         self.group_records = {} #--group_records[group] = [(fid0,eid0),(fid1,eid1),...]
 
-    def readFromMod(self, modInfo, progress=None):
+    def readFromMod(self, modInfo, progress=None,
+            __unpacker=struct.Struct(u'I').unpack):
         """Extracts details from mod file."""
         def getRecordReader(flags, size):
             """Decompress record data as needed."""
@@ -527,7 +528,7 @@ class ModDetails(object):
                 return ins,ins.tell()+size
             else:
                 import zlib
-                sizeCheck, = struct_unpack('I', ins.read(4))
+                sizeCheck, = __unpacker(ins.read(4))
                 decomp = zlib.decompress(ins.read(size-4))
                 if len(decomp) != sizeCheck:
                     raise ModError(ins.inName,
