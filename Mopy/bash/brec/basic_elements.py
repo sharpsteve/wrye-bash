@@ -24,6 +24,7 @@
 higher-level building blocks can be found in common_subrecords.py."""
 
 from __future__ import division, print_function
+from collections import Counter
 from itertools import chain
 
 from itertools import izip
@@ -38,6 +39,8 @@ from ..bolt import decoder, encode, structs_cache, struct_calcsize, \
 class MelObject(object):
     """An empty class used by group and structure elements for data storage."""
     __slots__ = ()
+    _cache_misses = Counter()
+    _key_errors = Counter()
 
     def __eq__(self,other):
         """Operator: =="""
@@ -254,6 +257,14 @@ class MelBase(Subrecord):
 
         :rtype: int"""
         raise exception.AbstractError()
+
+    def __repr__(self):
+        return u'[%s]: %s' % (type(self).__name__, getattr(self, u'attr', None))
+
+class MelCollection(MelBase):
+    """Any old collection of mod elements."""
+    def __init__(self, mel_sig, attr=u'', *elements):
+        super(MelCollection, self).__init__(mel_sig, attr)
 
 # Simple static Fields --------------------------------------------------------
 class _MelNum(MelBase):
@@ -503,6 +514,7 @@ class MelGroup(MelSequential):
                        u'.' not in m)))
             mel_set_obj = group_mel_set
             def __getattr__(self, missing_attr, __mset=mel_set_obj):
+                self.__class__._cache_misses[missing_attr] += 1
                 if missing_attr in __mset.defaulters:
                     target = __mset.defaulters[missing_attr]
                 elif missing_attr in __mset.listers:
@@ -510,6 +522,10 @@ class MelGroup(MelSequential):
                 elif missing_attr in __mset.mel_providers_dict:
                     target = __mset.mel_providers_dict[missing_attr]()
                 else:
+                    if not missing_attr in self.__class__._key_errors:
+                        # https://stackoverflow.com/a/33388198/281545
+                        print(missing_attr)  # '__deepcopy__' !
+                    self.__class__._key_errors[missing_attr] += 1
                     raise AttributeError(missing_attr)
                 setattr(self, missing_attr, target)
                 return target
