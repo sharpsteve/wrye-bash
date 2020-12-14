@@ -132,6 +132,7 @@ dll_excludes = [
     "api-ms-win-crt-time-l1-1-0.dll",
     "api-ms-win-crt-utility-l1-1-0.dll",
     "api-ms-win-security-base-l1-1-0.dll",
+    "libopenblas.TXA6YQSD3GCQQC22GEQ54J2UDCXDXHWN.gfortran-win_amd64.dll",
     "MSVCP140.dll",
     "VCRUNTIME140.dll",
     "mfc90.dll",
