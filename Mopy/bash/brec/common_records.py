@@ -28,6 +28,7 @@ from __future__ import division, print_function
 from itertools import izip
 from operator import attrgetter
 
+from .mod_io import RecHeader
 from .advanced_elements import FidNotNullDecider, AttrValDecider, MelArray, \
     MelUnion
 from .basic_elements import MelBase, MelFid, MelFloat, MelGroups, \
