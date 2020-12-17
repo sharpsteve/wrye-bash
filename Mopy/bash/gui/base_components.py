@@ -34,6 +34,14 @@ from ..exception import AbstractError
 from ..exception import ArgumentError
 
 # Utilities -------------------------------------------------------------------
+_cached_csf = None
+def csf(): ##: This is ugly, is there no nicer way?
+    """Returns the content scale factor (CSF) needed for high DPI displays."""
+    global _cached_csf
+    if _cached_csf is None:
+       _cached_csf = _wx.Window().GetContentScaleFactor()
+    return _cached_csf
+
 def wrapped_tooltip(tooltip_text, wrap_width=50):
     """Returns tooltip with wrapped copy of text."""
     tooltip_text = textwrap.fill(tooltip_text, wrap_width)
@@ -268,13 +276,15 @@ class _AComponent(object):
         """Changes the X and Y size of this component to the specified
         values.
 
-        :param new_size: A tuple of two integers, X and Y size."""
-        self._native_widget.SetSize(new_size)
+        :param new_size: A tuple of two integers, X and Y size, in
+            device-independent pixels (DIP)."""
+        self._native_widget.SetSize(self._native_widget.FromDIP(new_size))
 
     def set_min_size(self, width, height): # type: (int, int) -> None
         """Sets the minimum size of this component to the specified width and
         height."""
-        self._native_widget.SetMinSize(_wx.Size(width, height))
+        self._native_widget.SetMinSize(self._native_widget.FromDIP(
+            (width, height)))
 
     # focus methods wrappers
     def set_focus_from_kb(self):

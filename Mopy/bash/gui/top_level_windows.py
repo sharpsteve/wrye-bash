@@ -45,8 +45,8 @@ class _TopLevelWin(_AComponent):
     def __init__(self, parent, sizes_dict, icon_bundle, *args, **kwargs):
         # dict holding size/pos info ##: can be bass.settings or balt.sizes
         self._sizes_dict = sizes_dict
-        self._set_pos_size(kwargs, sizes_dict)
         super(_TopLevelWin, self).__init__(parent, *args, **kwargs)
+        self._set_pos_size(kwargs, sizes_dict)
         self._on_close_evt = self._evt_handler(_wx.EVT_CLOSE)
         self._on_close_evt.subscribe(self.on_closing)
         if icon_bundle: self.set_icons(icon_bundle)
@@ -56,9 +56,9 @@ class _TopLevelWin(_AComponent):
         wanted_pos = kwargs.get('pos', None) or sizes_dict.get(
             self._pos_key, self._def_pos)
         # Resolve the special DEFAULT_POSITION constant to a real value
-        kwargs['pos'] = (self._def_pos if wanted_pos == DEFAULT_POSITION
-                         else wanted_pos)
-        kwargs['size'] = kwargs.get('size', None) or sizes_dict.get(
+        self.component_position = (
+            self._def_pos if wanted_pos == DEFAULT_POSITION else wanted_pos)
+        self.component_size = kwargs.get('size', None) or sizes_dict.get(
             self._size_key, self._def_size)
 
     @property
@@ -203,6 +203,12 @@ class DialogWindow(_TopLevelWin):
     def exit_modal(self, custom_code):
         """Closes the modal dialog with a custom exit code."""
         self._native_widget.EndModal(custom_code)
+
+class StartupDialog(DialogWindow):
+    """Dialog shown during early boot, generally due to errors."""
+    def __init__(self, *args, **kwargs):
+        sd_style = _wx.STAY_ON_TOP | _wx.DIALOG_NO_PARENT
+        super(StartupDialog, self).__init__(*args, style=sd_style, **kwargs)
 
 class WizardDialog(DialogWindow, WithFirstShow):
     """Wrap a wx wizard control.
