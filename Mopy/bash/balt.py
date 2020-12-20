@@ -418,7 +418,7 @@ def showInfo(parent,message,title=_(u'Information'),**kwdargs):
 
 #------------------------------------------------------------------------------
 class _Log(object):
-    _settings_key = 'balt.LogMessage'
+    _settings_key = u'balt.LogMessage'
     def __init__(self, parent, title=u'', asDialog=True, log_icons=None):
         self.asDialog = asDialog
         #--Sizing
@@ -473,7 +473,7 @@ class Log(_Log):
 
 #------------------------------------------------------------------------------
 class WryeLog(_Log):
-    _settings_key = 'balt.WryeLog'
+    _settings_key = u'balt.WryeLog'
     def __init__(self, parent, logText, title=u'', asDialog=True,
                  log_icons=None):
         """Convert logText from wtxt to html and display. Optionally,
