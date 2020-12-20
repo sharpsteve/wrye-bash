@@ -183,8 +183,8 @@ class _Master_EditList(OneItemLink): # one item cause _singleSelect = True
 
 class Master_ChangeTo(_Master_EditList):
     """Rename/replace master through file dialog."""
-    _text = _(u"Change to...")
-    _help = _(u"Rename/replace master through file dialog")
+    _text = _(u'Change to...')
+    _help = _(u'Rename/replace master through file dialog')
 
     @balt.conversation
     def Execute(self):
@@ -200,8 +200,8 @@ class Master_ChangeTo(_Master_EditList):
         (newDir,newName) = newPath.headTail
         #--Valid directory?
         if newDir != bosh.modInfos.store_dir:
-            self._showError(_(u"File must be selected from "
-                u"%s Data Files directory." % bush.game.displayName))
+            self._showError(_(u'File must be selected from '
+                u'%s Data Files directory.' % bush.game.displayName))
             return
         elif newName == master_name:
             return
@@ -213,8 +213,8 @@ class Master_ChangeTo(_Master_EditList):
 #------------------------------------------------------------------------------
 class Master_Disable(AppendableLink, _Master_EditList):
     """Rename/replace master through file dialog."""
-    _text = _(u"Disable")
-    _help = _(u"Disable master")
+    _text = _(u'Disable')
+    _help = _(u'Disable master')
 
     def _append(self, window): #--Saves only
         return isinstance(window.detailsPanel, SaveDetails)

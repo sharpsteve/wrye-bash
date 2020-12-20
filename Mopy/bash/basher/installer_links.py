@@ -405,19 +405,19 @@ class Installer_Duplicate(OneItemLink, _InstallerLink):
         if isdir: root,ext = curName,u''
         else: root,ext = curName.root, curName.ext
         newName = self.window.new_name(root + _(u' Copy') + ext)
-        result = self._askText(_(u"Duplicate %s to:") % curName,
+        result = self._askText(_(u'Duplicate %s to:') % curName,
                                default=newName.s)
         if not result: return
         #--Error checking
         newName = GPath(result).tail
         if not newName.s:
-            self._showWarning(_(u"%s is not a valid name.") % result)
+            self._showWarning(_(u'%s is not a valid name.') % result)
             return
         if newName in self.idata:
-            self._showWarning(_(u"%s already exists.") % newName)
+            self._showWarning(_(u'%s already exists.') % newName)
             return
         if self.idata.store_dir.join(curName).isfile() and curName.cext != newName.cext:
-            self._showWarning(_(u"%s does not have correct extension (%s).")
+            self._showWarning(_(u'%s does not have correct extension (%s).')
                               % (newName,curName.ext))
             return
         #--Duplicate
@@ -576,7 +576,7 @@ class Installer_InstallSmart(_NoMarkerLink):
 
 class Installer_ListStructure(OneItemLink, _InstallerLink):
     """Copies folder structure of installer to clipboard."""
-    _text = _(u"List Structure...")
+    _text = _(u'List Structure...')
     _help = _(u'Displays the folder structure of the selected installer (and '
               u'copies it to the system clipboard).')
 
@@ -740,8 +740,8 @@ class Installer_SkipVoices(CheckLink, _RefreshingLink):
 
     @property
     def link_help(self):
-        return _(u"Skip over any voice files in %(installername)s") % (
-                    {'installername': self._selected_item})
+        return _(u'Skip over any voice files in %(installername)s') % (
+                    {u'installername': self._selected_item})
 
     def _check(self): return self._enable() and self._selected_info.skipVoices
 
@@ -759,7 +759,7 @@ class Installer_Uninstall(_NoMarkerLink):
         """Uninstall selected Installers."""
         ui_refresh = [False, False]
         try:
-            with balt.Progress(_(u"Uninstalling..."),u'\n'+u' '*60) as progress:
+            with balt.Progress(_(u'Uninstalling...'),u'\n'+u' '*60) as progress:
                 self.idata.bain_uninstall(self._installables, ui_refresh,
                                           progress)
         except (CancelError,SkipError): # now where could this be raised from ?
@@ -785,14 +785,14 @@ class Installer_CopyConflicts(_SingleInstallable):
         if not src_sizeCrc:
             return _ok(_(u'No files to install for %s'))
         src_order = self._selected_info.order
-        with balt.Progress(_(u"Scanning Packages..."),
+        with balt.Progress(_(u'Scanning Packages...'),
                            u'\n' + u' ' * 60) as progress:
             progress.setFull(len(self.idata))
             numFiles = 0
-            destDir = GPath(u"Conflicts - %03d" % src_order)
+            destDir = GPath(u'Conflicts - %03d' % src_order)
             for i,(package, installer) in enumerate(self.idata.sorted_pairs()):
                 curConflicts = set()
-                progress(i, _(u"Scanning Packages...") + u'\n' + package.s)
+                progress(i, _(u'Scanning Packages...') + u'\n%s' % package)
                 for z, y in installer.refreshDataSizeCrc().iteritems():
                     if z in src_sizeCrc and installer.ci_dest_sizeCrc[z] != \
                             src_sizeCrc[z]:
@@ -826,7 +826,7 @@ class Installer_CopyConflicts(_SingleInstallable):
                 unpack_dir.moveTo(ijoin(destDir, g_path))
                 curFile += len(curConflicts)
             return curFile
-        with balt.Progress(_(u"Copying Conflicts..."),
+        with balt.Progress(_(u'Copying Conflicts...'),
                            u'\n' + u' ' * 60) as progress:
             progress.setFull(numFiles)
             curFile = 0
@@ -834,7 +834,7 @@ class Installer_CopyConflicts(_SingleInstallable):
             curConflicts = srcConflicts
             curFile = _copy_conflicts(curFile)
             for order,package,curConflicts in packConflicts:
-                g_path = GPath(u"%03d - %s" % (
+                g_path = GPath(u'%03d - %s' % (
                     order if order < src_order else order + 1, package.s))
                 curFile = _copy_conflicts(curFile)
         self.idata.refresh_installer(destDir, is_project=True, progress=None,
@@ -888,8 +888,8 @@ class Installer_Espm_Rename(_Installer_Details_Link):
         if curName[0] == u'*':
             curName = curName[1:]
         _file = GPath(curName)
-        newName = self._askText(_(u"Enter new name (without the extension):"),
-                                title=_(u"Rename Plugin"), default=_file.sbody)
+        newName = self._askText(_(u'Enter new name (without the extension):'),
+                                title=_(u'Rename Plugin'), default=_file.sbody)
         if not newName: return
         if newName in self.window.espms: return
         self._installer.setEspmName(curName, newName + _file.cext)
@@ -1041,7 +1041,7 @@ class InstallerArchive_Unpack(AppendableLink, _InstallerLink):
                 # Error checking
                 project = GPath(result).tail
                 if not project.s or project.cext in archives.readExts:
-                    self._showWarning(_(u"%s is not a valid project name.") %
+                    self._showWarning(_(u'%s is not a valid project name.') %
                                       result)
                     return
                 if self.idata.store_dir.join(project).isfile():
@@ -1054,7 +1054,7 @@ class InstallerArchive_Unpack(AppendableLink, _InstallerLink):
             # All check passed, we can unpack this
             to_unpack.append((installer, project))
         # We're safe to show the progress dialog now
-        with balt.Progress(_(u"Unpacking to Project..."),u'\n'+u' '*60) \
+        with balt.Progress(_(u'Unpacking to Project...'),u'\n'+u' '*60) \
                 as progress:
             projects = []
             for installer, project in to_unpack:
@@ -1370,7 +1370,7 @@ class InstallerOpenAt_MainMenu(balt.MenuLink):
 
 class InstallerConverter_ConvertMenu(balt.MenuLink):
     """Apply BCF SubMenu."""
-    _text = _(u"Apply")
+    _text = _(u'Apply')
     def _enable(self):
         """Return False to disable the converter menu, otherwise populate its
         links attribute and return True."""
@@ -1408,7 +1408,7 @@ class InstallerConverter_ConvertMenu(balt.MenuLink):
 
 class InstallerConverter_MainMenu(balt.MenuLink):
     """Main BCF Menu"""
-    _text = _(u"BAIN Conversions")
+    _text = _(u'BAIN Conversions')
     def _enable(self):
         for item in self.selected:
             if not self.window.data_store[item].is_archive():
