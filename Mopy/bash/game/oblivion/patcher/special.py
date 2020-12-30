@@ -27,7 +27,7 @@ import re
 
 from collections import Counter, defaultdict
 from .... import bush, load_order
-from ....bolt import GPath, deprint
+from ....bolt import deprint, CIstr
 from ....brec import MreRecord, RecHeader, null4
 from ....parsers import _HandleAliases
 from ....patcher import getPatchesPath
@@ -35,7 +35,7 @@ from ....patcher.base import Patcher, Abstract_Patcher, ListPatcher, ModLoader
 
 __all__ = [u'CoblCatalogsPatcher', u'CoblExhaustionPatcher',
            u'MorphFactionsPatcher', u'SEWorldTestsPatcher']
-_cobl_main = GPath(u'COBL Main.esm')
+_cobl_main = CIstr(u'COBL Main.esm')
 
 class _ExSpecial(Abstract_Patcher):
     """Those used to be subclasses of SpecialPatcher that did not make much
@@ -318,7 +318,7 @@ class MorphFactionsPatcher(_ExSpecialList):
         """Scan modFile."""
         id_info = self.id_info
         patchBlock = self.patchFile.tops[b'FACT']
-        if modFile.fileInfo.name == _cobl_main:
+        if modFile.fileInfo.ci_name == _cobl_main:
             record = modFile.tops[b'FACT'].getRecord(self.mFactLong)
             if record:
                 patchBlock.setRecord(record.getTypeCopy())
@@ -376,7 +376,7 @@ class MorphFactionsPatcher(_ExSpecialList):
         self._pLog(log, changed)
 
 #------------------------------------------------------------------------------
-_ob_path = GPath(bush.game.master_file)
+_ob_path = CIstr(bush.game.master_file) ##: right on source?
 class SEWorldTestsPatcher(_ExSpecial, ModLoader):
     """Suspends Cyrodiil quests while in Shivering Isles."""
     patcher_name = _(u'SEWorld Tests')
@@ -405,7 +405,7 @@ class SEWorldTestsPatcher(_ExSpecial, ModLoader):
         self.isActive = bool(self.cyrodiilQuests)
 
     def scanModFile(self,modFile,progress):
-        if modFile.fileInfo.name == _ob_path: return
+        if modFile.fileInfo.ci_name == _ob_path: return
         cyrodiilQuests = self.cyrodiilQuests
         patchBlock = self.patchFile.tops[b'QUST']
         for record in modFile.tops[b'QUST'].getActiveRecords():

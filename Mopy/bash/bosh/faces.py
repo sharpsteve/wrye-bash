@@ -183,7 +183,7 @@ class PCFaces(object):
         #--Player ACHR
         record = saveFile.getRecord(0x14)
         data = record[-1]
-        namePos = PCFaces.save_getNamePos(saveFile.fileInfo.name,data,encode(saveFile.pcName))
+        namePos = PCFaces.save_getNamePos(saveFile.fileInfo.ci_name, data, encode(saveFile.pcName))
         (face.fggs_p, face.fgga_p, face.fgts_p, face.race, face.hair, face.eye,
             face.hairLength, face.hairRed, face.hairBlue, face.hairGreen, face.unused3, face.gender) = struct_unpack(
             '=200s120s200s3If3BsB',data[namePos-542:namePos-1])
@@ -304,7 +304,7 @@ class PCFaces(object):
                 buff.seek(4,1)
         oldRecord = saveFile.getRecord(0x14)
         oldData = oldRecord[-1]
-        namePos = PCFaces.save_getNamePos(saveFile.fileInfo.name,oldData,encode(saveFile.pcName))
+        namePos = PCFaces.save_getNamePos(saveFile.fileInfo.ci_name, oldData, encode(saveFile.pcName))
         buff.write(oldData)
         #--Modify buffer with face data.
         buff.seek(namePos-542)
@@ -382,7 +382,7 @@ class PCFaces(object):
         saveFile.load()
         record = saveFile.getRecord(0x14)
         data = record[-1]
-        namePos = PCFaces.save_getNamePos(saveInfo.name,data,encode(saveFile.pcName))
+        namePos = PCFaces.save_getNamePos(saveInfo.ci_name, data, encode(saveFile.pcName))
         raceRef,hairRef = struct_unpack(u'2I', data[namePos-22:namePos-14])
         if hairRef != 0: return False
         raceForm = raceRef and saveFile.fids[raceRef]
@@ -415,7 +415,7 @@ class PCFaces(object):
         faces = {}
         for npc in modFile.tops[b'NPC_'].getActiveRecords():
             face = PCFaces.PCFace()
-            face.face_masters = modFile.tes4.masters + [modInfo.name]
+            face.face_masters = modFile.tes4.masters + [modInfo.ci_name]
             for a in (u'eid', u'race', u'eye', u'hair', u'hairLength',
                       u'hairRed', u'hairBlue', u'hairGreen', u'unused3',
                       u'fggs_p', u'fgga_p', u'fgts_p', u'level', u'skills',
@@ -459,7 +459,7 @@ class PCFaces(object):
         from . import modInfos ##: put it here so I know it's initialized...
         if modInfos.masterName not in tes4.masters:
             tes4.masters.append(modInfos.masterName)
-        masterMap = MasterMap(face.face_masters,tes4.masters+[modInfo.name])
+        masterMap = MasterMap(face.face_masters, tes4.masters + [modInfo.ci_name])
         #--Eid
         npcEids = {record.eid for record in modFile.tops[b'NPC_'].records}
         eidForm = u''.join((u'sg', bush.game.raceShortNames.get(face.race, u'Unk'),
