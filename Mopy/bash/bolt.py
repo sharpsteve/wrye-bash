@@ -1174,8 +1174,6 @@ class DataDict(object):
         del self.data[key]
     def __len__(self):
         return len(self.data)
-    def setdefault(self,key,default):
-        return self.data.setdefault(key,default)
     def keys(self):
         return self.data.keys()
     def values(self):
@@ -1480,14 +1478,6 @@ class Settings(DataDict):
         self.deleted.add(key)
         del self.data[key]
 
-    def setdefault(self,key,value):
-        """Dictionary emulation. Will not mark as changed."""
-        if key in self.data:
-            return self.data[key]
-        if key in self.deleted: self.deleted.remove(key)
-        self.data[key] = value
-        return value
-
     def pop(self,key,default=None):
         """Dictionary emulation: extract value and delete from dictionary."""
         if key in self.changed: self.changed.remove(key)
@@ -1661,14 +1651,6 @@ class DataTable(DataDict):
         data[row][column] = value
         self.hasChanged = True
 
-    def setItemDefault(self,row,column,value):
-        """Set value for row, column."""
-        data = self.data
-        if row not in data:
-            data[row] = {}
-        self.hasChanged = True
-        return data[row].setdefault(column,value)
-
     def delItem(self,row,column):
         """Deletes item in row, column."""
         data = self.data
@@ -1712,9 +1694,6 @@ class DataTable(DataDict):
     def __delitem__(self,key):
         del self.data[key]
         self.hasChanged = True
-    def setdefault(self,key,default):
-        if key not in self.data: self.hasChanged = True
-        return self.data.setdefault(key,default)
     def pop(self,key,default=None):
         self.hasChanged = True
         return self.data.pop(key,default)
