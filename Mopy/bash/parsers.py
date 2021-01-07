@@ -272,7 +272,7 @@ class _AParser(_HandleAliases):
                     record.setChanged()
                     num_changed_records[rec_type] += 1
         # Check if we've actually changed something, otherwise skip saving
-        if sum(num_changed_records):
+        if num_changed_records:
             loaded_mod.safeSave()
         return num_changed_records
 
@@ -414,8 +414,8 @@ class ActorFactions(_AParser):
             for fields in ins:
                 if len(fields) < 8 or fields[3][:2] != u'0x': continue
                 type_,aed,amod,aobj,fed,fmod,fobj,rank = fields[:9]
-                aid = self._coerce_fid(amod ,aobj[2:])
-                fid = self._coerce_fid(fmod, fobj[2:])
+                aid = self._coerce_fid(amod, aobj)
+                fid = self._coerce_fid(fmod, fobj)
                 rank = int(rank)
                 id_factions = type_id_factions[type_]
                 factions = id_factions.get(aid)
@@ -517,7 +517,7 @@ class ActorLevels(_HandleAliases):
                     if source.lower() in (u'none', bush.game.master_file.lower()): continue
                     source = GPath(source)
                     if fidMod.lower() == u'none': continue
-                    fid = self._coerce_fid(fidMod, fidObject[2:])
+                    fid = self._coerce_fid(fidMod, fidObject)
                     offset = _coerce(offset, int)
                     calcMin = _coerce(calcMin, int)
                     calcMax = _coerce(calcMax, int)
@@ -661,7 +661,7 @@ class EditorIds(_HandleAliases):
             for fields in ins:
                 if len(fields) < 4 or fields[2][:2] != u'0x': continue
                 top_grup,mod,objectIndex,eid = fields[:4] ##: debug: top_grup??
-                longid = self._coerce_fid(mod, objectIndex[2:])
+                longid = self._coerce_fid(mod, objectIndex)
                 eid = _coerce(eid,unicode, AllowNone=True)
                 if not reValidEid.match(eid):
                     if badEidsList is not None:
@@ -753,8 +753,8 @@ class FactionRelations(_AParser):
             for fields in ins:
                 if len(fields) < 7 or fields[2][:2] != u'0x': continue
                 med, mmod, mobj, oed, omod, oobj = fields[:6]
-                mid = self._coerce_fid(mmod, mobj[2:])
-                oid = self._coerce_fid(omod, oobj[2:])
+                mid = self._coerce_fid(mmod, mobj)
+                oid = self._coerce_fid(omod, oobj)
                 relation_attrs = (oid,) + tuple(fields[6:])
                 relations = id_relations.get(mid)
                 if relations is None:
@@ -914,7 +914,7 @@ class FullNames(_HandleAliases):
             for fields in ins:
                 if len(fields) < 5 or fields[2][:2] != u'0x': continue
                 top_grup,mod,objectIndex,eid,full = fields[:5]
-                longid = self._coerce_fid(mod, objectIndex[2:])
+                longid = self._coerce_fid(mod, objectIndex)
                 eid = _coerce(eid, unicode, AllowNone=True)
                 full = _coerce(full, unicode, AllowNone=True)
                 if top_grup in type_id_name:
