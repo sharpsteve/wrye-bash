@@ -108,14 +108,13 @@ class Mod_RecalcRecordCounts(OneItemLink):
 
     def Execute(self):
         from operator import itemgetter
-        from pympler import tracker
+        from pympler import asizeof, muppy
         from pprint import pprint
         from ..bolt import round_size
-        mem = tracker.SummaryTracker()
-        sorted_summary = sorted(mem.create_summary(), reverse=True,
-                                key=itemgetter(2))
-        pprint([u'%d %ss, taking up %s' % (s[1], s[0], round_size(s[2]))
-                for s in sorted_summary])
+        objects = muppy.filter(muppy.get_objects(), Type=dict)
+        sizes = ((o, asizeof.asizeof(o)) for o in objects)
+        sorted_sizes = sorted(sizes, key=itemgetter(1), reverse=True)
+        pprint([round_size(s) for o, s in sorted_sizes])
 
 # File submenu ----------------------------------------------------------------
 # the rest of the File submenu links come from file_links.py
