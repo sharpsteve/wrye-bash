@@ -114,7 +114,7 @@ class Mod_RecalcRecordCounts(OneItemLink):
         objects = muppy.filter(muppy.get_objects(), Type=dict)
         sizes = ((o, asizeof.asizeof(o)) for o in objects)
         sorted_sizes = sorted(sizes, key=itemgetter(1), reverse=True)
-        pprint([round_size(s) for o, s in sorted_sizes])
+        pprint([u'%s: %s' % (round_size(s), o) for o, s in sorted_sizes])
 
 # File submenu ----------------------------------------------------------------
 # the rest of the File submenu links come from file_links.py
