@@ -477,7 +477,18 @@ class _ModGroups(CsvParser):
         for mod, mod_grp in dict_sort(self.mod_group):
             out.write(rowFormat % (mod, mod_grp))
 
-class _Mod_Groups_Export(ItemLink):
+class _CsvExport_Link(ItemLink):
+
+    def _csv_out(self, textName):
+        textDir = bass.dirs[u'patches']
+        textDir.makedirs()
+        #--File dialog
+        textPath = self._askSave(title=self.__class__.askTitle,
+                                 defaultDir=textDir, defaultFile=textName,
+                                 wildcard=u'*' + self.__class__.csvFile)
+        return textPath
+
+class _Mod_Groups_Export(_CsvExport_Link):
     """Export mod groups to text file."""
     askTitle = _(u'Export groups to:')
     csvFile = u'_Groups.csv'
@@ -486,12 +497,7 @@ class _Mod_Groups_Export(ItemLink):
 
     def Execute(self):
         textName = u'My' + self.__class__.csvFile
-        textDir = bass.dirs[u'patches']
-        textDir.makedirs()
-        #--File dialog
-        textPath = self._askSave(title=self.__class__.askTitle,
-                                 defaultDir=textDir, defaultFile=textName,
-                                 wildcard=u'*' + self.__class__.csvFile)
+        textPath = self._csv_out(textName)
         if not textPath: return
         #--Export
         modGroups = _ModGroups()
@@ -1725,15 +1731,10 @@ class _Import_Export_Link(AppendableLink):
             # FIXME(inf) old-style export link, drop once parsers refactored
             return True
 
-class _Mod_Export_Link(_Import_Export_Link, ItemLink):
+class _Mod_Export_Link(_Import_Export_Link, _CsvExport_Link):
     def Execute(self):
         textName = os.path.splitext(self.selected[0])[0] + self.__class__.csvFile
-        textDir = bass.dirs[u'patches']
-        textDir.makedirs()
-        #--File dialog
-        textPath = self._askSave(title=self.__class__.askTitle,
-                                 defaultDir=textDir, defaultFile=textName,
-                                 wildcard=u'*' + self.__class__.csvFile)
+        textPath = self._csv_out(textName)
         if not textPath: return
         (textDir, textName) = textPath.headTail
         #--Export
