@@ -103,18 +103,19 @@ class Mod_RecalcRecordCounts(OneItemLink):
     """Useful for debugging if any getNumRecords implementations are broken.
     Simply copy-paste the loop from below into ModFile.save to get output on BP
     save, then compare it to the MobBase-based output from this link."""
-    _text = _(u'Recalculate Record Counts')
-    _help = _(u'Recalculates the group record counts for the selected plugin '
-              u'and writes them to the BashBugDump.')
+    _text = _(u'Dump Memory Stats')
+    _help = _(u'Hastily repurposed this link to dump out memory stats.')
 
     def Execute(self):
-        loadFactory = mod_files.LoadFactory(True)
-        modFile = mod_files.ModFile(self._selected_info, loadFactory)
-        modFile.load(True)
-        for topType, block in sorted(modFile.tops.iteritems(),
-                key=lambda t: t[0]):
-            bolt.deprint(u'%s GRUP has %u records' % (
-                topType, block.getNumRecords()))
+        from operator import itemgetter
+        from pympler import tracker
+        from pprint import pprint
+        from ..bolt import round_size
+        mem = tracker.SummaryTracker()
+        sorted_summary = sorted(mem.create_summary(), reverse=True,
+                                key=itemgetter(2))
+        pprint([u'%d %ss, taking up %s' % (s[1], s[0], round_size(s[2]))
+                for s in sorted_summary])
 
 # File submenu ----------------------------------------------------------------
 # the rest of the File submenu links come from file_links.py
