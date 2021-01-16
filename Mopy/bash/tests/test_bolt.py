@@ -361,25 +361,25 @@ class TestPath(object):
         assert b'' r'c:\random\path.txt' == p
         assert GPath(b'c:/random/path.txt') == p
         assert GPath(b'' r'c:\random\path.txt') == p
-        # test comp with Falsy
-        assert not (p == [])
-        assert not (p == False)
         try:
+            # test comp with Falsy ##: test all of those
+            assert not (p == [])
+            assert not (p == False)
             assert not (p == [1])
-        except AttributeError:
-            pass
+        except TypeError:
+            """TypeError: Expected object of type bytes or bytearray,
+            got: <type 'list'>"""
         # Falsy and "empty" Path
         empty = GPath(u'')
         assert empty == Path(u'')
         assert empty == u''
         assert empty == b''
-        ## below should raise
-        assert empty == [] ##: raise
-        assert empty == False ##: raise
         assert not (None == p)
         try:
+            assert empty == []
+            assert empty == False
             assert not (empty == [1])
-        except AttributeError:
+        except TypeError:
             pass
 
     def test__le__(self):
@@ -402,25 +402,25 @@ class TestPath(object):
         assert b'' r'c:\random\path.txt' <= p
         assert GPath(b'c:/random/path.txt') <= p
         assert GPath(b'' r'c:\random\path.txt') <= p
-        # test comp with Falsy
-        assert not (p <= [])
-        assert not (p <= False)
+        # test comp with None
+        assert (None <= p)
         try:
+            assert not (p <= False)
+            assert not (p <= [])
             assert not (p <= [1])
-        except AttributeError:
+        except TypeError: # TypeError from the decoder
             pass
         # Falsy and "empty" Path
         empty = GPath(u'')
         assert empty <= Path(u'')
         assert empty <= u''
         assert empty <= b''
-        ## below should raise
-        assert empty <= [] ##: raise
-        assert empty <= False ##: raise
-        assert (None <= p) ## !
+        assert (None <= p)  ## !
         try:
+            assert empty <= []
+            assert empty <= False
             assert not (empty <= [1])
-        except AttributeError:
+        except TypeError:
             pass
 
     def test_dict_keys(self):
