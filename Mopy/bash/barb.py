@@ -62,21 +62,22 @@ def _init_settings_files(fsName_, root_prefix, mods_folder):
     settings_info = {
         (dirs[u'mopy'], jo(fsName_, u'Mopy')): {u'bash.ini', },
         (dirs[u'mods'].join(u'Bash'), jo(fsName_, mods_folder, u'Bash')): {
-            u'Table.dat', },
+            u'Table.wbdt', },
         (dirs[u'mods'].join(u'Docs'), jo(fsName_, mods_folder, u'Docs')): {
             u'Bash Readme Template.txt', u'Bash Readme Template.html',
             u'My Readme Template.txt', u'My Readme Template.html',
             u'wtxt_sand_small.css', u'wtxt_teal.css', },
         (dirs[u'modsBash'], jo(root_prefix + u' Mods', u'Bash Mod Data')): {
-            u'Table.dat', },
+            u'Table.wbdt', },
         (dirs[u'modsBash'].join(u'INI Data'),
          jo(root_prefix + u' Mods', u'Bash Mod Data', u'INI Data')): {
-           u'Table.dat', },
+           u'Table.wbdt', },
         (dirs[u'bainData'],
          jo(root_prefix + u' Mods', u'Bash Installers', u'Bash')): {
-           u'Converters.dat', u'Installers.dat', },
+           u'Converters.wbdt', u'Installers.wbdt', },
         (dirs[u'saveBase'], jo(u'My Games', fsName_)): {
-            u'BashProfiles.dat', u'BashSettings.dat', u'BashLoadOrders.dat'},
+            u'BashProfiles.wbdt', u'BashSettings.wbdt',
+            u'BashLoadOrders.wbdt'},
         # backup all files in Mopy\bash\l10n, Data\Bash Patches\,
         # Data\BashTags\ and Data\INI Tweaks\
         (dirs[u'l10n'], jo(fsName_, u'Mopy', u'bash', u'l10n')): {},
@@ -89,8 +90,11 @@ def _init_settings_files(fsName_, root_prefix, mods_folder):
     }
     for setting_files in settings_info.itervalues():
         for settings_file in set(setting_files):
-            if settings_file.endswith(u'.dat'): # add corresponding bak file
+            if settings_file.endswith(u'.wbdt'): # add corresponding bak file
                 setting_files.add(settings_file + u'.bak')
+                # Also add the older .dat format ##: backwards compat
+                settings_file.add(settings_file[:-4] + u'.dat')
+                settings_file.add(settings_file[:-4] + u'.dat.bak')
     return settings_info
 
 #------------------------------------------------------------------------------
@@ -122,11 +126,14 @@ class BackupSettings(object):
                 tpath = savedir.join(*txt)
                 fpath = dirs[u'saveBase'].join(*txt)
                 if fpath.exists(): self.files[tpath] = fpath
-            prof_table = (u'Saves', profile, u'Bash', u'Table.dat')
-            tpath = savedir.join(*prof_table)
-            fpath = dirs[u'saveBase'].join(*prof_table)
-            if fpath.exists(): self.files[tpath] = fpath
-            if fpath.backup.exists(): self.files[tpath.backup] = fpath.backup
+            for prof_table_name in (u'Table.wbdt', u'Table.dat'):
+                prof_table = (u'Saves', profile, u'Bash', prof_table_name)
+                tpath = savedir.join(*prof_table)
+                fpath = dirs[u'saveBase'].join(*prof_table)
+                if fpath.exists():
+                    self.files[tpath] = fpath
+                if fpath.backup.exists():
+                    self.files[tpath.backup] = fpath.backup
 
     @staticmethod
     def new_bash_version_prompt_backup(balt_, previous_bash_version):

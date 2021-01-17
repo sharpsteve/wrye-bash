@@ -312,13 +312,14 @@ class PatchDialog(DialogWindow):
     __new_key = u'Saved Bashed Patch Configuration (%s)'
     def ImportConfig(self):
         """Import the configuration from a user selected dat file."""
-        config_dat = self.patchInfo.name + u'_Configuration.dat'
+        config_dat = self.patchInfo.name + u'_Configuration.wbdt'
         textDir = bass.dirs[u'patches']
         textDir.makedirs()
         #--File dialog
         textPath = balt.askOpen(self.parent,
                                 _(u'Import Bashed Patch configuration from:'),
-                                textDir, config_dat, u'*.dat', mustExist=True)
+                                textDir, config_dat, u'*.wbdt;*.dat',
+                                mustExist=True)
         if not textPath: return
         table = bolt.DataTable(bolt.PickleDict(textPath))
         # try the current Bashed Patch mode.

@@ -1384,7 +1384,7 @@ class TableFileInfos(DataStore):
         self._data = {} # populated in refresh ()
         # the type of the table keys is always bolt.Path
         self.table = bolt.DataTable(
-            bolt.PickleDict(self.bash_dir.join(u'Table.dat')))
+            bolt.PickleDict(self.bash_dir.join(u'Table.wbdt')))
 
     def __init__(self, dir_, factory=AFile):
         """Init with specified directory and specified factory type."""
@@ -3005,7 +3005,7 @@ class SaveInfos(FileInfos):
                                         factory=SaveInfo)
         # Save Profiles database
         self.profiles = bolt.DataTable(bolt.PickleDict(
-            dirs[u'saveBase'].join(u'BashProfiles.dat')))
+            dirs[u'saveBase'].join(u'BashProfiles.wbdt')))
         # save profiles used to have a trailing slash, remove it if present
         for row in list(self.profiles):
             if row.endswith(u'\\'):
@@ -3245,11 +3245,11 @@ class ScreenInfos(FileInfos):
 #------------------------------------------------------------------------------
 from . import converters
 from .converters import InstallerConverter
-# Hack below needed as older Converters.dat expect bosh.InstallerConverter
+# Hack below needed as older Converters.wbdt expect bosh.InstallerConverter
 # See InstallerConverter.__reduce__()
 # noinspection PyRedeclaration
 class InstallerConverter(InstallerConverter): pass
-# same hack for Installers.dat...
+# same hack for Installers.wbdt...
 from .bain import InstallerArchive, InstallerMarker, InstallerProject
 # noinspection PyRedeclaration
 class InstallerArchive(InstallerArchive): pass
@@ -3452,8 +3452,8 @@ def initBosh(bashIni, game_ini_path):
     from .bain import Installer
     Installer.init_bain_dirs()
 
-def initSettings(readOnly=False, _dat=u'BashSettings.dat',
-                 _bak=u'BashSettings.dat.bak'):
+def initSettings(readOnly=False, _dat=u'BashSettings.wbdt',
+                 _bak=u'BashSettings.wbdt.bak'):
     """Init user settings from files and load the defaults (also in basher)."""
 
     def _load(dat_file=_dat):
@@ -3480,8 +3480,9 @@ def initSettings(readOnly=False, _dat=u'BashSettings.dat',
         msg = _(
             u"Error reading the Bash Settings database (the error is: '%r'). "
             u"This is probably not recoverable with the current file. Do you "
-            u"want to try the backup BashSettings.dat? (It will have all your "
-            u"UI choices of the time before last that you used Wrye Bash.")
+            u"want to try the backup BashSettings.wbdt? (It will have all "
+            u"your UI choices of the time before last that you used Wrye "
+            u"Bash.")
         usebck = balt.askYes(None, msg % err, _(u'Settings Load Error'))
         if usebck:
             try:

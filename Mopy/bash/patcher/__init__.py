@@ -23,13 +23,13 @@
 from .. import balt, bolt, bass
 
 def exportConfig(patch_name, config, win, outDir):
-    outFile = patch_name + u'_Configuration.dat'
+    outFile = patch_name + u'_Configuration.wbdt'
     outDir.makedirs()
     #--File dialog
     outPath = balt.askSave(win,
         title=_(u'Export Bashed Patch configuration to:'),
         defaultDir=outDir, defaultFile=outFile,
-        wildcard=u'*_Configuration.dat')
+        wildcard=u'*_Configuration.wbdt')
     if outPath:
         table = bolt.DataTable(bolt.PickleDict(outPath))
         table.setItem(bolt.GPath(u'Saved Bashed Patch Configuration (Python)'),

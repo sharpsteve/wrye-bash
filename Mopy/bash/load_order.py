@@ -58,8 +58,8 @@ locked = False
 warn_locked = False
 _lords_pickle = None # type: bolt.PickleDict
 _LORDS_PICKLE_VERSION = 2
-# active mod lists were saved in BashSettings.dat - sentinel needed for moving
-# them to BashloadOrder.dat
+# active mod lists were saved in BashSettings.wbdt - sentinel needed for moving
+# them to BashLoadOrders.wbdt
 __active_mods_sentinel = {}
 _active_mods_lists = {}
 
@@ -84,7 +84,7 @@ def initialize_load_order_files():
     global _plugins_txt_path, _loadorder_txt_path, _lord_pickle_path
     _plugins_txt_path = _dir.join(u'plugins.txt')
     _loadorder_txt_path = _dir.join(u'loadorder.txt')
-    _lord_pickle_path = bass.dirs[u'saveBase'].join(u'BashLoadOrders.dat')
+    _lord_pickle_path = bass.dirs[u'saveBase'].join(u'BashLoadOrders.wbdt')
 
 def initialize_load_order_handle(mod_infos):
     global _game_handle
@@ -389,8 +389,8 @@ def __load_pickled_load_orders():
     locked = bass.settings.get(u'bosh.modInfos.resetMTimes', False)
 
 def get_active_mods_lists():
-    """Get the user active mods lists from BashLoadOrder.dat, except if they
-    are still saved in BashSettings.dat"""
+    """Get the user active mods lists from BashLoadOrders.wbdt, except if they
+    are still saved in BashSettings.wbdt."""
     global _active_mods_lists
     if _active_mods_lists is __active_mods_sentinel:
         settings_mods_list = bass.settings.get(u'bash.loadLists.data',

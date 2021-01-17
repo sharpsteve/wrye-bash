@@ -79,7 +79,7 @@ class GameInfo(object):
     nexusUrl = u''   # URL
     nexusName = u''  # Long Name
     nexusKey = u''   # Key for the "always ask this question" setting in
-                     # settings.dat
+                     # BashSettings.wbdt
 
     # Additional game info - override as needed -------------------------------
     # URL to download patches for the main game.

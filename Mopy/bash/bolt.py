@@ -24,9 +24,9 @@
 # Imports ---------------------------------------------------------------------
 #--Standard
 from __future__ import division, print_function
-import StringIO
+
+import cStringIO as StringIO
 import cPickle as pickle  # PY3
-import chardet
 import codecs
 import collections
 import copy
@@ -49,6 +49,10 @@ from functools import partial
 from itertools import chain
 from keyword import iskeyword
 from operator import attrgetter
+
+import chardet
+import lz4.frame
+
 # Internal
 from . import exception
 
@@ -403,9 +407,11 @@ def setattr_deep(obj, attr, value, __attrgetters=attrgetter_cache,
 #  StringIO objects don't need to 'close' ever, since the data is unallocated
 #  once the object is destroyed.
 #------------------------------------------------------------------------------
-class sio(StringIO.StringIO):
-    def __enter__(self): return self
-    def __exit__(self, exc_type, exc_value, exc_traceback): self.close()
+class sio(object):
+    def __init__(self):
+        self._sio = StringIO.StringIO()
+    def __enter__(self): return self._sio
+    def __exit__(self, exc_type, exc_value, exc_traceback): self._sio.close()
 
 # Paths -----------------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -1320,8 +1326,12 @@ def mainfunc(func):
 class PickleDict(object):
     """Dictionary saved in a pickle file.
     Note: self.vdata and self.data are not reassigned! (Useful for some clients.)"""
+    _oldest_format_ver = 1 # The oldest supported format version
+    _curr_format_ver = 1 # The current format version
+
     def __init__(self, pkl_path, readOnly=False):
         """Initialize."""
+        assert pkl_path.cext == u'.wbdt' # debug only
         self._pkl_path = pkl_path
         self.backup = pkl_path.backup
         self.readOnly = readOnly
@@ -1333,7 +1343,7 @@ class PickleDict(object):
 
     class Mold(Exception):
         def __init__(self, moldedFile):
-            msg = (u'Your settings in %s come from an ancient Bash version. '
+            msg = (u'Your settings in %s come from an older Bash version. '
                    u'Please load them in 306 so they are converted '
                    u'to the newer format' % moldedFile)
             super(PickleDict.Mold, self).__init__(msg)
@@ -1356,27 +1366,34 @@ class PickleDict(object):
         self.vdata.clear()
         self.pickled_data.clear()
         cor = cor_name =  None
-        for path in (self._pkl_path, self.backup):
+        # Also try converting older files to new format
+        old_pkl_path = self._pkl_path.root + u'.dat'
+        all_pkl_paths = [self._pkl_path, self.backup, old_pkl_path,
+                         old_pkl_path.backup]
+        for curr_pkl in all_pkl_paths:
             if cor is not None:
                 cor.moveTo(cor_name)
                 cor = None
             try:
-                with path.open(u'rb') as ins:
+                with curr_pkl.open(u'rb') as ins:
+                    data_loader = (self.load_new if curr_pkl.cext == u'.wbdt'
+                                   else self.load_old)
                     try:
-                        firstPickle = pickle.load(ins)
-                    except ValueError:
-                        cor = path
-                        cor_name = GPath(
-                            u'%s (%s).corrupted' % (path, timestamp()))
-                        deprint(u'Unable to load %s (will be moved to "%s")' %(
-                                path, cor_name.tail), traceback=True)
-                        continue  # file corrupt - try next file
-                    if firstPickle == b'VDATA2':
+                        ins = data_loader(ins, curr_pkl.stail)
+                        # Load the actual pickled data
                         self.vdata.update(pickle.load(ins))
+                        ##: From old, dropped backwards compat - drop this too
+                        # in 309+
+                        self.vdata.pop(u'boltPaths', None)
                         self.pickled_data.update(pickle.load(ins))
-                    else:
-                        raise PickleDict.Mold(path)
-                return 1 + (path == self.backup)
+                    except ValueError:
+                        cor = curr_pkl
+                        cor_name = GPath(
+                            u'%s (%s).corrupted' % (curr_pkl, timestamp()))
+                        deprint(u'Unable to load %s (will be moved to "%s")' %(
+                            curr_pkl, cor_name.tail), traceback=True)
+                        continue  # file corrupt - try next file
+                return True
             except (OSError, IOError, EOFError, ValueError,
                     pickle.UnpicklingError): #PY3:FileNotFound
                 pass
@@ -1384,7 +1401,31 @@ class PickleDict(object):
             if cor is not None:
                 cor.moveTo(cor_name)
         #--No files and/or files are corrupt
-        return 0
+        return False
+
+    @staticmethod
+    def load_old(ins, wbdt_filename):
+        firstPickle = pickle.load(ins)
+        if firstPickle != b'VDATA2':
+            raise PickleDict.Mold(wbdt_filename)
+        return ins
+
+    def load_new(self, ins, wbdt_filename):
+        magic_num = unpack_4s(ins)
+        if magic_num != b'WBDT':
+            raise exception.WbdtError(
+                wbdt_filename, u'WBDT format invalid: wrong magic number '
+                               u'(expected WBDT, got %s)' % magic_num)
+        wbdt_ver = unpack_byte(ins)
+        if wbdt_ver > self._curr_format_ver:
+            raise exception.WbdtError(
+                wbdt_filename, u'WBDT format version (%u) is too new for this '
+                               u'version of Wrye Bash' % wbdt_ver)
+        if wbdt_ver < self._oldest_format_ver:
+            raise exception.WbdtError(
+                wbdt_filename, u'WBDT format version (%u) is too old for this '
+                               u'version of Wrye Bash' % wbdt_ver)
+        return StringIO.StringIO(lz4.frame.decompress(ins.read()))
 
     def save(self):
         """Save to pickle file.
@@ -1393,10 +1434,14 @@ class PickleDict(object):
         pickled_data dictionaries, in this order. Current version string is
         VDATA2."""
         if self.readOnly: return False
-        #--Pickle it
+        # Dump the header, version and LZ4-compressed data
+        s = StringIO.StringIO()
+        for pkl in (self.vdata, self.pickled_data):
+            pickle.dump(pkl, s, -1)
         with self._pkl_path.temp.open(u'wb') as out:
-            for pkl in (b'VDATA2', self.vdata, self.pickled_data):
-                pickle.dump(pkl, out, -1)
+            pack_4s(out, b'WBDT')
+            pack_byte(out, self._curr_format_ver)
+            out.write(lz4.frame.compress(s.getvalue()))
         self._pkl_path.untemp(doBackup=True)
         return True
 
@@ -1418,8 +1463,9 @@ class Settings(DataDict):
         self.dictFile = dictFile
         self.cleanSave = False
         if self.dictFile:
-            res = dictFile.load()
-            self.cleanSave = res == 0 # no data read - do not attempt to read on save
+            loaded_something = dictFile.load()
+            # no data read - do not attempt to read on save
+            self.cleanSave = not loaded_something
             self.vdata = dictFile.vdata.copy()
             self._data = dictFile.pickled_data.copy()
         else:
@@ -1440,7 +1486,7 @@ class Settings(DataDict):
         """Save to pickle file. Only key/values marked as changed are saved."""
         dictFile = self.dictFile
         if not dictFile or dictFile.readOnly: return
-        # on a clean save ignore BashSettings.dat.bak possibly corrupt
+        # on a clean save ignore BashSettings.wbdt.bak possibly corrupt
         if not self.cleanSave: dictFile.load()
         dictFile.vdata = self.vdata.copy()
         for del_key in self.deleted:

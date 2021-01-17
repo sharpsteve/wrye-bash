@@ -602,7 +602,7 @@ class Installer(object):
 
         WIP rewrite
         Used:
-         - in __setstate__ to construct the installers from Installers.dat,
+         - in __setstate__ to construct the installers from Installers.wbdt,
          used once (and in full refresh ?)
          - in refreshBasic, after refreshing persistent attributes - track
          call graph from here should be the path that needs optimization (
@@ -1645,7 +1645,7 @@ class InstallersData(DataStore):
         self.store_dir = bass.dirs[u'installers']
         self.bash_dir.makedirs()
         #--Persistent data
-        self.dictFile = bolt.PickleDict(self.bash_dir.join(u'Installers.dat'))
+        self.dictFile = bolt.PickleDict(self.bash_dir.join(u'Installers.wbdt'))
         self._data = {}
         self.data_sizeCrcDate = bolt.LowerDict()
         from . import converters
@@ -1688,7 +1688,7 @@ class InstallersData(DataStore):
         from . import oblivionIni, InstallerMarker, modInfos
         if bass.settings.get(u'bash.bsaRedirection') and oblivionIni.abs_path.exists():
             oblivionIni.setBsaRedirection(True)
-        #--Load Installers.dat if not loaded - will set changed to True
+        #--Load Installers.wbdt if not loaded - will set changed to True
         changed = not self.loaded and self.__load(progress)
         #--Last marker
         if self.lastKey not in self:

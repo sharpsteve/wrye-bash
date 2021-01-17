@@ -150,8 +150,8 @@ class Mods_LoadList(ChoiceLink):
 
     @property
     def load_lists(self):
-        """Get the load lists, since those come from BashLoadOrders.dat we must
-        wait for this being initialized in ModInfos.__init__"""
+        """Get the load lists, since those come from BashLoadOrders.wbdt we
+        must wait for this being initialized in ModInfos.__init__."""
         if self.__class__.loadListsDict is self.__class__.__uninitialized:
             loadListData = load_order.get_active_mods_lists()
             loadListData[u'Vanilla'] = [

@@ -47,7 +47,7 @@ class ConvertersData(DataDict):
         self.dup_bcfs_dir = dup_bcfs_dir
         self.corrupt_bcfs_dir = corrupt_bcfs_dir
         #--Persistent data
-        self.converterFile = PickleDict(bain_data_dir.join(u'Converters.dat'))
+        self.converterFile = PickleDict(bain_data_dir.join(u'Converters.wbdt'))
         self.srcCRC_converters = {}
         self.bcfCRC_converter = {}
         #--Volatile
@@ -220,9 +220,9 @@ class InstallerConverter(object):
         #--Persistent variables are saved in the data tank for normal
         # operations.
         #--persistBCF is read one time from BCF.dat, and then saved in
-        # Converters.dat to keep archive extractions to a minimum
+        # Converters.wbdt to keep archive extractions to a minimum
         #--persistDAT has operational variables that are saved in
-        # Converters.dat
+        # Converters.wbdt
         #--Do NOT reorder persistBCF,persistDAT,addedPersist or you will
         # break existing BCFs!
         #--Do NOT add new attributes to persistBCF, persistDAT.
@@ -236,7 +236,7 @@ class InstallerConverter(object):
         self.addedPersistDAT = []
         self.srcCRCs = set()
         self.crc = None
-        #--fullPath is saved in Converters.dat, but it is also updated on
+        #--fullPath is saved in Converters.wbdt, but it is also updated on
         # every refresh in case of renaming
         self.fullPath = u'BCF: Missing!'
         #--Semi-Persistent variables are loaded only when and as needed.
@@ -264,15 +264,15 @@ class InstallerConverter(object):
             self.fullPath = converters_dir.join(srcArchives)
             self.load()
             self.crc = self.fullPath.crc
-        #--Else is loading from Converters.dat, called by __setstate__
+        #--Else is loading from Converters.wbdt, called by __setstate__
 
     def __getstate__(self):
-        """Used by pickler to save object state. Used for Converters.dat"""
+        """Used by pickler to save object state. Used for Converters.wbdt."""
         return tuple(getattr(self, a) for a in
                      self.persistBCF + self.persistDAT + self.addedPersistDAT)
 
     def __setstate__(self, values):
-        """Used by unpickler to recreate object. Used for Converters.dat"""
+        """Used by unpickler to recreate object. Used for Converters.wbdt."""
         self.__init__()
         for a, v in zip(self.persistBCF + self.persistDAT +
                         self.addedPersistDAT, values):

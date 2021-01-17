@@ -257,6 +257,10 @@ class LexerError(_ALPError):
 class ParserError(_ALPError):
     """An error that ocurred during parsing."""
 
+# WBDT exceptions -------------------------------------------------------------
+class WbdtError(FileError):
+    """An error that ocurred while handling WBDT files."""
+
 # Misc exceptions -------------------------------------------------------------
 class StateError(BoltError):
     """Error: Object is corrupted."""
