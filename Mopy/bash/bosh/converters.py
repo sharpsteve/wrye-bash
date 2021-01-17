@@ -587,7 +587,7 @@ class InstallerConverter(object):
         if isinstance(srcInstaller, Path):
             apath = srcInstaller
         elif srcInstaller.is_archive():
-            srcInstaller = GPath(srcInstaller.archive)
+            srcInstaller = srcInstaller.archive
             apath = installers_dir.join(srcInstaller)
         subTempDir = tmpDir.join(u'%08X' % installerCRC)
         if progress:
