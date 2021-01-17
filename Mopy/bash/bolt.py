@@ -931,37 +931,38 @@ class Path(object):
     def __eq__(self, other):
         if isinstance(other, Path):
             return self._cs == other._cs
-        dec = decoder(other) # get unicode or None - will blow on most else
+        # get unicode or None - will blow on most other types - identical below
+        dec = other if isinstance(other, unicode) else decoder(other)
         return self._cs == (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __ne__(self, other):
         if isinstance(other, Path):
             return self._cs != other._cs
-        dec = decoder(other)
+        dec = other if isinstance(other, unicode) else decoder(other)
         return self._cs != (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __lt__(self, other):
         if isinstance(other, Path):
             return self._cs < other._cs
-        dec = decoder(other)
+        dec = other if isinstance(other, unicode) else decoder(other)
         return self._cs < (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __ge__(self, other):
         if isinstance(other, Path):
             return self._cs >= other._cs
-        dec = decoder(other)
+        dec = other if isinstance(other, unicode) else decoder(other)
         return self._cs >= (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __gt__(self, other):
         if isinstance(other, Path):
             return self._cs > other._cs
-        dec = decoder(other)
+        dec = other if isinstance(other, unicode) else decoder(other)
         return self._cs > (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __le__(self, other):
         if isinstance(other, Path):
             return self._cs <= other._cs
-        dec = decoder(other)
+        dec = other if isinstance(other, unicode) else decoder(other)
         return self._cs <= (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
 
