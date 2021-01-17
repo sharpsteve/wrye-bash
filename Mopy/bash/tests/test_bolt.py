@@ -21,6 +21,9 @@
 #
 # =============================================================================
 from collections import OrderedDict
+
+import pytest
+
 from ..bolt import LowerDict, DefaultLowerDict, OrderedLowerDict, decoder, \
     encode, getbestencoding, GPath, Path
 
@@ -361,26 +364,19 @@ class TestPath(object):
         assert b'' r'c:\random\path.txt' == p
         assert GPath(b'c:/random/path.txt') == p
         assert GPath(b'' r'c:\random\path.txt') == p
-        try:
-            # test comp with Falsy ##: test all of those
-            assert not (p == [])
-            assert not (p == False)
-            assert not (p == [1])
-        except TypeError:
-            """TypeError: Expected object of type bytes or bytearray,
-            got: <type 'list'>"""
+        # test comp with Falsy
+        with pytest.raises(TypeError): assert not (p == [])
+        with pytest.raises(TypeError): assert not (p == False)
+        with pytest.raises(TypeError): assert not (p == [1])
         # Falsy and "empty" Path
         empty = GPath(u'')
         assert empty == Path(u'')
         assert empty == u''
         assert empty == b''
         assert not (None == p)
-        try:
-            assert empty == []
-            assert empty == False
-            assert not (empty == [1])
-        except TypeError:
-            pass
+        with pytest.raises(TypeError): assert empty == []
+        with pytest.raises(TypeError): assert empty == False
+        with pytest.raises(TypeError): assert not (empty == [1])
 
     def test__le__(self):
         # reminder
@@ -404,24 +400,20 @@ class TestPath(object):
         assert GPath(b'' r'c:\random\path.txt') <= p
         # test comp with None
         assert (None <= p)
-        try:
-            assert not (p <= False)
-            assert not (p <= [])
-            assert not (p <= [1])
-        except TypeError: # TypeError from the decoder
-            pass
+        # unrelated types
+        with pytest.raises(TypeError): assert not (p <= [])
+        with pytest.raises(TypeError): assert not (p <= False)
+        with pytest.raises(TypeError): assert not (p <= [1])
         # Falsy and "empty" Path
         empty = GPath(u'')
         assert empty <= Path(u'')
         assert empty <= u''
         assert empty <= b''
         assert (None <= p)  ## !
-        try:
-            assert empty <= []
-            assert empty <= False
-            assert not (empty <= [1])
-        except TypeError:
-            pass
+        assert not (p <= None)
+        with pytest.raises(TypeError): assert empty <= []
+        with pytest.raises(TypeError): assert empty <= False
+        with pytest.raises(TypeError): assert not (empty <= [1])
 
     def test_dict_keys(self):
         d = {GPath(u'c:/random/path.txt'): 1}
