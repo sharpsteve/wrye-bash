@@ -27,6 +27,8 @@ loop."""
 
 # Imports ---------------------------------------------------------------------
 from __future__ import print_function
+
+import StringIO
 import atexit
 import codecs
 import ctypes
@@ -285,6 +287,9 @@ def _main(opts, wx_locale):
 
     :param opts: command line arguments
     :param wx_locale: The wx.Locale object that we ended up using."""
+    import cProfile, pstats
+    pr = cProfile.Profile()
+    pr.enable()
     import wx as _wx
     # barg is fine and balt/gui were initialized in main() already
     from . import barg, balt, gui
@@ -425,6 +430,10 @@ def _main(opts, wx_locale):
                                  title=_(u'Unable to create backup!')):
                     return  # Quit
     frame = app.Init() # Link.Frame is set here !
+    pr.disable()
+    s = StringIO.StringIO()
+    pstats.Stats(pr, stream=s).sort_stats(u'cumulative').print_stats()
+    bolt.deprint(s.getvalue())
     frame.ensureDisplayed()
     frame.bind_refresh()
     app.MainLoop()
