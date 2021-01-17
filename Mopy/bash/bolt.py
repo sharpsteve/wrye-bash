@@ -1026,11 +1026,11 @@ class Flags(object):
         Names are either strings or (index,name) tuples.
         E.g., Flags.getNames('isQuest','isHidden',None,(4,'isDark'),(7,'hasWater'))"""
         namesDict = {}
-        for index,name in enumerate(names):
-            if isinstance(name,tuple):
-                namesDict[name[1]] = name[0]
-            elif name: #--skip if "name" is 0 or None
-                namesDict[name] = index
+        for index,flg_name in enumerate(names):
+            if isinstance(flg_name,tuple):
+                namesDict[flg_name[1]] = flg_name[0]
+            elif flg_name: #--skip if "name" is 0 or None
+                namesDict[flg_name] = index
         return namesDict
 
     #--Generation
@@ -2634,11 +2634,11 @@ class WryeText(object):
         for line in outLines:
             if reContentsTag.match(line):
                 if contents and not didContents:
-                    baseLevel = min([level for (level,name,text) in contents])
-                    for (level,name,text) in contents:
+                    baseLevel = min([level for (level,name_,text) in contents])
+                    for (level,name_,text) in contents:
                         level = level - baseLevel + 1
                         if level <= addContents:
-                            outWrite(u'<p class="list-%d">&bull;&nbsp; <a href="#%s">%s</a></p>\n' % (level,name,text))
+                            outWrite(u'<p class="list-%d">&bull;&nbsp; <a href="#%s">%s</a></p>\n' % (level,name_,text))
                     didContents = True
             else:
                 outWrite(line)
