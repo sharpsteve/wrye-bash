@@ -129,14 +129,12 @@ class _APreserver(ImportPatcher):
 
     # noinspection PyDefaultArgument
     def _init_data_loop(self, top_grup_sig, srcFile, srcMod, temp_id_data,
-                        __attrgetters=attrgetter_cache):
+                        mod_tags, loaded_mods, __attrgetters=attrgetter_cache):
         recAttrs = self.rec_type_attrs[top_grup_sig]
         fid_attrs = self._fid_rec_attrs_class[top_grup_sig]
-        loaded_mods = self.patchFile.loadSet
         if self._multi_tag:
             # For multi-tag importers, we need to look up the applied bash tags
             # and use those to find all applicable attributes
-            mod_tags = srcFile.fileInfo.getBashTags()
             recAttrs = set(chain.from_iterable(
                 attrs for t, attrs in recAttrs.iteritems() if t in mod_tags))
             fid_attrs = set(chain.from_iterable(
@@ -146,8 +144,8 @@ class _APreserver(ImportPatcher):
             # If we have FormID attributes, check those before importing
             if fid_attrs:
                 fid_attr_values = [__attrgetters[a](record) for a in fid_attrs]
-                if any(f and (f[0] is None or f[0] not in loaded_mods) for f
-                       in fid_attr_values):
+                if any(f and (f[0] not in loaded_mods) for f in
+                       fid_attr_values):
                     # Ignore the record. Another option would be to just ignore
                     # the fid_attr_values result
                     self.patchFile.patcher_mod_skipcount[
@@ -164,16 +162,21 @@ class _APreserver(ImportPatcher):
         progress.setFull(len(self.srcs) + len(self.csv_srcs))
         cachedMasters = {}
         minfs = self.patchFile.p_file_minfos
+        loaded_mods = self.patchFile.loadSet
         for index,srcMod in enumerate(self.srcs):
             temp_id_data = {}
             if srcMod not in minfs: continue
             srcInfo = minfs[srcMod]
             srcFile = ModFile(srcInfo,loadFactory)
             srcFile.load(do_unpack=True)
+            mod_sigs = set()
+            mod_tags = srcFile.fileInfo.getBashTags() if self._multi_tag else None
             for rsig in self.rec_type_attrs:
                 if rsig not in srcFile.tops: continue
                 self.srcs_sigs.add(rsig)
-                self._init_data_loop(rsig, srcFile, srcMod, temp_id_data)
+                mod_sigs.add(rsig)
+                self._init_data_loop(rsig, srcFile, srcMod, temp_id_data,
+                                     mod_tags, loaded_mods, __attrgetters)
             if (self._force_full_import_tag and
                     self._force_full_import_tag in srcInfo.getBashTags()):
                 # We want to force-import - copy the temp data without
@@ -189,10 +192,10 @@ class _APreserver(ImportPatcher):
                     masterFile.load(True)
                     cachedMasters[master] = masterFile
                 for rsig in self.rec_type_attrs:
-                    if rsig not in masterFile.tops: continue
-                    if rsig not in self.srcs_sigs: continue
+                    if rsig not in masterFile.tops or rsig not in mod_sigs:
+                        continue
                     for record in masterFile.tops[rsig].iter_filtered_records(
-                        self.getReadClasses): # ugh, looks hideous...
+                            mod_sigs):
                         fid = record.fid
                         if fid not in temp_id_data: continue
                         for attr, value in temp_id_data[fid].iteritems():
