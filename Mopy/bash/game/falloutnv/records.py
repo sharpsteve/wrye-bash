@@ -1698,7 +1698,7 @@ class MreWthr(MelRecord):
         MelWthrColorsFnv(b'PNAM', u'cloudColors'),
         MelWthrColorsFnv(b'NAM0', u'daytimeColors'),
         MelStruct(b'FNAM','6f','fogDayNear','fogDayFar','fogNightNear','fogNightFar','fogDayPower','fogNightPower'),
-        MelBase(b'INAM', 'unused1', null1 * 304),
+        MelBase(b'INAM', 'unused1'),
         MelStruct(b'DATA','15B',
             'windSpeed','lowerCloudSpeed','upperCloudSpeed','transDelta',
             'sunGlare','sunDamage','rainFadeIn','rainFadeOut','boltFadeIn',

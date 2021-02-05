@@ -182,10 +182,10 @@ class MelBase(Subrecord):
     (to an output stream). All the complexity of subrecords unpacking should
     be encapsulated here. The base class is typically used for unknown
     elements."""
-    __slots__ = (u'attr', u'default')
+    __slots__ = (u'attr',)
 
-    def __init__(self, mel_sig, attr, default=None):
-        self.mel_sig, self.attr, self.default = mel_sig, attr, default
+    def __init__(self, mel_sig, attr):
+        self.mel_sig, self.attr = mel_sig, attr
 
     def getSlotsUsed(self):
         return self.attr,
@@ -197,9 +197,7 @@ class MelBase(Subrecord):
             we populate."""
         try:
             defaultrs = mel_set_instance.defaulters
-            if self.attr in defaultrs and self.default != defaultrs[self.attr]:
-                raise SyntaxError(u'%s duplicate attr %s' % (self, self.attr))
-            defaultrs[self.attr] = self.default
+            defaultrs[self.attr] = None
         except AttributeError:
             """Mel does not have a self.attr attribute so we won't be needing a
             default value for it."""
@@ -603,7 +601,7 @@ class MelString(MelBase):
     """Represents a mod record string element."""
 
     def __init__(self, mel_sig, attr, default=None, maxSize=0, minSize=0):
-        super(MelString, self).__init__(mel_sig, attr, default)
+        super(MelString, self).__init__(mel_sig, attr)
         self.maxSize = maxSize
         self.minSize = minSize
         self.encoding = None # will default to bolt.pluginEncoding

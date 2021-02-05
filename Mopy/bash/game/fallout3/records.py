@@ -2482,7 +2482,7 @@ class MreRace(MelRecord):
                   'maleHeight','femaleHeight','maleWeight','femaleWeight',(_flags, u'flags')),
         MelFid(b'ONAM','Older'),
         MelFid(b'YNAM','Younger'),
-        MelBase(b'NAM2','_nam2',b''),
+        MelBase(b'NAM2','_nam2'),
         MelRaceVoices(b'VTCK', '2I', (FID, 'maleVoice'), (FID, 'femaleVoice')),
         MelOptStruct(b'DNAM','2I',(FID, u'defaultHairMale'),(FID, u'defaultHairFemale')),
         # Int corresponding to GMST sHairColorNN
@@ -2490,8 +2490,8 @@ class MreRace(MelRecord):
         MelOptFloat(b'PNAM', 'mainClamp'),
         MelOptFloat(b'UNAM', 'faceClamp'),
         MelStruct(b'ATTR','2B','maleBaseAttribute','femaleBaseAttribute'),
-        MelBase(b'NAM0', 'head_data_marker', b''),
-        MelBase(b'MNAM', 'male_head_data_marker', b''),
+        MelBase(b'NAM0', 'head_data_marker'),
+        MelBase(b'MNAM', 'male_head_data_marker'),
         MelRaceParts({
             0: u'maleHead',
             1: u'maleEars',
@@ -2502,7 +2502,7 @@ class MreRace(MelRecord):
             6: u'maleLeftEye',
             7: u'maleRightEye',
         }, group_loaders=lambda indx: (MelRaceHeadPart(indx),)),
-        MelBase(b'FNAM', u'female_head_data_marker', b''),
+        MelBase(b'FNAM', u'female_head_data_marker'),
         MelRaceParts({
             0: u'femaleHead',
             1: u'femaleEars',
@@ -2513,8 +2513,8 @@ class MreRace(MelRecord):
             6: u'femaleLeftEye',
             7: u'femaleRightEye',
         }, group_loaders=lambda indx: (MelRaceHeadPart(indx),)),
-        MelBase(b'NAM1', u'body_data_marker', b''),
-        MelBase(b'MNAM', u'male_body_data_marker', b''),
+        MelBase(b'NAM1', u'body_data_marker'),
+        MelBase(b'MNAM', u'male_body_data_marker'),
         MelRaceParts({
             0: u'maleUpperBody',
             1: u'maleLeftHand',
@@ -2523,8 +2523,7 @@ class MreRace(MelRecord):
         }, group_loaders=lambda _indx: (
             MelIcons(),
             MelModel(),
-        )),
-        MelBase(b'FNAM', u'female_body_data_marker', b''),
+        )), MelBase(b'FNAM', u'female_body_data_marker'),
         MelRaceParts({
             0: u'femaleUpperBody',
             1: u'femaleLeftHand',
@@ -2536,9 +2535,9 @@ class MreRace(MelRecord):
         )),
         MelFidList(b'HNAM','hairs'),
         MelFidList(b'ENAM','eyes'),
-        MelBase(b'MNAM', 'male_facegen_marker', b''),
+        MelBase(b'MNAM', 'male_facegen_marker'),
         MelRaceFaceGen('maleFaceGen'),
-        MelBase(b'FNAM', 'female_facegen_marker', b''),
+        MelBase(b'FNAM', 'female_facegen_marker'),
         MelRaceFaceGen('femaleFaceGen'),
     ).with_distributor({
         b'NAM0': {
@@ -3224,7 +3223,7 @@ class MreWthr(MelRecord):
             MelWthrColors(b'NAM0'),
         ),
         MelStruct(b'FNAM','6f','fogDayNear','fogDayFar','fogNightNear','fogNightFar','fogDayPower','fogNightPower'),
-        MelBase(b'INAM', 'unused1', null1 * 304),
+        MelBase(b'INAM', 'unused1'),
         MelStruct(b'DATA','15B',
             'windSpeed','lowerCloudSpeed','upperCloudSpeed','transDelta',
             'sunGlare','sunDamage','rainFadeIn','rainFadeOut','boltFadeIn',
