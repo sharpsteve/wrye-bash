@@ -34,8 +34,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelReferences, MelColorInterpolator, MelValueInterpolator, \
     MelUnion, AttrValDecider, MelRegnEntrySubrecord, SizeDecider, MelFloat, \
     MelSInt8, MelSInt16, MelSInt32, MelUInt8, MelUInt16, MelUInt32, \
-    MelOptFid, MelOptUInt8, \
-    MelOptUInt16, MelOptUInt32, MelPartialCounter, MelRaceParts, \
+    MelOptFid, MelOptUInt32, MelPartialCounter, MelRaceParts, \
     MelRaceVoices, MelBounds, null1, null2, null3, null4, MelScriptVars, \
     MelSequential, MelTruncatedStruct, PartialLoadDecider, MelReadOnly, \
     MelSkipInterior, MelIcons, MelIcons2, MelIcon, MelIco2, MelEdid, MelFull, \
@@ -43,8 +42,8 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelCtdaFo3, MelRef3D, MelXlod, MelNull, MelWorldBounds, MelEnableParent, \
     MelRefScale, MelMapMarker, MelActionFlags, MelEnchantment, MelScript, \
     MelDecalData, MelDescription, MelLists, MelPickupSound, MelDropSound, \
-    MelActivateParents, BipedFlags, MelSpells, MelUInt8Flags, MelUInt16Flags, \
-    MelUInt32Flags, MelOptUInt32Flags, MelOptUInt8Flags, MelOwnership, \
+    MelActivateParents, BipedFlags, MelSpells, MelUInt16Flags, \
+    MelUInt32Flags, MelOptUInt32Flags, MelUInt8Flags, MelOwnership, \
     MelDebrData, MelModelCompare
 from ...exception import ModSizeError
 # Set MelModel in brec but only if unset
@@ -77,8 +76,8 @@ if brec.MelModel is None:
             # No MODD/MOSD equivalent for MOD2 and MOD4
             if len(types) == 5 and with_facegen_flags:
                 model_elements += [
-                    MelOptUInt8Flags(types[4], u'facegen_model_flags',
-                                     _MelModel._facegen_model_flags)]
+                    MelUInt8Flags(types[4], u'facegen_model_flags',
+                                  _MelModel._facegen_model_flags)]
             super(_MelModel, self).__init__(attr, *model_elements)
 
     brec.MelModel = _MelModel
@@ -740,13 +739,13 @@ class MreCell(MelRecord):
         MelString(b'XNAM','waterNoiseTexture'),
         MelFidList(b'XCLR','regions'),
         MelFid(b'XCIM','imageSpace'),
-        MelOptUInt8(b'XCET', 'xcet_p'),
+        MelUInt8(b'XCET', 'xcet_p'),
         MelFid(b'XEZN','encounterZone'),
         MelFid(b'XCCM','climate'),
         MelFid(b'XCWT','water'),
         MelOwnership(),
         MelFid(b'XCAS','acousticSpace'),
-        MelOptUInt8(b'XCMT', 'xcmt_p'),
+        MelUInt8(b'XCMT', 'xcmt_p'),
         MelFid(b'XCMO','music'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1691,7 +1690,7 @@ class MreLtex(MelRecord):
         MelIcon(),
         MelFid(b'TNAM', 'texture'),
         MelOptStruct(b'HNAM','3B','materialType','friction','restitution'),
-        MelOptUInt8(b'SNAM', 'specular'),
+        MelUInt8(b'SNAM', 'specular'),
         MelFids(b'GNAM', 'grass'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -3103,7 +3102,7 @@ class MreWeap(MelRecord):
         MelIcons(),
         MelScript(),
         MelEnchantment(),
-        MelOptUInt16(b'EAMT', 'objectEffectPoints'),
+        MelUInt16(b'EAMT', 'objectEffectPoints'),
         MelFid(b'NAM0','ammo'),
         MelDestructible(),
         MelFid(b'REPL','repairList'),

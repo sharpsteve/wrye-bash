@@ -34,7 +34,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelFidList, MreGmstBase, MreHeaderBase, MelColorInterpolator, \
     MelValueInterpolator, MelRegnEntrySubrecord, MelFloat, MelSInt8, \
     MelSInt16, MelSInt32, MelUInt8, MelUInt32, MelOptFid, \
-    MelOptUInt8, MelOptUInt16, MelOptUInt32, MelBounds, null1, \
+    MelUInt16, MelOptUInt32, MelBounds, null1, \
     null2, null3, null4, MelTruncatedStruct, MelReadOnly, MelSkipInterior, \
     MelIcons, MelIcons2, MelIcon, MelIco2, MelEdid, MelFull, MelArray, \
     MelObject, MreWithItems, MelRef3D, MelXlod, MelNull, MelEnableParent, \
@@ -412,9 +412,9 @@ class MreCell(MelRecord):
                     ),
         MelString(b'XNAM','waterNoiseTexture'),
         MelFidList(b'XCLR','regions'),
-        MelOptUInt8(b'XCMT', 'xcmt_p'),
+        MelUInt8(b'XCMT', 'xcmt_p'),
         MelFid(b'XCIM','imageSpace'),
-        MelOptUInt8(b'XCET', 'xcet_p'),
+        MelUInt8(b'XCET', 'xcet_p'),
         MelFid(b'XEZN','encounterZone'),
         MelFid(b'XCCM','climate'),
         MelFid(b'XCWT','water'),
@@ -1533,7 +1533,7 @@ class MreWeap(MelRecord):
         MelIcons(),
         MelScript(),
         MelEnchantment(),
-        MelOptUInt16(b'EAMT', 'objectEffectPoints'),
+        MelUInt16(b'EAMT', 'objectEffectPoints'),
         MelFid(b'NAM0','ammo'),
         MelDestructible(),
         MelFid(b'REPL','repairList'),

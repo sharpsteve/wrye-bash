@@ -34,7 +34,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelFids, MreHeaderBase, MelBase, MelFidList, MelStrings, \
     MreGmstBase, MelReferences, MelRegnEntrySubrecord, \
     MelFloat, MelSInt16, MelSInt32, MelUInt8, MelUInt16, MelUInt32, \
-    MelOptUInt8, MelOptUInt16, MelOptUInt32, \
+    MelOptUInt32, \
     MelRaceParts, MelRaceVoices, null1, null2, null3, null4, MelScriptVars, \
     MelSequential, MelUnion, FlagDecider, AttrValDecider, PartialLoadDecider, \
     MelTruncatedStruct, MelSkipInterior, MelIcon, MelIco2, MelEdid, MelFull, \
@@ -530,7 +530,7 @@ class MreAmmo(MelRecord):
         MelModel(),
         MelIcon(),
         MelFid(b'ENAM','enchantment'),
-        MelOptUInt16(b'ANAM', 'enchantPoints'),
+        MelUInt16(b'ANAM', 'enchantPoints'),
         MelStruct(b'DATA', 'fB3sIfH', 'speed', (_flags, u'flags'),
                   ('unused1', null3), 'value', 'weight', 'damage'),
     )
@@ -576,7 +576,7 @@ class MreArmo(MelRecord):
         MelFull(),
         MelScript(),
         MelFid(b'ENAM','enchantment'),
-        MelOptUInt16(b'ANAM', 'enchantPoints'),
+        MelUInt16(b'ANAM', 'enchantPoints'),
         MelUInt32Flags(b'BMDT', u'biped_flags', _flags),
         MelModel(u'maleBody', 0),
         MelModel(u'maleWorld', 2),
@@ -602,7 +602,7 @@ class MreBook(MelRecord):
         MelDescription(u'book_text'),
         MelScript(),
         MelFid(b'ENAM','enchantment'),
-        MelOptUInt16(b'ANAM', 'enchantPoints'),
+        MelUInt16(b'ANAM', 'enchantPoints'),
         MelStruct(b'DATA', '=BbIf', (_flags, u'flags'), ('teaches', -1),
                   'value', 'weight'),
     )
@@ -650,7 +650,7 @@ class MreCell(MelRecord):
             (u'unused3', null1), u'fogNear', u'fogFar', u'directionalXY',
             u'directionalZ', (u'directionalFade', 1.0), u'fogClip'),
         MelFidList(b'XCLR', u'regions'),
-        MelOptUInt8(b'XCMT', u'music'),
+        MelUInt8(b'XCMT', u'music'),
         # CS default for water is -2147483648, but by setting default here
         # to -2147483649, we force the bashed patch to retain the value of
         # the last mod. # FIXME test
@@ -730,7 +730,7 @@ class MreClot(MelRecord):
         MelFull(),
         MelScript(),
         MelFid(b'ENAM','enchantment'),
-        MelOptUInt16(b'ANAM', 'enchantPoints'),
+        MelUInt16(b'ANAM', 'enchantPoints'),
         MelUInt32Flags(b'BMDT', u'biped_flags', _flags),
         MelModel(u'maleBody', 0),
         MelModel(u'maleWorld', 2),
@@ -1224,7 +1224,7 @@ class MreLtex(MelRecord):
         MelIcon(),
         MelOptStruct(b'HNAM', '3B', (_flags, 'flags'), 'friction',
                      'restitution'), ##: flags are actually an enum....
-        MelOptUInt8(b'SNAM', 'specular'),
+        MelUInt8(b'SNAM', 'specular'),
         MelFids(b'GNAM', 'grass'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1672,7 +1672,7 @@ class MreRefr(MelRecord):
         MelBase(b'ONAM', u'open_by_default'),
         MelBase(b'XRGD', u'xrgd_p'), # Ragdoll Data, bytearray
         MelRefScale(),
-        MelOptUInt8(b'XSOL', u'ref_soul'),
+        MelUInt8(b'XSOL', u'ref_soul'),
         MelRef3D(),
     ).with_distributor({
         b'FULL': u'full', # unused, but still need to distribute it
@@ -1958,7 +1958,7 @@ class MreWeap(MelRecord):
         MelIcon(),
         MelScript(),
         MelFid(b'ENAM','enchantment'),
-        MelOptUInt16(b'ANAM', 'enchantPoints'),
+        MelUInt16(b'ANAM', 'enchantPoints'),
         MelStruct(b'DATA','I2f3IfH','weaponType','speed','reach',(_flags, u'flags'),
             'value','health','weight','damage'),
     )
