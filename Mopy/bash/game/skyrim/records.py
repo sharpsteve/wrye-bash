@@ -33,7 +33,7 @@ from ...brec import MelRecord, MelObject, MelGroups, MelStruct, FID, \
     MreGmstBase, MelLString, MelMODS, MelColorInterpolator, \
     MelValueInterpolator, MelUnion, AttrValDecider, MelRegnEntrySubrecord, \
     PartialLoadDecider, FlagDecider, MelFloat, MelSInt8, MelSInt32, MelUInt8, \
-    MelUInt16, MelUInt32, MelOptSInt16, MelOptSInt32, \
+    MelUInt16, MelUInt32, \
     MelActionFlags, MelOptUInt16, MelOptUInt32, MelOptFid, MelCounter, \
     MelPartialCounter, MelBounds, null1, null2, null3, null4, MelSequential, \
     MelTruncatedStruct, MelIcons, MelIcons2, MelIcon, MelIco2, MelEdid, \
@@ -1501,7 +1501,7 @@ class MreArmo(MelRecord):
         MelBounds(),
         MelFull(),
         MelEnchantment(),
-        MelOptSInt16(b'EAMT', 'enchantmentAmount'),
+        MelSInt16(b'EAMT', 'enchantmentAmount'),
         MelModel(u'model2', b'MOD2'),
         MelIcons(u'maleIconPath', u'maleSmallIconPath'),
         MelModel(u'model4', b'MOD4'),
@@ -4091,8 +4091,8 @@ class MreQust(MelRecord):
             MelUInt32Flags(b'FNAM', u'flags', aliasFlags),
             # None here is on purpose - ALFI is an alias ID, and 0 is a
             # perfectly valid alias ID. However, it does not have to be
-            # present, and so needs to be an optional element -> None.
-            MelOptSInt32(b'ALFI', u'forcedIntoAlias', None),
+            # present, and so needs to be an optional element -> None. FIXME test
+            MelSInt32(b'ALFI', u'forcedIntoAlias'),
             MelFid(b'ALFL','specificLocation'),
             MelFid(b'ALFR','forcedReference'),
             MelFid(b'ALUA','uniqueActor'),
@@ -4543,7 +4543,7 @@ class MreRefr(MelRecord):
         MelFidList(b'XLRT','locationRefType',),
         MelNull(b'XIS2',),
         MelOwnership(),
-        MelOptSInt32(b'XCNT', 'count'),
+        MelSInt32(b'XCNT', 'count'),
         MelFloat(b'XCHG', u'charge'),
         MelFid(b'XLRL','locationReference'),
         MelEnableParent(),
