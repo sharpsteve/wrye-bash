@@ -873,10 +873,3 @@ class MelOptStruct(MelStruct):
             if oldValue is not None and oldValue != default:
                 return super(MelOptStruct, self).pack_subrecord_data(record)
         return None
-
-#------------------------------------------------------------------------------
-class MelOptFid(MelFid, MelOptUInt32):  # TODO(ut): as it stands it could be
-    #   MelOptFid(MelFid) -> that's because MelFid is also used for optional
-    #   fids all over the place
-    """Optional FormID. Wrapper around MelOptUInt32 to avoid having to
-    constantly specify the format."""

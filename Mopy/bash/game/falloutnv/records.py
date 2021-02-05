@@ -33,7 +33,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelString, MelSet, MelFid, MelOptStruct, MelFids, MelBase, \
     MelFidList, MreGmstBase, MreHeaderBase, MelColorInterpolator, \
     MelValueInterpolator, MelRegnEntrySubrecord, MelFloat, MelSInt8, \
-    MelSInt16, MelSInt32, MelUInt8, MelUInt32, MelOptFid, \
+    MelSInt16, MelSInt32, MelUInt8, MelUInt32, \
     MelUInt16, MelBounds, null1, \
     null2, null3, null4, MelTruncatedStruct, MelReadOnly, MelSkipInterior, \
     MelIcons, MelIcons2, MelIcon, MelIco2, MelEdid, MelFull, MelArray, \
@@ -95,7 +95,7 @@ class MreAchr(MelRecord):
         MelActivateParents(),
         MelString(b'XATO','activationPrompt'),
         MelEnableParent(),
-        MelOptFid(b'XEMI', 'emittance'),
+        MelFid(b'XEMI', 'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
@@ -136,7 +136,7 @@ class MreAcre(MelRecord):
         MelActivateParents(),
         MelString(b'XATO','activationPrompt'),
         MelEnableParent(),
-        MelOptFid(b'XEMI', 'emittance'),
+        MelFid(b'XEMI', 'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
@@ -671,7 +671,7 @@ class MreFact(MelRecord):
             MelString(b'FNAM', u'female_title'),
             MelString(b'INAM', u'insignia_path')
         ),
-        MelOptFid(b'WMI1', u'reputation'),
+        MelFid(b'WMI1', u'reputation'),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1027,8 +1027,8 @@ class MreMset(MelRecord):
         MelFloat(b'ENAM', 'enam'),
         MelFloat(b'FNAM', 'fnam'),
         MelFloat(b'GNAM', 'gnam'),
-        MelOptFid(b'HNAM', 'hnam'),
-        MelOptFid(b'INAM', 'inam'),
+        MelFid(b'HNAM', 'hnam'),
+        MelFid(b'INAM', 'inam'),
         MelBase(b'DATA','data'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1081,7 +1081,7 @@ class MrePgre(MelRecord):
         MelActivateParents(),
         MelString(b'XATO','activationPrompt'),
         MelEnableParent(),
-        MelOptFid(b'XEMI', 'emittance'),
+        MelFid(b'XEMI', 'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
@@ -1125,7 +1125,7 @@ class MrePmis(MelRecord):
         MelActivateParents(),
         MelString(b'XATO','activationPrompt'),
         MelEnableParent(),
-        MelOptFid(b'XEMI', 'emittance'),
+        MelFid(b'XEMI', 'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
@@ -1295,7 +1295,7 @@ class MreRefr(MelRecord):
         MelActivateParents(),
         MelString(b'XATO','activationPrompt'),
         MelEnableParent(),
-        MelOptFid(b'XEMI', 'emittance'),
+        MelFid(b'XEMI', 'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelActionFlags(),
         MelBase(b'ONAM','onam_p'),

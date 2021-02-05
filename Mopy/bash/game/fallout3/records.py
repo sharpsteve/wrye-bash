@@ -34,7 +34,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelReferences, MelColorInterpolator, MelValueInterpolator, \
     MelUnion, AttrValDecider, MelRegnEntrySubrecord, SizeDecider, MelFloat, \
     MelSInt8, MelSInt16, MelSInt32, MelUInt8, MelUInt16, MelUInt32, \
-    MelOptFid, MelPartialCounter, MelRaceParts, \
+    MelPartialCounter, MelRaceParts, \
     MelRaceVoices, MelBounds, null1, null2, null3, null4, MelScriptVars, \
     MelSequential, MelTruncatedStruct, PartialLoadDecider, MelReadOnly, \
     MelSkipInterior, MelIcons, MelIcons2, MelIcon, MelIco2, MelEdid, MelFull, \
@@ -304,7 +304,7 @@ class MreAchr(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFid(b'NAME','base'),
-        MelOptFid(b'XEZN', u'encounterZone'),
+        MelFid(b'XEZN', u'encounterZone'),
         MelBase(b'XRGD','ragdollData'),
         MelBase(b'XRGB','ragdollBipedData'),
         MelGroup('patrolData',
@@ -315,20 +315,20 @@ class MreAchr(MelRecord):
             MelFid(b'TNAM','topic'),
         ),
         MelSInt32(b'XLCM', 'levelModifier'),
-        MelOptFid(b'XMRC', u'merchantContainer',),
+        MelFid(b'XMRC', u'merchantContainer',),
         MelSInt32(b'XCNT', 'count'),
         MelFloat(b'XRDS', 'radius'),
         MelFloat(b'XHLP', 'health'),
         MelGroups('linkedDecals',
             MelStruct(b'XDCR', '2I', (FID, 'reference'), 'unknown'),
         ),
-        MelOptFid(b'XLKR', u'linkedReference'),
+        MelFid(b'XLKR', u'linkedReference'),
         MelOptStruct(b'XCLP','8B','linkStartColorRed','linkStartColorGreen','linkStartColorBlue',('linkColorUnused1',null1),
                      'linkEndColorRed','linkEndColorGreen','linkEndColorBlue',('linkColorUnused2',null1)),
         MelActivateParents(),
         MelEnableParent(),
-        MelOptFid(b'XEMI', u'emittance'),
-        MelOptFid(b'XMBR', u'multiboundReference'),
+        MelFid(b'XEMI', u'emittance'),
+        MelFid(b'XMBR', u'multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
         MelRef3D(),
@@ -343,7 +343,7 @@ class MreAcre(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFid(b'NAME','base'),
-        MelOptFid(b'XEZN', u'encounterZone'),
+        MelFid(b'XEZN', u'encounterZone'),
         MelBase(b'XRGD','ragdollData'),
         MelBase(b'XRGB','ragdollBipedData'),
         MelGroup('patrolData',
@@ -355,20 +355,20 @@ class MreAcre(MelRecord):
         ),
         MelSInt32(b'XLCM', 'levelModifier'),
         MelOwnership(),
-        MelOptFid(b'XMRC', u'merchantContainer'),
+        MelFid(b'XMRC', u'merchantContainer'),
         MelSInt32(b'XCNT', 'count'),
         MelFloat(b'XRDS', 'radius'),
         MelFloat(b'XHLP', 'health'),
         MelGroups('linkedDecals',
             MelStruct(b'XDCR', '2I', (FID, 'reference'), 'unknown'),
         ),
-        MelOptFid(b'XLKR', u'linkedReference'),
+        MelFid(b'XLKR', u'linkedReference'),
         MelOptStruct(b'XCLP','8B','linkStartColorRed','linkStartColorGreen','linkStartColorBlue',('linkColorUnused1',null1),
                      'linkEndColorRed','linkEndColorGreen','linkEndColorBlue',('linkColorUnused2',null1)),
         MelActivateParents(),
         MelEnableParent(),
-        MelOptFid(b'XEMI', u'emittance'),
-        MelOptFid(b'XMBR', u'multiboundReference'),
+        MelFid(b'XEMI', u'emittance'),
+        MelFid(b'XMBR', u'multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
         MelRef3D(),
@@ -387,10 +387,10 @@ class MreActi(MelRecord):
         MelModel(),
         MelScript(),
         MelDestructible(),
-        MelOptFid(b'SNAM', u'soundLooping'),
-        MelOptFid(b'VNAM', u'soundActivation'),
-        MelOptFid(b'RNAM', u'radioStation'),
-        MelOptFid(b'WNAM', u'waterType'),
+        MelFid(b'SNAM', u'soundLooping'),
+        MelFid(b'VNAM', u'soundActivation'),
+        MelFid(b'RNAM', u'radioStation'),
+        MelFid(b'WNAM', u'waterType'),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -404,7 +404,7 @@ class MreAddn(MelRecord):
         MelBounds(),
         MelModel(),
         MelSInt32(b'DATA', 'nodeIndex'),
-        MelOptFid(b'SNAM', u'ambientSound'),
+        MelFid(b'SNAM', u'ambientSound'),
         MelStruct(b'DNAM','H2s','mastPartSysCap','unknown',),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1794,7 +1794,7 @@ class MreMgef(MelRecord):
             u'actorValue'),
             counter=u'counter_effect_count', counts=u'counter_effects'),
         MelGroups(u'counter_effects',
-            MelOptFid(b'ESCE', u'counter_effect_code'),
+            MelFid(b'ESCE', u'counter_effect_code'),
         ),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -2276,7 +2276,7 @@ class MrePgre(MelRecord):
                      'linkEndColorRed','linkEndColorGreen','linkEndColorBlue',('linkColorUnused2',null1)),
         MelActivateParents(),
         MelEnableParent(),
-        MelOptFid(b'XEMI', u'emittance'),
+        MelFid(b'XEMI', u'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
@@ -2319,7 +2319,7 @@ class MrePmis(MelRecord):
                      'linkEndColorRed','linkEndColorGreen','linkEndColorBlue',('linkColorUnused2',null1)),
         MelActivateParents(),
         MelEnableParent(),
-        MelOptFid(b'XEMI', u'emittance'),
+        MelFid(b'XEMI', u'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelBase(b'XIBS','ignoredBySandbox'),
         MelRefScale(),
@@ -2642,7 +2642,7 @@ class MreRefr(MelRecord):
                      'linkEndColorRed','linkEndColorGreen','linkEndColorBlue',('linkColorUnused2',null1)),
         MelActivateParents(),
         MelEnableParent(),
-        MelOptFid(b'XEMI', u'emittance'),
+        MelFid(b'XEMI', u'emittance'),
         MelFid(b'XMBR','multiboundReference'),
         MelActionFlags(),
         MelBase(b'ONAM','onam_p'),
