@@ -1593,7 +1593,7 @@ class MreWeap(MelRecord):
                     'animationAttackMultiplier','fireRate','overrideActionPoint',
                     'rumbleLeftMotorStrength','rumbleRightMotorStrength',
                     'rumbleDuration','overrideDamageToWeaponMult','attackShotsPerSec',
-                    'reloadTime','jamTime','aimArc',('skill',45),'rumblePattern',
+                    'reloadTime','jamTime','aimArc', 'skill','rumblePattern',
                     'rambleWavelangth','limbDmgMult',('resistType',-1),
                     'sightUsage','semiAutomaticFireDelayMin',
                     'semiAutomaticFireDelayMax',

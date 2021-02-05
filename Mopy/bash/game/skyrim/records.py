@@ -3153,7 +3153,7 @@ class MreLeveledList(MreLeveledListBase):
         def __init__(self):
             MelGroups.__init__(self, u'entries',
                 MelStruct(b'LVLO', u'2HI2H', u'level', u'unknown1',
-                          (FID, u'listId'), (u'count', 1),
+                          (FID, u'listId'), u'count',
                           u'unknown2'),
                 MelCoed(),
             )

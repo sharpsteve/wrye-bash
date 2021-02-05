@@ -328,7 +328,7 @@ class MreLeveledList(MreLeveledListBase):
         MelFid(b'TNAM','template'),
         MelGroups('entries',
             MelLevListLvlo(b'LVLO', u'h2sIh2s', u'level', u'unused1',
-                           (FID, u'listId'), (u'count', 1),
+                           (FID, u'listId'), u'count',
                            u'unused2', old_versions={u'iI'}),
         ),
         MelNull(b'DATA'),
@@ -873,7 +873,7 @@ class MreCsty(MelRecord):
             (_flagsA, 'flagsA'), 'acroDodge', 'unused5',
             ('rMultOpt', 1.0), ('rMultMax', 1.0), ('mDistance', 250.0),
             ('rDistance', 1000.0), ('buffStand', 325.0), ('rStand', 500.0),
-            ('groupStand', 325.0), ('rushChance', 25), 'unused6',
+            ('groupStand', 325.0), 'rushChance', 'unused6',
             ('rushMult', 1.0), (_flagsB, 'flagsB'), old_versions={
                 '2B2s8f2B2s3fB3s2f5B3s2f2B2s7fB3sf',
                 '2B2s8f2B2s3fB3s2f5B3s2f2B2s7f',
@@ -947,17 +947,17 @@ class MreEfsh(MelRecord):
             u'fillAnimSpdV', u'edgeOff', u'edgeRed', u'edgeGreen', u'edgeBlue',
             u'unused3', u'edgeAIn', u'edgeAFull', u'edgeAOut',
             u'edgeAPRatio', u'edgeAAmp', u'edgeAFreq', u'fillAFRatio',
-            u'edgeAFRatio', u'memDBlend', (u'partSBlend', 5),
-            (u'partBlendOp', 1), (u'partZFunc', 4), (u'partDBlend', 6),
+            u'edgeAFRatio', u'memDBlend', u'partSBlend',
+            (u'partBlendOp', 1), u'partZFunc', u'partDBlend',
             u'partBUp', u'partBFull', u'partBDown', (u'partBFRatio', 1.0),
             (u'partBPRatio', 1.0), (u'partLTime', 1.0), u'partLDelta',
             u'partNSpd', u'partNAcc', u'partVel1', u'partVel2', u'partVel3',
             u'partAcc1', u'partAcc2', u'partAcc3', u'partKey1',
             (u'partKey2', 1.0), u'partKey1Time', (u'partKey2Time', 1.0),
-            (u'key1Red', 255), (u'key1Green', 255), (u'key1Blue', 255),
-            u'unused4', (u'key2Red', 255), (u'key2Green', 255),
-            (u'key2Blue', 255), u'unused5', (u'key3Red', 255),
-            (u'key3Green', 255), (u'key3Blue', 255), u'unused6',
+            (u'key1Red', 255), u'key1Green', u'key1Blue',
+            u'unused4', u'key2Red', u'key2Green',
+            (u'key2Blue', 255), u'unused5', u'key3Red',
+            (u'key3Green', 255), u'key3Blue', u'unused6',
             (u'key1A', 1.0), (u'key2A', 1.0), (u'key3A', 1.0), u'key1Time',
             (u'key2Time', 0.5), (u'key3Time', 1.0),
             old_versions={u'B3s3I3Bs9f3Bs8fI'}),
@@ -1363,7 +1363,7 @@ class MreNpc(MreActorBase):
     class MelNpcData(MelLists):
         """Convert npc stats into skills, health, attributes."""
         _attr_indexes = OrderedDict( # 21 skills and 7 attributes
-            [(u'skills', slice(21)), (u'health', 21), (u'unused2', 22),
+            [(u'skills', slice(21)), u'health', u'unused2',
              (u'attributes', slice(23, None))])
 
     melSet = MelSet(
