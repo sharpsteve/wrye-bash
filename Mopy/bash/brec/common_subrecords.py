@@ -189,6 +189,8 @@ class MelCtda(MelUnion):
     def getSlotsUsed(self): # PY3: unpack
         return (self.decider_result_attr,) + self._ctda_mel.getSlotsUsed()
 
+    # def mel_default_value(self): XXX getDefaulters
+    #     self._ctda_mel.mel_default_value()
 
 class MelCtdaFo3(MelCtda):
     """Version of MelCtda that handles the additional complexities that were
