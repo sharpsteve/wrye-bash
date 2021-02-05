@@ -253,7 +253,7 @@ class MreArma(MelRecord):
         MelStruct(b'DATA','IIf','value','health','weight'),
         MelTruncatedStruct(b'DNAM', 'hHf4s', 'ar',
                            (_dnamFlags, u'dnamFlags'), 'dt',
-                           ('armaDnam1', null4), old_versions={'hH'}),
+                           'armaDnam1', old_versions={'hH'}),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -287,7 +287,7 @@ class MreArmo(MelRecord):
         MelStruct(b'DATA','=2if','value','health','weight'),
         MelTruncatedStruct(b'DNAM', 'hHf4s', 'ar',
                            (_dnamFlags, u'dnamFlags'), 'dt',
-                           ('armoDnam1', null4), old_versions={'hH'}),
+                           'armoDnam1', old_versions={'hH'}),
         MelUInt32(b'BNAM', u'overridesAnimationSound'),
         MelGroups('animationSounds',
             MelStruct(b'SNAM', 'IB3sI', (FID, 'sound'), 'chance',
@@ -1269,8 +1269,8 @@ class MreRefr(MelRecord):
         # record to me - but no way to test since we don't load this yet
         MelTruncatedStruct(
             b'XLOC', 'B3sI4sB3s4s', 'lockLevel', ('unused1',null3),
-            (FID, 'lockKey'), ('unused2', null4), (_lockFlags, 'lockFlags'),
-            ('unused3', null3), ('unused4', null4), is_optional=True,
+            (FID, 'lockKey'), 'unused2', (_lockFlags, 'lockFlags'),
+            ('unused3', null3), 'unused4', is_optional=True,
             old_versions={'B3sI4s'}),
         MelSInt32(b'XCNT', 'count'),
         MelFloat(b'XRDS', 'radius'),
@@ -1363,11 +1363,11 @@ class MreRegn(MelRecord):
                     'minSlope', 'maxSlope', (obflags, 'flags'),
                     'radiusWRTParent', 'radius', 'minHeight', 'maxHeight',
                     'sink', 'sinkVar', 'sizeVar', 'angleVarX', 'angleVarY',
-                    'angleVarZ', ('unk2', null2), ('unk3', null4)),
+                    'angleVarZ', ('unk2', null2), 'unk3'),
             )),
             MelRegnEntrySubrecord(4, MelString(b'RDMP', 'mapName')),
             MelRegnEntrySubrecord(6, MelArray('grasses',
-                MelStruct(b'RDGS', 'I4s', (FID, 'grass'), ('unknown', null4)),
+                MelStruct(b'RDGS', 'I4s', (FID, 'grass'), 'unknown'),
             )),
             MelRegnEntrySubrecord(7, MelUInt32(b'RDMD', 'musicType')),
             MelRegnEntrySubrecord(7, MelFid(b'RDMO', 'music')),

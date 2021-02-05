@@ -873,7 +873,7 @@ class MreMisc(MelRecord):
         MelModel(),
         MelMWFull(),
         MelStruct(b'MCDT', u'fI4s', u'misc_weight', u'misc_value',
-            (u'unknown1', null4)),
+                  u'unknown1'),
         MelScriptId(),
         MelMWIcon(),
     )
