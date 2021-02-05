@@ -127,8 +127,8 @@ class MelCtda(MelUnion):
         # cause exponential growth and bring PBash down to a crawl.
         prefix_fmt = u'B3s4sH2s' + (u'%s' * len(func_data[1:]))
         prefix_elements = [(self._ctda_type_flags, u'operFlag'),
-                           (u'unused1', null3), u'compValue',
-                           u'ifunc', (u'unused2', null2)]
+                           u'unused1', u'compValue',
+                           u'ifunc', u'unused2']
         # Builds an argument tuple to use for formatting the struct format
         # string from above plus the suffix we got passed in
         fmt_list = tuple([self._param_types[func_param]
@@ -255,8 +255,8 @@ class MelDecalData(MelOptStruct):
         super(MelDecalData, self).__init__(b'DODT', u'7fBB2s3Bs', u'minWidth',
             u'maxWidth', u'minHeight', u'maxHeight', u'depth', u'shininess',
             u'parallaxScale', u'parallaxPasses',
-            (self._decal_data_flags, u'decalFlags'), (u'unusedDecal1', null2),
-            u'redDecal', u'greenDecal', u'blueDecal', (u'unusedDecal2', null1))
+            (self._decal_data_flags, u'decalFlags'), u'unusedDecal1',
+            u'redDecal', u'greenDecal', u'blueDecal', u'unusedDecal2')
 
 #------------------------------------------------------------------------------
 class MelReferences(MelGroups):
@@ -378,10 +378,10 @@ class MelWthrColors(MelStruct):
     def __init__(self, wthr_sub_sig):
         MelStruct.__init__(
             self, wthr_sub_sig, u'3Bs3Bs3Bs3Bs', u'riseRed', u'riseGreen',
-            u'riseBlue', (u'unused1', null1), u'dayRed', u'dayGreen',
-            u'dayBlue',(u'unused2', null1), u'setRed', u'setGreen', u'setBlue',
-            (u'unused3', null1), u'nightRed', u'nightGreen', u'nightBlue',
-            (u'unused4', null1))
+            u'riseBlue', u'unused1', u'dayRed', u'dayGreen',
+            u'dayBlue',u'unused2', u'setRed', u'setGreen', u'setBlue',
+            u'unused3', u'nightRed', u'nightGreen', u'nightBlue',
+            u'unused4')
 
 #------------------------------------------------------------------------------
 class MelDropSound(MelFid):
@@ -640,7 +640,7 @@ class MelDebrData(MelStruct):
     def __init__(self):
         # Format doesn't matter, struct.Struct(u'') works! ##: MelStructured
         super(MelDebrData, self).__init__(b'DATA', u'', u'percentage',
-            (u'modPath', null1), u'flags')
+            u'modPath', u'flags') # fixme (test)
 
     def load_mel(self, record, ins, sub_type, size_, *debug_strs):
         byte_data = ins.read(size_, *debug_strs)

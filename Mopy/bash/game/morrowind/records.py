@@ -83,7 +83,7 @@ class MelAIAccompanyPackage(MelOptStruct):
         super(MelAIAccompanyPackage, self).__init__(ai_package_sig,
             u'3fH32sBs', u'dest_x', u'dest_y', u'dest_z', u'package_duration',
             (FixedString(32), u'package_id'), (u'unknown_marker', 1),
-            (u'unused1', null1))
+            u'unused1')
 
 class MelAIPackages(MelGroups):
     """Handles the AI_* and CNDT subrecords, which have the additional
@@ -97,7 +97,7 @@ class MelAIPackages(MelGroups):
                 b'AI_E': MelAIAccompanyPackage(b'AI_E'),
                 b'AI_F': MelAIAccompanyPackage(b'AI_F'),
                 b'AI_T': MelStruct(b'AI_T', u'3fB3s', u'dest_x', u'dest_y',
-                    u'dest_z', (u'unknown_marker', 1), (u'unused1', null1)),
+                    u'dest_z', (u'unknown_marker', 1), u'unused1'),
                 b'AI_W': MelStruct(b'AI_W', u'=2H10B', u'wanter_distance',
                     u'wanter_duration', u'time_of_day', u'idle_1', u'idle_2',
                     u'idle_3', u'idle_4', u'idle_5', u'idle_6', u'idle_7',
@@ -692,9 +692,9 @@ class MreInfo(MelRecord):
         MelString(b'INAM', u'info_name_string'),
         MelString(b'PNAM', u'prev_info_name'),
         MelString(b'NNAM', u'next_info_name'),
-        MelStruct(b'DATA', u'B3sIBbBs', u'dialogue_type', (u'unused1', null3),
+        MelStruct(b'DATA', u'B3sIBbBs', u'dialogue_type', u'unused1',
             u'disposition', u'dialogue_rank', u'speaker_gender', u'pc_rank',
-            (u'unused2', null1)),
+            u'unused2'),
         MelString(b'ONAM', u'actor_name'),
         MelString(b'RNAM', u'race_name'),
         MelString(b'CNAM', u'class_name'),
@@ -924,13 +924,13 @@ class MreNpc(MelRecord):
         MelScriptId(),
         MelUnion({
             12: MelStruct(b'NPDT', u'H3B3sB', u'npc_level', u'npc_disposition',
-                u'npc_reputation', u'npc_rank', (u'unknown1', null3),
+                u'npc_reputation', u'npc_rank', u'unknown1',
                 u'npc_gold'),
             52: MelNpcData(b'NPDT', u'H35Bs3H3BsI', u'npc_level',
                 (u'attributes', [0] * 8), (u'skills', [0] * 27),
-                (u'unknown2', null1), u'npc_health', u'npc_spell_points',
+                u'unknown2', u'npc_health', u'npc_spell_points',
                 u'npc_fatigue', u'npc_disposition', u'npc_reputation',
-                u'npc_rank', (u'unknown3', null1), u'npc_gold'),
+                u'npc_rank', u'unknown3', u'npc_gold'),
         }, decider=NpcDataDecider()),
         MelUInt32Flags(b'FLAG', u'npc_flags', _npc_flags),
         MelItems(),
@@ -948,7 +948,7 @@ class MrePgrd(MelRecord):
 
     melSet = MelSet(
         MelStruct(b'DATA', u'2I2sH', u'pgrd_x', u'pgrd_y',
-            (u'unknown1', null2), u'point_count'),
+            u'unknown1', u'point_count'),
         MelMWId(),
         # Could be loaded via MelArray, but are very big and not very useful
         MelBase(b'PGRP', u'point_array'),
