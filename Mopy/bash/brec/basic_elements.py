@@ -750,7 +750,7 @@ def parseElements(*elements):
 
     Example call:
     parseElements('level', 'unused1', (FID, 'listId', None),
-                  ('count', 1), 'unused2')
+    'count', (action_class, u'flags'))
 
     :type elements: (list[None|unicode|tuple])"""
     formAttrs = set()

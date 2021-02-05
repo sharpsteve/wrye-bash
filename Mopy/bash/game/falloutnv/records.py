@@ -551,7 +551,7 @@ class MreCsty(MelRecord):
                     'pAtkNormal','pAtkFor','pAtkBack','pAtkL','pAtkR',
                     ('unused4',null3),'holdTimerMin','holdTimerMax',
                     (_flagsA,'flagsA'),('unused5',null2),'acroDodge',
-                    ('rushChance',25),('unused6',null3),('rushMult',1.0),),
+                    'rushChance',('unused6',null3),('rushMult',1.0),),
         MelOptStruct(b'CSAD', '21f', 'dodgeFMult', 'dodgeFBase', 'encSBase', 'encSMult',
                      'dodgeAtkMult', 'dodgeNAtkMult', 'dodgeBAtkMult', 'dodgeBNAtkMult',
                      'dodgeFAtkMult', 'dodgeFNAtkMult', 'blockMult', 'blockBase',
