@@ -31,7 +31,7 @@ from .advanced_elements import AttrValDecider, MelArray, MelTruncatedStruct, \
     MelUnion, PartialLoadDecider, FlagDecider
 from .basic_elements import MelBase, MelFid, MelGroup, MelGroups, MelLString, \
     MelNull, MelSequential, MelString, MelStruct, MelUInt32, MelOptStruct, \
-    MelOptFloat, MelOptFid, MelReadOnly, MelFids, MelOptUInt32Flags, \
+    MelFloat, MelOptFid, MelReadOnly, MelFids, MelOptUInt32Flags, \
     MelUInt8Flags, MelOptUInt8Flags, MelOptSInt32
 from .utils_constants import _int_unpacker, FID, null1, null2, null3, null4
 from ..bolt import Flags, encode, struct_pack, struct_unpack, unpack_byte
@@ -592,10 +592,11 @@ class MelRef3D(MelOptStruct):
             u'ref_rot_x', u'ref_rot_y', u'ref_rot_z'),
 
 #------------------------------------------------------------------------------
-class MelRefScale(MelOptFloat):
+class MelRefScale(MelFloat):
     """Scale for a reference record (REFR, ACHR, etc.)."""
     def __init__(self):
-        super(MelRefScale, self).__init__(b'XSCL', u'ref_scale', 1.0)
+        super(MelRefScale, self).__init__(b'XSCL', u'ref_scale' #:def, 1.0
+                                          )
 
 #------------------------------------------------------------------------------
 class MelSpells(MelFids):

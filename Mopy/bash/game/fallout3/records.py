@@ -34,7 +34,7 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelReferences, MelColorInterpolator, MelValueInterpolator, \
     MelUnion, AttrValDecider, MelRegnEntrySubrecord, SizeDecider, MelFloat, \
     MelSInt8, MelSInt16, MelSInt32, MelUInt8, MelUInt16, MelUInt32, \
-    MelOptFid, MelOptFloat, MelOptSInt16, MelOptSInt32, MelOptUInt8, \
+    MelOptFid, MelOptSInt16, MelOptSInt32, MelOptUInt8, \
     MelOptUInt16, MelOptUInt32, MelPartialCounter, MelRaceParts, \
     MelRaceVoices, MelBounds, null1, null2, null3, null4, MelScriptVars, \
     MelSequential, MelTruncatedStruct, PartialLoadDecider, MelReadOnly, \
@@ -735,7 +735,8 @@ class MreCell(MelRecord):
         # GECK default for water is -2147483648, but by setting default here to
         # -2147483649, we force the Bashed Patch to retain the value of the
         # last mod.
-        MelOptFloat(b'XCLW', u'waterHeight', -2147483649),
+        MelFloat(b'XCLW', u'waterHeight' #:def, -2147483649
+                    ),
         MelString(b'XNAM','waterNoiseTexture'),
         MelFidList(b'XCLR','regions'),
         MelFid(b'XCIM','imageSpace'),
@@ -1237,7 +1238,7 @@ class MreFact(MelRecord):
                            (_general_flags, u'general_flags'),
                            (_general_flags_2, u'general_flags_2'),
                            (u'unused1', null2), old_versions={u'2B', u'B'}),
-        MelOptFloat(b'CNAM', u'cnam_unused'), # leftover from Oblivion
+        MelFloat(b'CNAM', u'cnam_unused'), # leftover from Oblivion
         MelGroups(u'ranks',
             MelSInt32(b'RNAM', u'rank_level'),
             MelString(b'MNAM', u'male_title'),
@@ -1659,8 +1660,7 @@ class MreLigh(MelRecord):
         MelStruct(b'DATA','iI3BsI2fIf','duration','radius','red','green','blue',
                   ('unused1',null1),(_flags, u'flags'),'falloff','fov','value',
                   'weight'),
-        # None here is on purpose! See AssortedTweak_LightFadeValueFix
-        MelOptFloat(b'FNAM', u'fade', None),
+        MelFloat(b'FNAM', u'fade'), #:def AssortedTweak_LightFadeValueFix
         MelFid(b'SNAM','sound'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -2017,8 +2017,7 @@ class MreNpc(MreActor):
         MelNpcDnam(b'DNAM', u'=28B', (u'skillValues', [0] * 14),
                    (u'skillOffsets', [0] * 14)),
         MelFid(b'HNAM','hair'),
-        # None here is on purpose, for race patcher
-        MelOptFloat(b'LNAM', u'hairLength', None),
+        MelFloat(b'LNAM', u'hairLength'),  #:def , for race patcher
         MelFid(b'ENAM','eye'), ####fid Array
         MelStruct(b'HCLR','3Bs','hairRed','hairBlue','hairGreen',('unused3',null1)),
         MelFid(b'ZNAM','combatStyle'),
@@ -2131,7 +2130,7 @@ class MrePack(MelRecord):
         MelBase(b'PKED','eatMarker'),
         MelOptUInt32(b'PKE2', 'escortDistance'),
         MelFid(b'CNAM','combatStyle'),
-        MelOptFloat(b'PKFD', 'followStartLocationTrigerRadius'),
+        MelFloat(b'PKFD', 'followStartLocationTrigerRadius'),
         MelBase(b'PKPT','patrolFlags'), # byte or short
         MelOptStruct(b'PKW3','IBB3Hff4s','weaponFlags','fireRate','fireCount','numBursts',
                      'shootPerVolleysMin','shootPerVolleysMax','pauseBetweenVolleysMin','pauseBetweenVolleysMax','weaponUnknown'),
@@ -2487,8 +2486,8 @@ class MreRace(MelRecord):
         MelOptStruct(b'DNAM','2I',(FID, u'defaultHairMale'),(FID, u'defaultHairFemale')),
         # Int corresponding to GMST sHairColorNN
         MelStruct(b'CNAM','2B','defaultHairColorMale','defaultHairColorFemale'),
-        MelOptFloat(b'PNAM', 'mainClamp'),
-        MelOptFloat(b'UNAM', 'faceClamp'),
+        MelFloat(b'PNAM', 'mainClamp'),
+        MelFloat(b'UNAM', 'faceClamp'),
         MelStruct(b'ATTR','2B','maleBaseAttribute','femaleBaseAttribute'),
         MelBase(b'NAM0', 'head_data_marker'),
         MelBase(b'MNAM', 'male_head_data_marker'),
@@ -2623,10 +2622,10 @@ class MreRefr(MelRecord):
             ('unused3', null3), ('unused4', null4), is_optional=True,
             old_versions={'B3sI4s'}),
         MelOptSInt32(b'XCNT', 'count'),
-        MelOptFloat(b'XRDS', 'radius'),
-        MelOptFloat(b'XHLP', 'health'),
-        MelOptFloat(b'XRAD', 'radiation'),
-        MelOptFloat(b'XCHG', u'charge'),
+        MelFloat(b'XRDS', 'radius'),
+        MelFloat(b'XHLP', 'health'),
+        MelFloat(b'XRAD', 'radiation'),
+        MelFloat(b'XCHG', u'charge'),
         MelGroup('ammo',
             MelFid(b'XAMT','type'),
             MelUInt32(b'XAMC', 'count'),

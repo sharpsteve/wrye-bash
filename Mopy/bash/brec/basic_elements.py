@@ -875,25 +875,6 @@ class MelOptStruct(MelStruct):
         return None
 
 #------------------------------------------------------------------------------
-# 'Opt' versions of the type wrappers above
-class MelOptNum(_MelNum):
-    """Represents an optional field that is only dumped if at least one
-    value is not equal to the default."""
-
-    def pack_subrecord_data(self, record):
-        oldValue = getattr(record, self.attr)
-        if oldValue is not None and oldValue != self.default:
-            return super(MelOptNum, self).pack_subrecord_data(record)
-        return None
-
-class MelOptFloat(MelOptNum, MelFloat):
-    """Optional float."""
-
-class MelOptSInt8(MelOptNum, MelSInt8):
-    """Optional signed 8-bit integer."""
-    # Unused right now - keeping around for completeness' sake and to make
-    # future usage simpler.
-
 class MelOptSInt16(MelOptNum, MelSInt16):
     """Optional signed 16-bit integer."""
 
