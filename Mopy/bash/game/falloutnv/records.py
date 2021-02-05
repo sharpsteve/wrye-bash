@@ -34,13 +34,13 @@ from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelFidList, MreGmstBase, MreHeaderBase, MelColorInterpolator, \
     MelValueInterpolator, MelRegnEntrySubrecord, MelFloat, MelSInt8, \
     MelSInt16, MelSInt32, MelUInt8, MelUInt32, MelOptFid, \
-    MelUInt16, MelOptUInt32, MelBounds, null1, \
+    MelUInt16, MelBounds, null1, \
     null2, null3, null4, MelTruncatedStruct, MelReadOnly, MelSkipInterior, \
     MelIcons, MelIcons2, MelIcon, MelIco2, MelEdid, MelFull, MelArray, \
     MelObject, MreWithItems, MelRef3D, MelXlod, MelNull, MelEnableParent, \
     MelRefScale, MelMapMarker, MelActionFlags, MelEnchantment, MelScript, \
     MelDecalData, MelDescription, MelPickupSound, MelDropSound, \
-    MelActivateParents, MelUInt8Flags, MelOptUInt32Flags
+    MelActivateParents, MelUInt8Flags, MelUInt32Flags
 from ...exception import ModSizeError
 
 #------------------------------------------------------------------------------
@@ -404,7 +404,7 @@ class MreCell(MelRecord):
                            old_versions={'3Bs3Bs3Bs2f2i2f'}),
         MelBase(b'IMPF','footstepMaterials'), #--todo rewrite specific class.
         MelFid(b'LTMP','lightTemplate'),
-        MelOptUInt32Flags(b'LNAM', u'lightInheritFlags', inheritFlags),
+        MelUInt32Flags(b'LNAM', u'lightInheritFlags', inheritFlags),
         # GECK default for water is -2147483648, but by setting default here to
         # -2147483649, we force the Bashed Patch to retain the value of the
         # last mod. # fixme test
@@ -1238,7 +1238,7 @@ class MreRefr(MelRecord):
             u'primitiveBoundY', u'primitiveBoundZ', u'primitiveColorRed',
             u'primitiveColorGreen', u'primitiveColorBlue', u'primitiveUnknown',
             u'primitiveType'),
-        MelOptUInt32(b'XTRI', 'collisionLayer'),
+        MelUInt32(b'XTRI', 'collisionLayer'),
         MelBase(b'XMBP','multiboundPrimitiveMarker'),
         MelOptStruct(b'XMBO','3f','boundHalfExtentsX','boundHalfExtentsY','boundHalfExtentsZ'),
         MelOptStruct(b'XTEL','I6fI',(FID,'destinationFid'),'destinationPosX','destinationPosY',
@@ -1369,7 +1369,7 @@ class MreRegn(MelRecord):
             MelRegnEntrySubrecord(6, MelArray('grasses',
                 MelStruct(b'RDGS', 'I4s', (FID, 'grass'), ('unknown', null4)),
             )),
-            MelRegnEntrySubrecord(7, MelOptUInt32(b'RDMD', 'musicType')),
+            MelRegnEntrySubrecord(7, MelUInt32(b'RDMD', 'musicType')),
             MelRegnEntrySubrecord(7, MelFid(b'RDMO', 'music')),
             MelRegnEntrySubrecord(7, MelFid(b'RDSI', 'incidentalMediaSet')),
             MelRegnEntrySubrecord(7, MelFids(b'RDSB', 'battleMediaSets')),

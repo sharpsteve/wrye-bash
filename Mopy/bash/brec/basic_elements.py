@@ -875,13 +875,8 @@ class MelOptStruct(MelStruct):
         return None
 
 #------------------------------------------------------------------------------
-class MelOptUInt32(MelOptNum, MelUInt32):
-    """Optional unsigned 32-bit integer."""
-
 class MelOptFid(MelFid, MelOptUInt32):  # TODO(ut): as it stands it could be
     #   MelOptFid(MelFid) -> that's because MelFid is also used for optional
     #   fids all over the place
     """Optional FormID. Wrapper around MelOptUInt32 to avoid having to
     constantly specify the format."""
-
-class MelOptUInt32Flags(MelOptUInt32, _MelFlags): pass
