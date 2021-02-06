@@ -1595,11 +1595,11 @@ class MreIpds(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelTruncatedStruct(
-            b'DATA', '12I', (FID, 'stone', 0), (FID, 'dirt', 0),
-            (FID, 'grass', 0), (FID, 'glass', 0), (FID, 'metal', 0),
-            (FID, 'wood', 0), (FID, 'organic', 0), (FID, 'cloth', 0),
-            (FID, 'water', 0), (FID, 'hollowMetal', 0), (FID, 'organicBug', 0),
-            (FID, 'organicGlow', 0), old_versions={'10I', '9I'}),
+            b'DATA', '12I', (FID, u'stone'), (FID, u'dirt'),
+            (FID, u'grass'), (FID, u'glass'), (FID, u'metal'),
+            (FID, u'wood'), (FID, u'organic'), (FID, u'cloth'),
+            (FID, u'water'), (FID, u'hollowMetal'), (FID, u'organicBug'),
+            (FID, u'organicGlow'), old_versions={'10I', '9I'}),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -2483,7 +2483,7 @@ class MreRace(MelRecord):
         MelFid(b'YNAM','Younger'),
         MelBase(b'NAM2','_nam2',b''),
         MelRaceVoices(b'VTCK', '2I', (FID, 'maleVoice'), (FID, 'femaleVoice')),
-        MelOptStruct(b'DNAM','2I',(FID,'defaultHairMale',0),(FID,'defaultHairFemale',0)),
+        MelOptStruct(b'DNAM','2I',(FID, u'defaultHairMale'),(FID, u'defaultHairFemale')),
         # Int corresponding to GMST sHairColorNN
         MelStruct(b'CNAM','2B','defaultHairColorMale','defaultHairColorFemale'),
         MelOptFloat(b'PNAM', 'mainClamp'),
@@ -3143,7 +3143,7 @@ class MreWeap(MelRecord):
                     'animationType','animationMultiplier','reach',
                     (_dflags1,'dnamFlags1',0),('gripAnimation',255),'ammoUse',
                     'reloadAnimation','minSpread','spread','weapDnam1','sightFov',
-                    'weapDnam2',(FID,'projectile',0),'baseVatsToHitChance',
+                    'weapDnam2',(FID, u'projectile'),'baseVatsToHitChance',
                     ('attackAnimation',255),'projectileCount','embeddedWeaponActorValue',
                     'minRange','maxRange','onHit',(_dflags2,'dnamFlags2',0),
                     'animationAttackMultiplier','fireRate','overrideActionPoint',
@@ -3157,7 +3157,7 @@ class MreWeap(MelRecord):
                                   'I2f4B5fI4B2f2I11fiI2f'}),
         MelOptStruct(b'CRDT','H2sfB3sI','criticalDamage',('weapCrdt1', null2),
                      'criticalMultiplier',(_cflags,'criticalFlags', 0),
-                     ('weapCrdt2', null3),(FID,'criticalEffect', 0)),
+                     ('weapCrdt2', null3),(FID, u'criticalEffect')),
         MelBase(b'VNAM','soundLevel'),
     )
     __slots__ = melSet.getSlotsUsed()
