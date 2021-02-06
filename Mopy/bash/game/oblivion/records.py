@@ -523,7 +523,7 @@ class MreAlch(MelRecord,MreHasEffects):
         MelIcon(),
         MelScript(),
         MelFloat(b'DATA', 'weight'),
-        MelStruct(b'ENIT','iB3s','value',(_flags,'flags',0),('unused1',null3)),
+        MelStruct(b'ENIT','iB3s','value',(_flags, u'flags'),('unused1',null3)),
         MelEffects(),
         MelEffectsObmeFull(),
     ).with_distributor(_effects_distributor)
@@ -764,7 +764,7 @@ class MreCont(MreWithItems):
         MelModel(),
         MelScript(),
         MelItems(),
-        MelStruct(b'DATA','=Bf',(_flags,'flags',0),'weight'),
+        MelStruct(b'DATA','=Bf',(_flags, u'flags'),'weight'),
         MelFid(b'SNAM','soundOpen'),
         MelFid(b'QNAM','soundClose'),
     )
@@ -817,7 +817,7 @@ class MreCrea(MreActorBase):
         MelStrings(b'NIFZ','bodyParts'),
         MelBase(b'NIFT','nift_p'), # Texture File Hashes
         MelStruct(b'ACBS','=I3Hh2H',
-            (_flags,'flags',0),'baseSpell','fatigue','barterGold',
+            (_flags, u'flags'),'baseSpell','fatigue','barterGold',
             ('level',1),'calcMin','calcMax'),
         MelGroups(u'factions',
             MelStruct(b'SNAM', u'IB3s', (FID, u'faction'), u'rank',
@@ -1151,7 +1151,7 @@ class MreIngr(MelRecord,MreHasEffects):
         MelIcon(),
         MelScript(),
         MelFloat(b'DATA', 'weight'),
-        MelStruct(b'ENIT','iB3s','value',(_flags,'flags',0),('unused1',null3)),
+        MelStruct(b'ENIT','iB3s','value',(_flags, u'flags'),('unused1',null3)),
         MelEffects(),
         MelEffectsObmeFull(),
     ).with_distributor(_effects_distributor)
@@ -1384,7 +1384,7 @@ class MreNpc(MreActorBase):
         MelFull(),
         MelModel(),
         MelStruct(b'ACBS','=I3Hh2H',
-            (_flags,'flags',0),'baseSpell','fatigue','barterGold',
+            (_flags, u'flags'),'baseSpell','fatigue','barterGold',
             ('level',1),'calcMin','calcMax'),
         MelGroups(u'factions',
             MelStruct(b'SNAM', u'IB3s', (FID, u'faction'), u'rank',
@@ -1973,7 +1973,7 @@ class MreWeap(MelRecord):
         MelScript(),
         MelFid(b'ENAM','enchantment'),
         MelOptUInt16(b'ANAM', 'enchantPoints'),
-        MelStruct(b'DATA','I2f3IfH','weaponType','speed','reach',(_flags,'flags',0),
+        MelStruct(b'DATA','I2f3IfH','weaponType','speed','reach',(_flags, u'flags'),
             'value','health','weight','damage'),
     )
     __slots__ = melSet.getSlotsUsed()

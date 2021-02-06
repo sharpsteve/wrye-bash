@@ -218,7 +218,7 @@ class MreAmmo(MelRecord):
         MelDestructible(),
         MelPickupSound(),
         MelDropSound(),
-        MelStruct(b'DATA','fB3siB','speed',(_flags,'flags',0),('ammoData1',null3),
+        MelStruct(b'DATA','fB3siB','speed',(_flags, u'flags'),('ammoData1',null3),
                   'value','clipRounds'),
         MelTruncatedStruct(b'DAT2', '2IfIf', 'projPerShot',
                            (FID, u'projectile'), 'weight',
@@ -488,7 +488,7 @@ class MreCont(MreWithItems):
         MelScript(),
         MelItems(),
         MelDestructible(),
-        MelStruct(b'DATA','=Bf',(_flags,'flags',0),'weight'),
+        MelStruct(b'DATA','=Bf',(_flags, u'flags'),'weight'),
         MelFid(b'SNAM','soundOpen'),
         MelFid(b'QNAM','soundClose'),
         MelFid(b'RNAM','soundRandomLooping'),
@@ -637,7 +637,7 @@ class MreEnch(MelRecord):
         MelEdid(),
         MelFull(),
         MelStruct(b'ENIT','3IB3s','itemType','chargeAmount','enchantCost',
-                  (_flags,'flags',0),('unused1',null3)),
+                  (_flags, u'flags'),('unused1',null3)),
         MelEffects(),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -926,7 +926,7 @@ class MreLigh(MelRecord):
         MelFull(),
         MelIcons(),
         MelStruct(b'DATA','iI3BsI2fIf','duration','radius','red','green','blue',
-                  ('unused1',null1),(_flags,'flags',0),'falloff','fov','value',
+                  ('unused1',null1),(_flags, u'flags'),'falloff','fov','value',
                   'weight'),
         # None here is on purpose! See AssortedTweak_LightFadeValueFix
         MelOptFloat(b'FNAM', u'fade', None),

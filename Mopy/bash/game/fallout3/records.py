@@ -451,7 +451,7 @@ class MreAmmo(MelRecord):
         MelDestructible(),
         MelPickupSound(),
         MelDropSound(),
-        MelStruct(b'DATA','fB3siB','speed',(_flags,'flags',0),('ammoData1',null3),
+        MelStruct(b'DATA','fB3siB','speed',(_flags, u'flags'),('ammoData1',null3),
                   'value','clipRounds'),
         MelString(b'ONAM','shortName'),
     )
@@ -572,7 +572,7 @@ class MreBook(MelRecord):
         MelDestructible(),
         MelPickupSound(),
         MelDropSound(),
-        MelStruct(b'DATA', '=BbIf',(_flags,'flags',0),('teaches',-1),'value','weight'),
+        MelStruct(b'DATA', '=BbIf',(_flags, u'flags'),('teaches',-1),'value','weight'),
     )
     __slots__ = melSet.getSlotsUsed() + ['modb']
 
@@ -779,7 +779,7 @@ class MreClas(MelRecord):
         MelDescription(),
         MelIcon(),
         MelStruct(b'DATA','4i2IbB2s','tagSkill1','tagSkill2','tagSkill3',
-            'tagSkill4',(_flags,'flags',0),(aiService,'services',0),
+            'tagSkill4',(_flags, u'flags'),(aiService,'services',0),
             ('trainSkill',-1),'trainLevel',('clasData1',null2)),
         MelStruct(b'ATTR', '7B', 'strength', 'perception', 'endurance',
                   'charisma', 'intelligence', 'agility', 'luck'),
@@ -838,7 +838,7 @@ class MreCont(MreWithItems):
         MelScript(),
         MelItems(),
         MelDestructible(),
-        MelStruct(b'DATA','=Bf',(_flags,'flags',0),'weight'),
+        MelStruct(b'DATA','=Bf',(_flags, u'flags'),'weight'),
         MelFid(b'SNAM','soundOpen'),
         MelFid(b'QNAM','soundClose'),
     )
@@ -918,7 +918,7 @@ class MreCrea(MreActor):
         MelUInt16(b'EAMT', 'eamt'),
         MelStrings(b'NIFZ','bodyParts'),
         MelBase(b'NIFT','nift_p'), # Texture File Hashes
-        MelStruct(b'ACBS','=I2Hh3HfhH',(_flags,'flags',0),'fatigue',
+        MelStruct(b'ACBS','=I2Hh3HfhH',(_flags, u'flags'),'fatigue',
             'barterGold',('level',1),'calcMin','calcMax','speedMultiplier',
             'karma', 'dispositionBase',
             (MreActor.TemplateFlags, 'templateFlags', 0)),
@@ -1162,7 +1162,7 @@ class MreEnch(MelRecord):
         MelEdid(),
         MelFull(),
         MelStruct(b'ENIT','3IB3s','itemType','chargeAmount','enchantCost',
-                  (_flags,'flags',0),('unused1',null3)),
+                  (_flags, u'flags'),('unused1',null3)),
         MelEffects(),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1565,7 +1565,7 @@ class MreIngr(MelRecord):
         MelScript(),
         MelEquipmentType(),
         MelFloat(b'DATA', 'weight'),
-        MelStruct(b'ENIT','iB3s','value',(_flags,'flags',0),('unused1',null3)),
+        MelStruct(b'ENIT','iB3s','value',(_flags, u'flags'),('unused1',null3)),
         MelEffects(),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -1656,7 +1656,7 @@ class MreLigh(MelRecord):
         MelFull(),
         MelIcon(),
         MelStruct(b'DATA','iI3BsI2fIf','duration','radius','red','green','blue',
-                  ('unused1',null1),(_flags,'flags',0),'falloff','fov','value',
+                  ('unused1',null1),(_flags, u'flags'),'falloff','fov','value',
                   'weight'),
         # None here is on purpose! See AssortedTweak_LightFadeValueFix
         MelOptFloat(b'FNAM', u'fade', None),
@@ -1983,7 +1983,7 @@ class MreNpc(MreActor):
         MelFull(),
         MelModel(),
         MelStruct(b'ACBS','=I2Hh3Hf2H',
-            (_flags,'flags',0),'fatigue','barterGold',
+            (_flags, u'flags'),'fatigue','barterGold',
             ('level',1),'calcMin','calcMax','speedMultiplier','karma',
             'dispositionBase', (MreActor.TemplateFlags, 'templateFlags', 0)),
         MelGroups('factions',
@@ -2478,7 +2478,7 @@ class MreRace(MelRecord):
         MelStruct(b'DATA','14b2s4fI','skill1','skill1Boost','skill2','skill2Boost',
                   'skill3','skill3Boost','skill4','skill4Boost','skill5','skill5Boost',
                   'skill6','skill6Boost','skill7','skill7Boost',('unused1',null2),
-                  'maleHeight','femaleHeight','maleWeight','femaleWeight',(_flags,'flags',0)),
+                  'maleHeight','femaleHeight','maleWeight','femaleWeight',(_flags, u'flags')),
         MelFid(b'ONAM','Older'),
         MelFid(b'YNAM','Younger'),
         MelBase(b'NAM2','_nam2',b''),
