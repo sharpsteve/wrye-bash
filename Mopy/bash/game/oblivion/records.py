@@ -1567,8 +1567,8 @@ class MreRace(MelRecord):
                   'maleHeight', 'femaleHeight', 'maleWeight', 'femaleWeight',
                   (_flags, 'flags', 0)),
         MelRaceVoices(b'VNAM', '2I', (FID, 'maleVoice'), (FID, 'femaleVoice')),
-        MelOptStruct(b'DNAM', '2I', (FID, 'defaultHairMale', 0),
-                     (FID, 'defaultHairFemale', 0)),
+        MelOptStruct(b'DNAM', '2I', (FID, u'defaultHairMale'),
+                     (FID, u'defaultHairFemale')),
         # Corresponds to GMST sHairColorNN
         MelUInt8(b'CNAM', 'defaultHairColor'),
         MelOptFloat(b'PNAM', 'mainClamp'),
