@@ -266,9 +266,8 @@ class MelRaceHeadPart(MelGroup):
             target_head_part = getattr(record, self.attr)
             # Special handling for ears: If ICON or MICO is present, don't
             # dump the model
-            has_icon = getattr(target_head_part, u'iconPath', None) is not None
-            has_mico = getattr(target_head_part, u'smallIconPath',
-                               None) is not None
+            has_icon = getattr(target_head_part, u'iconPath', None)
+            has_mico = getattr(target_head_part, u'smallIconPath', None)
             if not has_icon and not has_mico:
                 self._modl_loader.dumpData(target_head_part, out)
             else:
